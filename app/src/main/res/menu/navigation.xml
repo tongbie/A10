@@ -17,7 +17,7 @@
         android:title="消息" />
 
     <item
-        android:id="@+id/navigation_information"
+        android:id="@+id/navigation_personal"
         android:icon="@drawable/navigation_information"
         android:title="我的" />
 

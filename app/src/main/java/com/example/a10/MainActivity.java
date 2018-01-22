@@ -1,6 +1,5 @@
 package com.example.a10;
 
-import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.a10.Fragments.HomeFragment;
-import com.example.a10.Fragments.InformationFragment;
+import com.example.a10.Fragments.PersonalFragment;
 import com.example.a10.Fragments.NotificationFragment;
 import com.example.a10.Fragments.RequireFragment;
 
@@ -42,11 +41,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Fragment homeFragment = new HomeFragment();
         Fragment requireFragment = new RequireFragment();
         Fragment notificationFragment = new NotificationFragment();
-        Fragment informationFragment = new InformationFragment();
+        Fragment personalFragment = new PersonalFragment();
         fragments.add(homeFragment);
         fragments.add(requireFragment);
         fragments.add(notificationFragment);
-        fragments.add(informationFragment);
+        fragments.add(personalFragment);
         fragmentManager=getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout,fragments.get(0));
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             case R.id.navigation_notification:
                 fragmentId=2;
                 break;
-            case R.id.navigation_information:
+            case R.id.navigation_personal:
                 fragmentId=3;
                 break;
         }

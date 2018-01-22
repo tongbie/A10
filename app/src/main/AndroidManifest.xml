@@ -11,15 +11,18 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="外包管理">
-        </activity>
+            android:label="外包管理"></activity>
         <activity
             android:name=".LoginActivity"
-            android:label="登录"><intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:label="登录">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".FaceIdentifyActivity">
+        </activity>
     </application>
 
 </manifest>
