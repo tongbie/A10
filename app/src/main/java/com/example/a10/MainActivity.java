@@ -8,7 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.a10.Fragments.HomeFragment;
 import com.example.a10.Fragments.InformationFragment;
@@ -21,6 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     private List<Fragment> fragments = new ArrayList<>();
     private FragmentManager fragmentManager;
+    private long backTime = 0;//双击返回计时
 
 
     @Override
@@ -72,5 +75,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragmentTransaction.replace(R.id.frameLayout,fragments.get(fragmentId));
         fragmentTransaction.commit();
         return true;
+    }
+
+    /* 双击返回 */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if ((System.currentTimeMillis() - backTime) > 1500) {
+                Toast.makeText(MainActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
+                backTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
