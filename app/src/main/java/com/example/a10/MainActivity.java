@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.example.a10.Fragments.HomeFragment;
 import com.example.a10.Fragments.PersonalFragment;
-import com.example.a10.Fragments.NotificationFragment;
+import com.example.a10.Fragments.Notification.NotificationFragment;
 import com.example.a10.Fragments.RequireFragment;
 
 import java.util.ArrayList;
@@ -24,16 +24,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private FragmentManager fragmentManager;
     private long backTime = 0;//双击返回计时
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initView();
         initFragment();
-        {//控件
-            BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-            navigation.setOnNavigationItemSelectedListener(this);
-        }
+    }
+
+    private void initView(){
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(this);
     }
 
     /* 初始化Fragment */
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragments.add(personalFragment);
         fragmentManager=getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout,fragments.get(0));
+        fragmentTransaction.replace(R.id.root,fragments.get(0));
         fragmentTransaction.commit();
     }
 
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
         }
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout,fragments.get(fragmentId));
+        fragmentTransaction.replace(R.id.root,fragments.get(fragmentId));
         fragmentTransaction.commit();
         return true;
     }

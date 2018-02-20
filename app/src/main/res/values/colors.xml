@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00a3af</color>
-    <color name="colorPrimaryDark">#00a3af</color>
-    <color name="colorAccent">#00a3af</color>
+    <color name="colorPrimary">#808080</color>
+    <color name="colorPrimaryDark">#808080</color>
+    <color name="colorAccent">#808080</color>
+
+    <drawable name="clr_normal">#FFF37C7B</drawable>
+    <drawable name="clr_pressed">#808080</drawable>
 </resources>

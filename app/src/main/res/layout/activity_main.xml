@@ -8,7 +8,8 @@
     tools:context="com.example.a10.MainActivity">
 
     <FrameLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/root"
+        android:layout_marginBottom="56dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></FrameLayout>
 

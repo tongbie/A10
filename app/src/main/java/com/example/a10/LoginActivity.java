@@ -1,39 +1,22 @@
 package com.example.a10;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
     private String username = "";
@@ -46,9 +29,11 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ToolClass toolClass = new ToolClass();
         initView();
     }
 
+    /* 添加控件 */
     private void initView() {
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -64,13 +49,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         });
         login = (Button) findViewById(R.id.login);
         login.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     /* 判断账号密码是否为空，启动loginRunnable */
@@ -99,6 +77,68 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login://登录
+                username = mUsernameView.getText().toString();
+                password = mPasswordView.getText().toString();
+                new Thread(loginRunnable).start();
+        }
+    }
 
+    Runnable loginRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                FormBody formBody = new FormBody.Builder()
+                        .add("userName", username)
+                        .add("password", password)
+                        .build();
+                Request request = new Request.Builder()
+                        //TODO:set URL
+                        .url("")
+                        .post(formBody)
+                        .build();
+                Response response = ToolClass.client.newCall(request).execute();
+                String responseData = response.body().string();
+                if (responseData != null) {
+                    if (String.valueOf(response.code()).charAt(0) == '2') {
+                        //TODO:登录成功
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        uiError("用户名或密码错误");
+                    }
+                } else {
+                    uiError("网络连接失败");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                uiToast("出现错误,请重启应用");
+            }
+        }
+    };
+
+    /* 用于在线程中显示Toast */
+    private void uiToast(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /* 用于在线程中显示文本框的错误信息 */
+    private void uiError(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mUsernameView.setError(text);
+            }
+        });
+    }
 }
 
