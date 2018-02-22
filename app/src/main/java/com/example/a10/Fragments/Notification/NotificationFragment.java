@@ -7,10 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.a10.R;
+import com.example.a10.ToolClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +27,19 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
+        initAnimation(view);
         initView(view);
         initData();
         return view;
+    }
+
+    private void initAnimation(View view){
+        TranslateAnimation ta=new TranslateAnimation(0,0,-3000,0);
+        ta.setDuration(300);
+        LayoutAnimationController lac=new LayoutAnimationController(ta,0.3f);
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        LinearLayout linearLayout=view.findViewById(R.id.linearLayout);
+        linearLayout.setLayoutAnimation(lac);
     }
 
     private void initData() {

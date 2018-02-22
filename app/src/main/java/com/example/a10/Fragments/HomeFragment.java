@@ -1,5 +1,6 @@
 package com.example.a10.Fragments;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,13 +18,20 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.R;
+import com.example.a10.ToolClass;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,10 +57,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        initAnimation(view);
         getData();
         initView(view);
         addDate();
         return view;
+    }
+
+    private void initAnimation(View view) {
+        ScaleAnimation sa = new ScaleAnimation(0.4f, 1f, 0.4f, 1f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        sa.setDuration(300);
+        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
+        linearLayout.setLayoutAnimation(lac);
     }
 
     /* 获取数据 */

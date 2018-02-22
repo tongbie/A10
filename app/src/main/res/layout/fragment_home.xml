@@ -23,12 +23,12 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
-        android:layout_marginBottom="56dp"
         android:orientation="vertical">
 
         <LinearLayout
