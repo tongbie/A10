@@ -1,12 +1,11 @@
 package com.example.a10.Fragments.Notification;
 
-import android.graphics.Bitmap;
 
 /**
  * Created by BieTong on 2018/2/9.
  */
 
-public class Message {
+public class Message{
     private int imageId;
     private String name;
     private String message;

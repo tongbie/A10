@@ -1,10 +1,12 @@
-package com.example.a10;
+package com.example.a10.MyView;
 
 import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import com.example.a10.R;
 
 /**
  * Created by BieTong on 2018/1/18.

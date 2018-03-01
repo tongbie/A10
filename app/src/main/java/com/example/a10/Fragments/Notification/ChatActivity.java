@@ -1,12 +1,10 @@
 package com.example.a10.Fragments.Notification;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 
 import com.example.a10.R;
-import com.example.a10.SlipBack;
 
 import java.util.ArrayList;
 import java.util.List;

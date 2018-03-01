@@ -1,4 +1,4 @@
-package com.example.a10.Fragments;
+package com.example.a10.Fragments.Personal;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,17 +13,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
+import com.example.a10.Login.LoginActivity;
 import com.example.a10.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class PersonalFragment extends Fragment {
+import cn.bmob.v3.BmobUser;
+
+public class PersonalFragment extends Fragment implements View.OnClickListener {
+    private View view;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_personal,container,false);
+        View view = inflater.inflate(R.layout.fragment_personal, container, false);
+        this.view = view;
+        initView();
         return view;
+    }
+
+
+    private void initView() {
+        view.findViewById(R.id.logout).setOnClickListener(this);
     }
 
     @Override
@@ -42,6 +54,16 @@ public class PersonalFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.logout:
+                BmobUser.logOut();
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                getActivity().finish();
         }
     }
 }

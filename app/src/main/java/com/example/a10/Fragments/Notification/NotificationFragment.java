@@ -43,6 +43,11 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
     }
 
     private void initData() {
+        MessageGson messages=new MessageGson();
+        messages.setMessages(list);
+//        messages.setMessages();
+
+
         list.add(new Message(R.drawable.navigation_information,"别同","我发了一条消息"));
         list.add(new Message(R.drawable.navigation_information,"王栋","我发了一条消息"));
     }

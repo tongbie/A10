@@ -11,10 +11,10 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.a10.Fragments.HomeFragment;
-import com.example.a10.Fragments.PersonalFragment;
+import com.example.a10.Fragments.Home.HomeFragment;
+import com.example.a10.Fragments.Personal.PersonalFragment;
 import com.example.a10.Fragments.Notification.NotificationFragment;
-import com.example.a10.Fragments.RequireFragment;
+import com.example.a10.Fragments.Require.RequireFragment;
 
 import java.util.ArrayList;
 import java.util.List;
