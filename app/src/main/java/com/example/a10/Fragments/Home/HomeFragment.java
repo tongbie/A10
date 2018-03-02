@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,28 +83,68 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.menuButton).setOnClickListener(this);
         view.findViewById(R.id.save).setOnClickListener(this);
         view.findViewById(R.id.sign).setOnClickListener(this);
+        view.findViewById(R.id.addDate).setOnClickListener(this);
         /* 进度条 */
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setMax(100);
-        progressNum =  view.findViewById(R.id.progressNum);
+        progressNum = view.findViewById(R.id.progressNum);
         progressNum.setText(" " + String.valueOf(progressBar.getProgress()) + " %");
         /* 日历初始化 */
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         String date = sdf.format(new java.util.Date());//获取日期
-        datePicker =  view.findViewById(R.id.datePicker);
+        datePicker = view.findViewById(R.id.datePicker);
         datePicker.setDate(Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)));//设置日期，必须调用
     }
 
     private void addData() {
-        BmobQuery<HomeGson> bmobQuery = new BmobQuery<HomeGson>();
+        BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
+        query.addWhereEqualTo("username", LoginActivity.username);
+        query.findObjects(new FindListener<HomeGson>() {
+            @Override
+            public void done(List<HomeGson> list, BmobException e) {
+                if (e == null) {
+                    HomeGson data = new HomeGson();
+                    if (list.size() == 0) {
+                        data.setUsername(LoginActivity.username);
+                        data.save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                if (e != null) {
+                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                        return;
+                    }
+                    data = list.get(0);
+                    progressNum.setText(" "+String.valueOf(data.getProgress())+" %");
+                    progressBar.setProgress(data.getProgress());
+                    startDate = data.getStartDate();
+                    dateSign = data.getDataSign();
+                    addDateSign(dateSign);
+                } else {
+                    if (e.getErrorCode() == 101) {
+                        new HomeGson().save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                if (e != null) {
+                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+    }
 
-
-
-        DPCManager.getInstance().setDecorBG(dateSign);
-        datePicker.setDPDecor(new DPDecor() {//绘制指定日期圆圈
+    private void addDateSign(List<String> dateSign){
+        datePicker.setDPDecor(new DPDecor() {
             @Override
             public void drawDecorBG(Canvas canvas, Rect rect, Paint paint) {
-                paint.setColor(Color.parseColor("#b0b0b0"));
+                paint.setColor(Color.parseColor("#ef7a82"));
                 canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2F, paint);
             }
         });
@@ -132,13 +171,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showMenuButton();
                 break;
             case R.id.save:
-                saveAll();
+                save();
+            case R.id.sign:
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+                String date = sdf.format(new java.util.Date());//获取日期
+                dateSign.add(date);
+                addDateSign(dateSign);
                 break;
         }
     }
 
-    private void saveAll() {
-        final HomeGson data=new HomeGson();
+    private void save() {
+        final HomeGson data = new HomeGson();
         data.setProgress(progressBar.getProgress());
         data.setStartDate(startDate);
         data.setDataSign(dateSign);
@@ -148,49 +192,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         query.findObjects(new FindListener<HomeGson>() {
             @Override
             public void done(List<HomeGson> list, BmobException e) {
-                if(e==null) {
-                    String homeObjectId=null;
-                    if(list.size()==0){
-                        data.save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                if(e==null) {
-                                    Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
-                                }else {
-                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        return;
-                    }else {
-                        homeObjectId=list.get(0).getObjectId();
-                    }
-                    data.update(homeObjectId,new UpdateListener() {
+                if (e == null) {
+                    data.update(list.get(0).getObjectId(), new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
-                            if(e==null) {
+                            if (e == null) {
                                 Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
-                            }else {
+                            } else {
                                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-                }else {
-                    Log.e("查询ErrorCode",String.valueOf(e.getErrorCode()));
-                    if(e.getErrorCode()==101){
-                        data.save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                if(e==null) {
-                                    Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
-                                }else {
-                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                    }else {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                } else {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -208,8 +222,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             } else {
                 menuLayout.setVisibility(View.GONE);
             }
-        }catch (Exception e){
-            //TODO:未知异常
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

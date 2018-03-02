@@ -15,6 +15,12 @@
         android:text="退出登录\n刷脸注册\n主题色设置"
         android:textSize="20dp" />
 
+    <TextView
+        android:id="@+id/username"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/logout"
         android:text="退出登录"

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.TextView;
 
 import com.example.a10.Login.LoginActivity;
 import com.example.a10.R;
@@ -30,6 +31,8 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_personal, container, false);
         this.view = view;
         initView();
+        TextView userText=view.findViewById(R.id.username);
+        userText.setText("当前用户：\n"+LoginActivity.username);
         return view;
     }
 

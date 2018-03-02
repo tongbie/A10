@@ -122,24 +122,9 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             @Override
             public void done(BmobUser bmobUser, BmobException e) {
                 if (e == null) {
-                    creatTable(user);
                     Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    private void creatTable(final BmobUser user) {
-        HomeGson data = new HomeGson();
-        data.save(new SaveListener<String>() {
-            @Override
-            public void done(String objectId, BmobException e) {
-                if (e == null) {
-
-                } else {
-
                 }
             }
         });
