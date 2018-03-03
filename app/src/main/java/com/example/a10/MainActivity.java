@@ -1,5 +1,6 @@
 package com.example.a10;
 
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -11,6 +12,9 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ashokvarma.bottomnavigation.BadgeItem;
+import com.ashokvarma.bottomnavigation.BottomNavigationBar;
+import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.a10.Fragments.Home.HomeFragment;
 import com.example.a10.Fragments.Personal.PersonalFragment;
 import com.example.a10.Fragments.Notification.NotificationFragment;
@@ -19,7 +23,7 @@ import com.example.a10.Fragments.Require.RequireFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements BottomNavigationBar.OnTabSelectedListener {
     private List<Fragment> fragments = new ArrayList<>();
     private FragmentManager fragmentManager;
     private long backTime = 0;//双击返回计时
@@ -32,13 +36,29 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         initFragment();
     }
 
-    private void initView(){
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(this);
+    private void initView() {
+        /* BottomNavigationBar */
+        BottomNavigationBar bottomBar = findViewById(R.id.navigation);
+        bottomBar.setTabSelectedListener(this);
+//        BadgeItem badgeItem = new BadgeItem().setBackgroundColor(Color.RED).setText("3");
+        bottomBar.setMode(BottomNavigationBar.MODE_FIXED);
+        bottomBar.setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_STATIC);
+        bottomBar.setBarBackgroundColor(R.color.colorWrite);
+        bottomBar.addItem(new BottomNavigationItem(R.drawable.ic_home_black_24dp, "首页")
+                .setActiveColorResource(R.color.colorWrite))
+                .addItem(new BottomNavigationItem(R.drawable.ic_dashboard_black_24dp, "任务")
+                        .setActiveColorResource(R.color.colorWrite))
+                .addItem(new BottomNavigationItem(R.drawable.ic_notifications_black_24dp, "消息")
+                        .setActiveColorResource(R.color.colorWrite)
+                        /*.setBadgeItem(badgeItem)*/)//添加角标
+                .addItem(new BottomNavigationItem(R.drawable.ic_personal, "我的")
+                        .setActiveColorResource(R.color.colorWrite))
+                .setFirstSelectedPosition(0)
+                .initialise();//所有的设置需在调用该方法前完成
     }
 
     /* 初始化Fragment */
-    private void initFragment(){
+    private void initFragment() {
         Fragment homeFragment = new HomeFragment();
         Fragment requireFragment = new RequireFragment();
         Fragment notificationFragment = new NotificationFragment();
@@ -47,34 +67,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragments.add(requireFragment);
         fragments.add(notificationFragment);
         fragments.add(personalFragment);
-        fragmentManager=getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.root,fragments.get(0));
+        fragmentTransaction.replace(R.id.root, fragments.get(0));
         fragmentTransaction.commit();
-    }
-
-    /* 底栏点击事件 */
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int fragmentId=0;
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                fragmentId=0;
-                break;
-            case R.id.navigation_require:
-                fragmentId=1;
-                break;
-            case R.id.navigation_notification:
-                fragmentId=2;
-                break;
-            case R.id.navigation_personal:
-                fragmentId=3;
-                break;
-        }
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.root,fragments.get(fragmentId));
-        fragmentTransaction.commit();
-        return true;
     }
 
     /* 双击返回 */
@@ -86,10 +82,27 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 backTime = System.currentTimeMillis();
             } else {
                 finish();
-                System.exit(0);
             }
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onTabSelected(int position) {
+        int fragmentId=position;
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.root, fragments.get(fragmentId));
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onTabUnselected(int position) {
+
+    }
+
+    @Override
+    public void onTabReselected(int position) {
+
     }
 }

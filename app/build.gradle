@@ -46,4 +46,5 @@ dependencies {
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     compile 'cn.bmob.android:bmob-push:0.8'
     compile 'cn.bmob.android:http-legacy:1.0'
+    compile 'com.ashokvarma.android:bottom-navigation-bar:1.4.1'
 }

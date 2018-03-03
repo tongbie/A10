@@ -29,7 +29,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void initData(){
-        list.add(new Chat(R.drawable.navigation_information,"王栋","我说了一句话",0));
-        list.add(new Chat(R.drawable.navigation_information,"别同","我说了一句话",1));
+        list.add(new Chat(R.drawable.ic_personal,"王栋","我说了一句话",0));
+        list.add(new Chat(R.drawable.ic_personal,"别同","我说了一句话",1));
     }
 }

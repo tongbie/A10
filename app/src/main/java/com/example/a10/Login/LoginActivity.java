@@ -1,6 +1,11 @@
 package com.example.a10.Login;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -40,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         setContentView(R.layout.activity_login);
         new ToolClass(getApplicationContext());
         Bmob.initialize(this, "c2c1321b56eef48e75db1371f8153b80");
+        requestPermission();
         skipLogin();
         initView();
         mUsernameView.setText("bietong");
@@ -53,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         } else {
             username = user.getUsername();
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
     }
 
@@ -96,6 +103,12 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             focusView.requestFocus();
         } else {
 
+        }
+    }
+
+    private void requestPermission(){
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{android.Manifest.permission.READ_PHONE_STATE}, 0x000);
         }
     }
 
@@ -149,24 +162,12 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         });
     }
 
-    /* 用于在线程中显示Toast */
-    private void uiToast(final String text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    /* 用于在线程中显示文本框的错误信息 */
-    private void uiError(final String text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mUsernameView.setError(text);
-            }
-        });
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getApplicationContext(), "未获得全部权限", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

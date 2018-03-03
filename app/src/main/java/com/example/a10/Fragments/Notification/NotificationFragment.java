@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.a10.R;
-import com.example.a10.ToolClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +47,8 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
 //        messages.setMessages();
 
 
-        list.add(new Message(R.drawable.navigation_information,"别同","我发了一条消息"));
-        list.add(new Message(R.drawable.navigation_information,"王栋","我发了一条消息"));
+        list.add(new Message(R.drawable.ic_personal,"别同","我发了一条消息"));
+        list.add(new Message(R.drawable.ic_personal,"王栋","我发了一条消息"));
     }
 
     private void initView(View view) {

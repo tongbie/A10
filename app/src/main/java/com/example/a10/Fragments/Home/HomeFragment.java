@@ -1,7 +1,9 @@
 package com.example.a10.Fragments.Home;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,6 +11,7 @@ import android.graphics.Rect;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +33,7 @@ import com.example.a10.ToolClass;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import cn.aigestudio.datepicker.bizs.calendars.DPCManager;
@@ -56,8 +60,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        this.view = view;
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_home, null);
+        }
+        ViewGroup viewGroup = (ViewGroup) view.getParent();
+        if (viewGroup != null) {
+            viewGroup.removeView(view);
+        }
         initAnimation();
         initView();
         addData();
@@ -65,7 +74,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initAnimation() {
-        ScaleAnimation sa = new ScaleAnimation(0.7f, 1f, 0.7f, 1f,
+        ScaleAnimation sa = new ScaleAnimation(0.8f, 1f, 0.8f, 1f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
         sa.setDuration(300);
@@ -117,11 +126,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         return;
                     }
                     data = list.get(0);
-                    progressNum.setText(" "+String.valueOf(data.getProgress())+" %");
+                    progressNum.setText(" " + String.valueOf(data.getProgress()) + " %");
                     progressBar.setProgress(data.getProgress());
                     startDate = data.getStartDate();
                     dateSign = data.getDataSign();
-                    addDateSign(dateSign);
+                    addDateSign();
                 } else {
                     if (e.getErrorCode() == 101) {
                         new HomeGson().save(new SaveListener<String>() {
@@ -140,15 +149,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void addDateSign(List<String> dateSign){
-        datePicker.setDPDecor(new DPDecor() {
-            @Override
-            public void drawDecorBG(Canvas canvas, Rect rect, Paint paint) {
-                paint.setColor(Color.parseColor("#ef7a82"));
-                canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2F, paint);
-            }
-        });
-        datePicker.invalidate();
+    private void addDateSign() {
+        DPCManager.getInstance().setDecorBG(dateSign);
+        try {
+            datePicker.setDPDecor(new DPDecor() {
+                @Override
+                public void drawDecorBG(Canvas canvas, Rect rect, Paint paint) {
+                    paint.setColor(Color.parseColor("#ef7a82"));
+                    canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2F, paint);
+                }
+            });
+            datePicker.invalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -173,10 +187,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.save:
                 save();
             case R.id.sign:
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-                String date = sdf.format(new java.util.Date());//获取日期
+//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+//                String date = sdf.format(new java.util.Date());//获取日期
+                Calendar calendar = Calendar.getInstance();
+                String date = String.valueOf(calendar.get(Calendar.YEAR)) + "-"
+                        + String.valueOf(calendar.get(Calendar.MONTH)) + "-"
+                        + String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                for (String newDate : dateSign) {
+                    if (newDate.equals(date)) {
+                        return;
+                    }
+                }
                 dateSign.add(date);
-                addDateSign(dateSign);
+                addDateSign();
                 break;
         }
     }
@@ -213,13 +236,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void showMenuButton() {
         try {
             LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
+            LinearLayout linearLayout=view.findViewById(R.id.linearLayout);
             if (menuLayout.getVisibility() == View.GONE) {
+                linearLayout.animate()
+                        .y(ToolClass.dp(200))
+                        .setDuration(200)
+                        .setInterpolator(new OvershootInterpolator())
+                        .start();
                 menuLayout.setVisibility(View.VISIBLE);
-                TranslateAnimation ta = new TranslateAnimation(0, 0, 0, ToolClass.dp(12));
-                ta.setDuration(200);
-                ta.setInterpolator(new OvershootInterpolator());
-                view.findViewById(R.id.linearLayout).startAnimation(ta);
             } else {
+                linearLayout.animate()
+                        .y(ToolClass.dp(62))
+                        .setDuration(200)
+                        .setInterpolator(new OvershootInterpolator())
+                        .start();
                 menuLayout.setVisibility(View.GONE);
             }
         } catch (Exception e) {
@@ -270,11 +300,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
             }
         }*/
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        progressNum.setText(" " + String.valueOf(progressBar.getProgress()) + " %");
     }
 }

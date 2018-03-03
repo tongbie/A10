@@ -18,7 +18,7 @@
 
     <item
         android:id="@+id/navigation_personal"
-        android:icon="@drawable/navigation_information"
+        android:icon="@drawable/ic_personal"
         android:title="我的" />
 
 </menu>
