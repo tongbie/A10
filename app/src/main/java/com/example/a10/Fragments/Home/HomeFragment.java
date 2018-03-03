@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.Login.LoginActivity;
+import com.example.a10.MyView.MyButton;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
 
@@ -185,6 +186,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showMenuButton();
                 break;
             case R.id.save:
+                ((MyButton)view.findViewById(R.id.save)).setLoading(true);
                 save();
             case R.id.sign:
 //                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
@@ -221,6 +223,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         public void done(BmobException e) {
                             if (e == null) {
                                 Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
+                                ((MyButton)view.findViewById(R.id.save)).setLoading(false);
                             } else {
                                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }

@@ -11,6 +11,8 @@ import com.example.a10.R;
 /**
  * Created by BieTong on 2018/1/18.
  * 右滑退出
+ * 使用时只需在对应Activity或Fragment中实例化一个对象
+ * 对于被强制拦截滑动事件的控件，可调用setStartY()设置作用范围
  */
 
 public class SlipBack extends FrameLayout {
