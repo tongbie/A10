@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                 if (e == null) {
                     Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -156,7 +156,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.e("登录错误信息", e.getMessage());
                 }
             }
         });

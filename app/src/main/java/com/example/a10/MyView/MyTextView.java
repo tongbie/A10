@@ -4,26 +4,17 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.a10.R;
 import com.example.a10.ToolClass;
 
 /**
- * Created by BieTong on 2018/3/3.
- * 用以实现网络延时按钮功能
- * 点击后setLoading()可变成灰色且不可点击
- * 然后有小球的弹跳动画
- * 性能堪忧
+ * Created by BieTong on 2018/3/4.
  */
 
-public class MyButton extends android.support.v7.widget.AppCompatButton {
-    private Drawable background;
+public class MyTextView extends android.support.v7.widget.AppCompatTextView {
     private Paint paint;
     private float currentX;
     private float currentY;
@@ -36,44 +27,23 @@ public class MyButton extends android.support.v7.widget.AppCompatButton {
     private boolean isLeft=false;
     private boolean isUp=false;
 
-
-    public MyButton(Context context) {
+    public MyTextView(Context context) {
         super(context);
-        saveBackground();
-        init();
     }
 
-    public MyButton(Context context, AttributeSet attrs) {
+    public MyTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        saveBackground();
-        init();
     }
 
-    public MyButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MyTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        saveBackground();
-        init();
-    }
-
-    private void init(){
-        paint=new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.YELLOW);
-    }
-
-    private void saveBackground(){
-        this.background=this.getBackground();
     }
 
     public void setLoading(boolean isLoading){
         if(isLoading) {
-            this.setClickable(false);
-            this.setBackground(getResources().getDrawable(R.drawable.pressedbutton));
             isDraw=true;
             invalidate();
         }else {
-            this.setClickable(true);
-            this.setBackground(this.background);
             isDraw=false;
         }
     }
@@ -84,7 +54,7 @@ public class MyButton extends android.support.v7.widget.AppCompatButton {
         if(!isDraw){
             return;
         }
-        canvas.drawCircle(currentX,currentY,ToolClass.dp(6),paint);
+        canvas.drawCircle(currentX,currentY, ToolClass.dp(6),paint);
         if(isLeft){
             currentX-=5;
             if(currentX<positionX){
@@ -123,5 +93,8 @@ public class MyButton extends android.support.v7.widget.AppCompatButton {
         currentX=positionX;
         currentY=positionY+this.getMeasuredHeight()/2;
         isFirstMeasure=false;
+        paint=new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.YELLOW);
     }
 }

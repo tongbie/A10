@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.example.a10.Login.LoginActivity;
 import com.example.a10.MyView.MyButton;
+import com.example.a10.MyView.MyTextView;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
 
@@ -63,19 +64,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_home, null);
+            initView();
+            ((MyTextView)view.findViewById(R.id.title)).setLoading(true);
+            addData();
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
         initAnimation();
-        initView();
-        addData();
         return view;
     }
 
     private void initAnimation() {
-        ScaleAnimation sa = new ScaleAnimation(0.8f, 1f, 0.8f, 1f,
+        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
         sa.setDuration(300);
@@ -124,6 +126,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 }
                             }
                         });
+                        addData();
                         return;
                     }
                     data = list.get(0);
@@ -132,12 +135,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     startDate = data.getStartDate();
                     dateSign = data.getDataSign();
                     addDateSign();
+                    ((MyTextView)view.findViewById(R.id.title)).setLoading(false);
                 } else {
                     if (e.getErrorCode() == 101) {
                         new HomeGson().save(new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
-                                if (e != null) {
+                                if (e == null) {
+                                    addData();
+                                }else {
                                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -156,7 +162,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             datePicker.setDPDecor(new DPDecor() {
                 @Override
                 public void drawDecorBG(Canvas canvas, Rect rect, Paint paint) {
-                    paint.setColor(Color.parseColor("#ef7a82"));
+                    paint.setColor(Color.RED);
                     canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2F, paint);
                 }
             });
@@ -223,7 +229,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         public void done(BmobException e) {
                             if (e == null) {
                                 Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
-                                ((MyButton)view.findViewById(R.id.save)).setLoading(false);
                             } else {
                                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -232,6 +237,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+                ((MyButton)view.findViewById(R.id.save)).setLoading(false);
             }
         });
     }
@@ -263,7 +269,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void setProgress() {
         final EditText editText = new EditText(getContext());
         AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setTitle("进度设置")//设置对话框的标题
+                .setTitle("进度设置")
                 .setView(editText)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
