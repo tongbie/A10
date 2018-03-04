@@ -12,7 +12,6 @@ import cn.bmob.v3.BmobObject;
 public class HomeGson extends BmobObject {
     private int progress=0;
     private String username="";
-    private List<String> startDate=new ArrayList<>();
     private List<String> DataSign =new ArrayList<>();
 
     public int getProgress() {
@@ -29,14 +28,6 @@ public class HomeGson extends BmobObject {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public List<String> getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(List<String> startDate) {
-        this.startDate = startDate;
     }
 
     public List<String> getDataSign() {

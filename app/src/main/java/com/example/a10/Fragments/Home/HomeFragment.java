@@ -1,9 +1,7 @@
 package com.example.a10.Fragments.Home;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,16 +9,15 @@ import android.graphics.Rect;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -30,17 +27,16 @@ import android.widget.Toast;
 import com.example.a10.Login.LoginActivity;
 import com.example.a10.MyView.MyButton;
 import com.example.a10.MyView.MyTextView;
+import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
+import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
+import com.example.a10.MyView.datepicker.views.DatePicker;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import cn.aigestudio.datepicker.bizs.calendars.DPCManager;
-import cn.aigestudio.datepicker.bizs.decors.DPDecor;
-import cn.aigestudio.datepicker.views.DatePicker;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
@@ -54,18 +50,19 @@ import cn.bmob.v3.listener.UpdateListener;
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private ProgressBar progressBar;//进度条
     private TextView progressNum;//进度条进度
-    List<String> startDate = new ArrayList<>();
     List<String> dateSign = new ArrayList<>();//标记日期
-    DatePicker datePicker;//日历控件
     private View view;
+    LinearLayout dateLayout;
+    private DatePicker picker;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
+            Window window = getActivity().getWindow();
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
             view = inflater.inflate(R.layout.fragment_home, null);
             initView();
-            ((MyTextView)view.findViewById(R.id.title)).setLoading(true);
             addData();
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
@@ -94,21 +91,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.setProgress).setOnClickListener(this);
         view.findViewById(R.id.menuButton).setOnClickListener(this);
         view.findViewById(R.id.save).setOnClickListener(this);
-        view.findViewById(R.id.sign).setOnClickListener(this);
-        view.findViewById(R.id.addDate).setOnClickListener(this);
+        view.findViewById(R.id.setStartDate).setOnClickListener(this);
+        view.findViewById(R.id.refresh).setOnClickListener(this);
         /* 进度条 */
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setMax(100);
         progressNum = view.findViewById(R.id.progressNum);
         progressNum.setText(" " + String.valueOf(progressBar.getProgress()) + " %");
         /* 日历初始化 */
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-        String date = sdf.format(new java.util.Date());//获取日期
-        datePicker = view.findViewById(R.id.datePicker);
-        datePicker.setDate(Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)));//设置日期，必须调用
+        dateLayout = view.findViewById(R.id.dateLayout);
     }
 
     private void addData() {
+        ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
+        ((MyButton) view.findViewById(R.id.refresh)).setLoading(true);
         BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
         query.addWhereEqualTo("username", LoginActivity.username);
         query.findObjects(new FindListener<HomeGson>() {
@@ -132,10 +128,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     data = list.get(0);
                     progressNum.setText(" " + String.valueOf(data.getProgress()) + " %");
                     progressBar.setProgress(data.getProgress());
-                    startDate = data.getStartDate();
                     dateSign = data.getDataSign();
                     addDateSign();
-                    ((MyTextView)view.findViewById(R.id.title)).setLoading(false);
                 } else {
                     if (e.getErrorCode() == 101) {
                         new HomeGson().save(new SaveListener<String>() {
@@ -143,33 +137,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             public void done(String s, BmobException e) {
                                 if (e == null) {
                                     addData();
-                                }else {
+                                } else {
                                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
                     } else {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
+                ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
+                ((MyButton) view.findViewById(R.id.refresh)).setLoading(false);
             }
         });
     }
 
     private void addDateSign() {
-        DPCManager.getInstance().setDecorBG(dateSign);
-        try {
-            datePicker.setDPDecor(new DPDecor() {
-                @Override
-                public void drawDecorBG(Canvas canvas, Rect rect, Paint paint) {
-                    paint.setColor(Color.RED);
-                    canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2F, paint);
-                }
-            });
-            datePicker.invalidate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        dateLayout.removeAllViews();
+        picker = new DatePicker(getContext());
+        DPCManager.getInstance().setDecorTR(dateSign);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        String date = sdf.format(new java.util.Date());//获取日期
+        picker.setDate(Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)));
+        picker.setDPDecor(new DPDecor() {
+            @Override
+            public void drawDecorTR(Canvas canvas, Rect rect, Paint paint) {
+                paint.setColor(Color.parseColor("#E95464"));
+                canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2, paint);
+            }
+        });
+        dateLayout.addView(picker);
     }
 
 
@@ -192,30 +189,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showMenuButton();
                 break;
             case R.id.save:
-                ((MyButton)view.findViewById(R.id.save)).setLoading(true);
-                save();
-            case R.id.sign:
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-//                String date = sdf.format(new java.util.Date());//获取日期
-                Calendar calendar = Calendar.getInstance();
-                String date = String.valueOf(calendar.get(Calendar.YEAR)) + "-"
-                        + String.valueOf(calendar.get(Calendar.MONTH)) + "-"
-                        + String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-                for (String newDate : dateSign) {
-                    if (newDate.equals(date)) {
-                        return;
-                    }
-                }
-                dateSign.add(date);
-                addDateSign();
+                ((MyButton) view.findViewById(R.id.save)).setLoading(true);
+                save("保存成功");
+                break;
+            case R.id.refresh:
+                dateSign = null;
+                addData();
                 break;
         }
     }
 
-    private void save() {
+    private void sign() {
+
+    }
+
+    private void save(String text) {
         final HomeGson data = new HomeGson();
         data.setProgress(progressBar.getProgress());
-        data.setStartDate(startDate);
         data.setDataSign(dateSign);
         data.setUsername(LoginActivity.username);
         BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
@@ -228,7 +218,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
-                                Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -237,7 +227,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                ((MyButton)view.findViewById(R.id.save)).setLoading(false);
+                ((MyButton) view.findViewById(R.id.save)).setLoading(false);
             }
         });
     }
@@ -245,7 +235,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void showMenuButton() {
         try {
             LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
-            LinearLayout linearLayout=view.findViewById(R.id.linearLayout);
+            LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
             if (menuLayout.getVisibility() == View.GONE) {
                 linearLayout.animate()
                         .y(ToolClass.dp(200))

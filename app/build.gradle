@@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     defaultConfig {
         applicationId "com.example.a10"
         minSdkVersion 21
@@ -37,12 +41,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-//    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-//    compile 'com.google.code.gson:gson:2.7'
-    compile 'cn.aigestudio.datepicker:DatePicker:2.2.0'
-//    implementation files('src/main/jniLibs/facedetection.jar')
-//    implementation files('src/main/jniLibs/facerecognition.jar')
-//    implementation files('src/main/jniLibs/facetracking.jar')
+    //    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    //    compile 'com.google.code.gson:gson:2.7'
+    //    implementation files('src/main/jniLibs/facedetection.jar')
+    //    implementation files('src/main/jniLibs/facerecognition.jar')
+    //    implementation files('src/main/jniLibs/facetracking.jar')
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     compile 'cn.bmob.android:bmob-push:0.8'
     compile 'cn.bmob.android:http-legacy:1.0'
