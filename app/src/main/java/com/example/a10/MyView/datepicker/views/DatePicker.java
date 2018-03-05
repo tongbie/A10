@@ -2,6 +2,7 @@ package com.example.a10.MyView.datepicker.views;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -34,6 +35,10 @@ public class DatePicker extends LinearLayout {
     private MonthView monthView;// 月视图
     private TextView tvYear, tvMonth;// 年份 月份显示
     private TextView tvEnsure;// 确定按钮显示
+
+    public TextView getTvEnsure(){
+        return tvEnsure;
+    }
 
 
     private OnDateSelectedListener onDateSelectedListener;// 日期多选后监听
@@ -108,17 +113,9 @@ public class DatePicker extends LinearLayout {
 
         // 确定显示
         tvEnsure = new TextView(context);
-        tvEnsure.setText(mLManager.titleEnsure());
+        tvEnsure.setText("签到");
         tvEnsure.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         tvEnsure.setTextColor(Color.parseColor("#FFFFFF"));
-        tvEnsure.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != onDateSelectedListener) {
-                    onDateSelectedListener.onDateSelected(monthView.getDateSelected());
-                }
-            }
-        });
 
         rlTitle.addView(tvYear, lpYear);
         rlTitle.addView(tvMonth, lpMonth);

@@ -40,39 +40,38 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
-        android:layout_marginTop="6dp"
         android:orientation="vertical"
         android:visibility="gone">
 
         <com.example.a10.MyView.MyButton
             android:id="@+id/save"
-            android:layout_width="120dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/button"
-            android:text="保存"
+            android:text="保  存"
             android:textColor="#ffffff"
-            android:textSize="16dp" />
+            android:textSize="18dp" />
 
         <com.example.a10.MyView.MyButton
             android:id="@+id/refresh"
-            android:layout_width="120dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/button"
-            android:text="刷新"
+            android:text="刷  新"
             android:textColor="#ffffff"
-            android:textSize="16dp" />
+            android:textSize="18dp" />
 
         <Button
-            android:id="@+id/setStartDate"
-            android:layout_width="120dp"
+            android:id="@+id/signIn"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/button"
-            android:text="设置期限"
+            android:text="签  到"
             android:textColor="#ffffff"
-            android:textSize="16dp" />
+            android:textSize="18dp" />
 
     </LinearLayout>
 

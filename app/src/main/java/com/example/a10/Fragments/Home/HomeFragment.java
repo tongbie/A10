@@ -4,12 +4,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,7 @@ import com.example.a10.ToolClass;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
@@ -73,17 +77,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    private void initAnimation() {
-        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
-        sa.setDuration(300);
-        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-        linearLayout.setLayoutAnimation(lac);
-    }
-
     private void initView() {
         /* 控件 */
 //        view.findViewById(R.id.face).setOnClickListener(this);
@@ -91,8 +84,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.setProgress).setOnClickListener(this);
         view.findViewById(R.id.menuButton).setOnClickListener(this);
         view.findViewById(R.id.save).setOnClickListener(this);
-        view.findViewById(R.id.setStartDate).setOnClickListener(this);
         view.findViewById(R.id.refresh).setOnClickListener(this);
+        view.findViewById(R.id.signIn).setOnClickListener(this);
         /* 进度条 */
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setMax(100);
@@ -105,6 +98,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void addData() {
         ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
         ((MyButton) view.findViewById(R.id.refresh)).setLoading(true);
+        ((MyButton)view.findViewById(R.id.save)).setLoading(true);
         BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
         query.addWhereEqualTo("username", LoginActivity.username);
         query.findObjects(new FindListener<HomeGson>() {
@@ -148,6 +142,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
                 ((MyButton) view.findViewById(R.id.refresh)).setLoading(false);
+                ((MyButton)view.findViewById(R.id.save)).setLoading(false);
             }
         });
     }
@@ -155,8 +150,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void addDateSign() {
         dateLayout.removeView(picker);
         picker = new DatePicker(getContext());
-//        DPCManager.getInstance().setDecorTR(dateSign);
-        DPCManager dpcManager=new DPCManager();
+        picker.getTvEnsure().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });
+        DPCManager dpcManager = new DPCManager();
         dpcManager.setDecorTR(dateSign);
         picker.setDPCManager(dpcManager);
 //        TODO:双位数日期未测试
@@ -178,8 +178,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 startActivityForResult(intent, 0x000);
                 break;*/
             case R.id.addProgress:
-                progressBar.setProgress(progressBar.getProgress() + 1);
-                progressNum.setText(" " + String.valueOf(progressBar.getProgress()) + " %");
+                progressSet(progressBar.getProgress()+1);
                 break;
             case R.id.setProgress:
                 setProgress();
@@ -188,21 +187,40 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showMenuButton();
                 break;
             case R.id.save:
-                ((MyButton) view.findViewById(R.id.save)).setLoading(true);
                 save("保存成功");
                 break;
             case R.id.refresh:
                 dateSign = null;
                 addData();
                 break;
+            case R.id.signIn:
+                signIn();
+                break;
         }
     }
 
-    private void sign() {
+    private void progressSet(int progress){
+        progressBar.setProgress(progress);
+        progressNum.setText(" " + progress + " %");
+    }
 
+    private void signIn() {
+        Time time = new Time("GMT+8");
+        time.setToNow();
+        String date = String.valueOf(time.year) + "-" + String.valueOf(time.month+1) + "-" + String.valueOf(time.monthDay);
+        for(String day:dateSign){
+            if(date.equals(day)){
+                Toast.makeText(getContext(), "今天已经签到了哦", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        dateSign.add(date);
+        save("签到成功");
+        addDateSign();
     }
 
     private void save(String text) {
+        ((MyButton) view.findViewById(R.id.save)).setLoading(true);
         final HomeGson data = new HomeGson();
         data.setProgress(progressBar.getProgress());
         data.setDataSign(dateSign);
@@ -256,10 +274,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setProgress() {
-        final EditText editText = new EditText(getContext());
+        SeekBar seekBar=new SeekBar(getContext());
+        seekBar.setMax(100);
+        seekBar.setProgress(progressBar.getProgress());
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressSet(seekBar.getProgress());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                progressSet(seekBar.getProgress());
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                progressSet(seekBar.getProgress());
+            }
+        });
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle("进度设置")
-                .setView(editText)
+                .setView(seekBar)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -270,11 +306,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
-                            int progress = Integer.valueOf(editText.getText().toString());
+                            int progress = seekBar.getProgress();
                             progressBar.setProgress(progress);
                             progressNum.setText(" " + String.valueOf(progress) + " %");
                         } catch (Exception e) {
-                            Toast.makeText(getContext(), "请输入0-100间的整数", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).create();
@@ -298,5 +334,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
             }
         }*/
+    }
+
+    private void initAnimation() {
+        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        sa.setDuration(300);
+        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
+        linearLayout.setLayoutAnimation(lac);
     }
 }
