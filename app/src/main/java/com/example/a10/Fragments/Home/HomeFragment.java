@@ -2,11 +2,6 @@ package com.example.a10.Fragments.Home;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,14 +15,13 @@ import android.view.animation.Animation;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a10.Login.LoginActivity;
+import com.example.a10.LoginActivity;
 import com.example.a10.MyView.MyButton;
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
@@ -38,7 +32,6 @@ import com.example.a10.ToolClass;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
@@ -137,7 +130,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             }
                         });
                     } else {
-                        Toast.makeText(getActivity().getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
                 ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
@@ -340,6 +333,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
+        sa.setInterpolator(new OvershootInterpolator());
         sa.setDuration(300);
         LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
         lac.setOrder(LayoutAnimationController.ORDER_NORMAL);

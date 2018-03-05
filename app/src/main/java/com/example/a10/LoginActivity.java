@@ -1,4 +1,4 @@
-package com.example.a10.Login;
+package com.example.a10;
 
 import android.Manifest;
 import android.content.Intent;
@@ -9,29 +9,19 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.a10.Fragments.Home.HomeGson;
-import com.example.a10.MainActivity;
-import com.example.a10.R;
-import com.example.a10.ToolClass;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
     public static String username = "";
@@ -43,9 +33,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        new ToolClass(getApplicationContext());
-        Bmob.initialize(this, "c2c1321b56eef48e75db1371f8153b80");
-        requestPermission();
         skipLogin();
         initView();
         mUsernameView.setText("bietong");
@@ -106,12 +93,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         }
     }
 
-    private void requestPermission(){
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{android.Manifest.permission.READ_PHONE_STATE}, 0x000);
-        }
-    }
-
     @Override
     public void onClick(View v) {
         username = mUsernameView.getText().toString();
@@ -159,14 +140,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                 }
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getApplicationContext(), "未获得全部权限", Toast.LENGTH_SHORT).show();
-        }
     }
 }
 

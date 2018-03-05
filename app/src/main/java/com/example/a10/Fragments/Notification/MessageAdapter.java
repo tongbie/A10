@@ -31,7 +31,6 @@ public class MessageAdapter extends ArrayAdapter {
         ViewHolder viewHolder=null;
         if(view==null){
             viewHolder=new ViewHolder();
-
             view= LayoutInflater.from(context).inflate(R.layout.message_item, viewGroup, false);
             viewHolder.imageView= (ImageView) view.findViewById(R.id.imageView);
             viewHolder.nameView= (TextView) view.findViewById(R.id.nameView);
@@ -41,7 +40,7 @@ public class MessageAdapter extends ArrayAdapter {
             viewHolder=(ViewHolder)view.getTag();
         }
         Message message = (Message) getItem(position);
-        viewHolder.imageView.setImageResource(message.getImageId());
+//        viewHolder.imageView.setImageResource(message.getImageId());
         viewHolder.nameView.setText(message.getName());
         viewHolder.messageView.setText(message.getMessage());
         return view;
