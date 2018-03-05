@@ -19,22 +19,11 @@ import com.example.a10.MyView.datepicker.views.DatePicker;
  *
  * @author AigeStudio 2015-06-12
  */
-public final class DPCManager {
-    private static final HashMap<Integer, HashMap<Integer, DPInfo[][]>> DATE_CACHE = new HashMap<>();
+public class DPCManager {
+    private HashMap<Integer, HashMap<Integer, DPInfo[][]>> DATE_CACHE = new HashMap<>();
+    private HashMap<String, Set<String>> DECOR_CACHE_TR = new HashMap<>();
 
-    private static final HashMap<String, Set<String>> DECOR_CACHE_BG = new HashMap<>();
-    private static final HashMap<String, Set<String>> DECOR_CACHE_TL = new HashMap<>();
-    private static final HashMap<String, Set<String>> DECOR_CACHE_T = new HashMap<>();
-    private static final HashMap<String, Set<String>> DECOR_CACHE_TR = new HashMap<>();
-    private static final HashMap<String, Set<String>> DECOR_CACHE_L = new HashMap<>();
-    private static final HashMap<String, Set<String>> DECOR_CACHE_R = new HashMap<>();
-
-    private static DPCManager sManager;
-
-    private DPCalendar c;
-
-    private DPCManager() {
-        // 默认显示为中文日历
+    public DPCManager(){
         String locale = Locale.getDefault().getCountry().toLowerCase();
         if (locale.equals("cn")) {
             initCalendar(new DPCNCalendar());
@@ -42,6 +31,20 @@ public final class DPCManager {
             initCalendar(new DPUSCalendar());
         }
     }
+
+    private static DPCManager sManager;
+
+    private DPCalendar c;
+
+//    private DPCManager() {
+//        // 默认显示为中文日历
+//        String locale = Locale.getDefault().getCountry().toLowerCase();
+//        if (locale.equals("cn")) {
+//            initCalendar(new DPCNCalendar());
+//        } else {
+//            initCalendar(new DPUSCalendar());
+//        }
+//    }
 
     /**
      * 获取月历管理器
@@ -74,9 +77,6 @@ public final class DPCManager {
      *
      * @param date 日期列表 List of date
      */
-    public void setDecorBG(List<String> date) {
-        setDecor(date, DECOR_CACHE_BG);
-    }
 
     /**
      * 获取指定年月的日历对象数组
@@ -116,10 +116,6 @@ public final class DPCManager {
         }
     }
 
-    public void setDecorT(List<String> date) {
-        setDecor(date, DECOR_CACHE_T);
-    }
-
     public void setDecorTR(List<String> date) {
         setDecor(date, DECOR_CACHE_TR);
     }
@@ -133,12 +129,7 @@ public final class DPCManager {
         Set<String> strHoliday = c.buildMonthHoliday(year, month);
         Set<String> strWeekend = c.buildMonthWeekend(year, month);
 
-        Set<String> decorBG = DECOR_CACHE_BG.get(year + ":" + month);
-        Set<String> decorTL = DECOR_CACHE_TL.get(year + ":" + month);
-        Set<String> decorT = DECOR_CACHE_T.get(year + ":" + month);
         Set<String> decorTR = DECOR_CACHE_TR.get(year + ":" + month);
-        Set<String> decorL = DECOR_CACHE_L.get(year + ":" + month);
-        Set<String> decorR = DECOR_CACHE_R.get(year + ":" + month);
         for (int i = 0; i < info.length; i++) {
             for (int j = 0; j < info[i].length; j++) {
                 DPInfo tmp = new DPInfo();
@@ -164,12 +155,7 @@ public final class DPCManager {
                 } else {
                     tmp.isFestival = !TextUtils.isEmpty(strF[i][j]);
                 }
-                if (null != decorBG && decorBG.contains(tmp.strG)) tmp.isDecorBG = true;
-                if (null != decorTL && decorTL.contains(tmp.strG)) tmp.isDecorTL = true;
-                if (null != decorT && decorT.contains(tmp.strG)) tmp.isDecorT = true;
                 if (null != decorTR && decorTR.contains(tmp.strG)) tmp.isDecorTR = true;
-                if (null != decorL && decorL.contains(tmp.strG)) tmp.isDecorL = true;
-                if (null != decorR && decorR.contains(tmp.strG)) tmp.isDecorR = true;
                 info[i][j] = tmp;
             }
         }

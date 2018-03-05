@@ -153,20 +153,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void addDateSign() {
-        dateLayout.removeAllViews();
+        dateLayout.removeView(picker);
         picker = new DatePicker(getContext());
-        DPCManager.getInstance().setDecorTR(dateSign);
+//        DPCManager.getInstance().setDecorTR(dateSign);
+        DPCManager dpcManager=new DPCManager();
+        dpcManager.setDecorTR(dateSign);
+        picker.setDPCManager(dpcManager);
+//        TODO:双位数日期未测试
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         String date = sdf.format(new java.util.Date());//获取日期
         picker.setDate(Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)));
-        picker.setDPDecor(new DPDecor() {
-            @Override
-            public void drawDecorTR(Canvas canvas, Rect rect, Paint paint) {
-                paint.setColor(Color.parseColor("#E95464"));
-                canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2, paint);
-            }
-        });
+        picker.setDPDecor(new DPDecor());
         dateLayout.addView(picker);
+
     }
 
 

@@ -8,6 +8,7 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Region;
@@ -51,7 +52,12 @@ public class MonthView extends View {
 
     private final Map<String, List<Region>> REGION_SELECTED = new HashMap<>();
 
-    private DPCManager mCManager = DPCManager.getInstance();
+    private DPCManager mCManager/* = DPCManager.getInstance()*/;
+
+    public void setDPCManager(DPCManager dpcManager){
+        mCManager=dpcManager;
+    }
+
     private DPTManager mTManager = DPTManager.getInstance();
 
     protected Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG |
@@ -399,38 +405,11 @@ public class MonthView extends View {
     private void drawDecor(Canvas canvas, Rect rect, DPInfo info) {
         if (!TextUtils.isEmpty(info.strG)) {
             String data = centerYear + "-" + centerMonth + "-" + info.strG;
-            if (null != mDPDecor && info.isDecorTL) {
-                canvas.save();
-                canvas.clipRect(rect.left, rect.top, rect.left + sizeDecor, rect.top + sizeDecor);
-                mDPDecor.drawDecorTL(canvas, canvas.getClipBounds(), mPaint, data);
-                canvas.restore();
-            }
-            if (null != mDPDecor && info.isDecorT) {
-                canvas.save();
-                canvas.clipRect(rect.left + sizeDecor, rect.top, rect.left + sizeDecor2x,
-                        rect.top + sizeDecor);
-                mDPDecor.drawDecorT(canvas, canvas.getClipBounds(), mPaint, data);
-                canvas.restore();
-            }
             if (null != mDPDecor && info.isDecorTR) {
                 canvas.save();
                 canvas.clipRect(rect.left + sizeDecor2x, rect.top, rect.left + sizeDecor3x,
                         rect.top + sizeDecor);
                 mDPDecor.drawDecorTR(canvas, canvas.getClipBounds(), mPaint, data);
-                canvas.restore();
-            }
-            if (null != mDPDecor && info.isDecorL) {
-                canvas.save();
-                canvas.clipRect(rect.left, rect.top + sizeDecor, rect.left + sizeDecor,
-                        rect.top + sizeDecor2x);
-                mDPDecor.drawDecorL(canvas, canvas.getClipBounds(), mPaint, data);
-                canvas.restore();
-            }
-            if (null != mDPDecor && info.isDecorR) {
-                canvas.save();
-                canvas.clipRect(rect.left + sizeDecor2x, rect.top + sizeDecor,
-                        rect.left + sizeDecor3x, rect.top + sizeDecor2x);
-                mDPDecor.drawDecorR(canvas, canvas.getClipBounds(), mPaint, data);
                 canvas.restore();
             }
         }

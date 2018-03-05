@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
 import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
 import com.example.a10.MyView.datepicker.bizs.languages.DPLManager;
 import com.example.a10.MyView.datepicker.bizs.themes.DPTManager;
@@ -174,6 +175,10 @@ public class DatePicker extends LinearLayout {
 
     public void setDPDecor(DPDecor decor) {
         monthView.setDPDecor(decor);
+    }
+
+    public void setDPCManager(DPCManager dpcManager){
+        monthView.setDPCManager(dpcManager);
     }
 
     /**

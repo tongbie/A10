@@ -150,22 +150,12 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
             <LinearLayout
                 android:id="@+id/dateLayout"
-                android:orientation="vertical"
-                android:layout_marginTop="6dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"></LinearLayout>
-            </ScrollView>
-            <!--<com.example.a10.MyView.datepicker.views.DatePicker
-                android:id="@+id/datePicker"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </com.example.a10.MyView.datepicker.views.DatePicker>-->
+                android:orientation="vertical"></LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

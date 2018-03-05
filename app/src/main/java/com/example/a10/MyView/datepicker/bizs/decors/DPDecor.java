@@ -1,6 +1,7 @@
 package com.example.a10.MyView.datepicker.bizs.decors;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -73,7 +74,8 @@ public class DPDecor {
      * @see #drawDecorTR(Canvas, Rect, Paint, String)
      */
     public void drawDecorTR(Canvas canvas, Rect rect, Paint paint) {
-
+        paint.setColor(Color.parseColor("#E95464"));
+        canvas.drawCircle(rect.centerX(), rect.centerY(), rect.width() / 2, paint);
     }
 
     /**
