@@ -19,6 +19,7 @@ import com.example.a10.R;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import cn.bmob.newim.BmobIM;
 import cn.bmob.v3.BmobUser;
 
 public class PersonalFragment extends Fragment implements View.OnClickListener {
@@ -65,6 +66,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
             case R.id.logout:
                 BmobUser.logOut();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
+                BmobIM.getInstance().disConnect();//断开服务器连接
                 getActivity().finish();
         }
     }

@@ -12,10 +12,15 @@ import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.a10.Fragments.Home.HomeGson;
+import com.example.a10.LoginActivity;
+import com.example.a10.MainActivity;
+import com.example.a10.MyView.MyButton;
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
@@ -30,17 +35,25 @@ import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.event.MessageEvent;
+import cn.bmob.newim.event.OfflineMessageEvent;
 import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.newim.listener.ConversationListener;
 import cn.bmob.newim.listener.MessageSendListener;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
-public class NotificationFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+import static com.example.a10.Fragments.Notification.BmobIMApplication.getMyProcessName;
+
+public class NotificationFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener, AdapterView.OnItemLongClickListener {
     private ListView listView;
     private List<Message> messagesList;
     private View view;
-    private String userId="6925eb69db";
+    private EditText editText;
+    private boolean isLink=false;
+    private boolean isFristLoad=true;
 
     @Nullable
     @Override
@@ -55,6 +68,7 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
             viewGroup.removeView(view);
         }
         initAnimation(view);
+        editText.setText("test");
         return view;
     }
 
@@ -66,10 +80,13 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
                 @Override
                 public void done(String uid, BmobException e) {
                     if (e == null) {
-                        toast("连接成功");
-                        initData();
+                        isLink=true;
+                        if(isFristLoad) {
+                            initData();
+                        }
                     } else {
-                        toast(e.getMessage());
+                        toast("无法连接至服务器");
+                        isLink=false;
                     }
                     ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
                 }
@@ -78,52 +95,24 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
     }
 
     private void initData() {
-        for(BmobIMConversation bimc:BmobIM.getInstance().loadAllConversation()){
-            messagesList.add(new Message(bimc.getConversationIcon(),bimc.getConversationId(),bimc.getConversationTitle()));
+        if(!isLink){
+            linkServer();
+            return;
         }
+        messagesList = new ArrayList<>();
+        for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
+            messagesList.add(new Message(bimc.getConversationIcon(), bimc.getConversationTitle(),bimc.getMessages().get(bimc.getMessages().size()-1).toString()));
+        }
+        listView.setAdapter(new MessageAdapter(getContext(), 0, messagesList));
     }
 
     private void initView() {
         listView = view.findViewById(R.id.listView);
-        messagesList = new ArrayList<>();
-        listView.setAdapter(new MessageAdapter(getContext(), 0, messagesList));
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
         view.findViewById(R.id.refresh).setOnClickListener(this);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-//        view.getId();
-//        startActivity(new Intent(getContext(), ChatActivity.class));
-//        getActivity().overridePendingTransition(R.anim.in_from_right, R.anim.empty);
-        BmobIMUserInfo info =new BmobIMUserInfo();
-        info.setName("test");
-        info.setUserId(userId);
-        BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
-            @Override
-            public void done(BmobIMConversation bmobIMConversation, BmobException e) {
-                if(e==null) {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("bmobIMConversation", bmobIMConversation);
-                    Intent intent=new Intent(getActivity(),ChatActivity.class);
-                    intent.putExtra("bmobIMConversation",bundle);
-                    getActivity().startActivity(intent);
-                /*BmobIMTextMessage message=new BmobIMTextMessage();
-                bmobIMConversation.sendMessage(message, new MessageSendListener() {
-                    @Override
-                    public void done(BmobIMMessage msg, BmobException e) {
-                        if (e != null) {
-                            Toast.makeText(getContext(), "发送成功", Toast.LENGTH_SHORT).show();
-                        }else{
-                        }
-                    }
-                });*/
-                }else {
-                    toast(e.getMessage());
-                }
-            }
-        });
+        editText = view.findViewById(R.id.editText);
+        view.findViewById(R.id.add).setOnClickListener(this);
     }
 
     private void initAnimation(View view) {
@@ -138,7 +127,7 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
 
     private void toast(String text) {
         try {
-            Toast.makeText(getContext(),text,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,10 +135,58 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.refresh:
-                messagesList.add(new Message(null,"别同","shit"));
+                initData();
+                break;
+            case R.id.add:
+                startChat(editText.getText().toString());
                 break;
         }
+    }
+
+    private void startChat(String username) {
+        if(!isLink){
+            linkServer();
+            return;
+        }
+        BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
+        query.addWhereEqualTo("username", username);
+        query.findObjects(new FindListener<HomeGson>() {
+            @Override
+            public void done(List<HomeGson> list, BmobException e) {
+                if (e == null) {
+                    BmobIMUserInfo info = new BmobIMUserInfo();
+                    info.setName(username);
+                    info.setUserId(list.get(0).getObjectId());
+                    BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
+                        @Override
+                        public void done(BmobIMConversation bmobIMConversation, BmobException e) {
+                            if (e == null) {
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("bmobIMConversation", bmobIMConversation);
+                                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                                intent.putExtras(bundle);
+                                getActivity().startActivity(intent);
+                            } else {
+                                toast("创建对话失败");
+                            }
+                        }
+                    });
+                } else {
+                    toast("未查找到该用户");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        return false;
     }
 }

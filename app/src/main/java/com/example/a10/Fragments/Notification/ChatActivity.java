@@ -9,7 +9,9 @@ import android.widget.Toast;
 import com.example.a10.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
@@ -21,35 +23,38 @@ import cn.bmob.v3.exception.BmobException;
 public class ChatActivity extends AppCompatActivity {
     private ListView listView;
     private List<Chat> chats;
-    private BmobIMConversation bmobIMConversation;
+    private BmobIMConversation bConversation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         initView();
-        try {
-            bmobIMConversation = BmobIMConversation.obtain(
+        bConversation = BmobIMConversation.obtain(
                     BmobIMClient.getInstance(),
                     (BmobIMConversation) getIntent().getExtras().getSerializable("bmobIMConversation"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            BmobIMTextMessage msg = new BmobIMTextMessage();
-            msg.setContent("shit");
-            bmobIMConversation.sendMessage(msg, new MessageSendListener() {
+        sendMessage("BieTong发了一条消息");
+
+    }
+
+    private void sendMessage(String message) {
+        //可随意设置额外信息
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("level", "1");
+//        msg.setExtraMap(map);
+        BmobIMTextMessage bMessage = new BmobIMTextMessage();
+        bMessage.setContent(message);
+        if(bConversation!=null) {
+            bConversation.sendMessage(bMessage, new MessageSendListener() {
                 @Override
                 public void done(BmobIMMessage msg, BmobException e) {
                     if (e != null) {
                         toast("发送成功");
                     } else {
-                        toast(e.getMessage());
+                        toast("发送失败\n"+e.getMessage());
                     }
                 }
             });
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -61,7 +66,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void toast(String text) {
         try {
-            Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
