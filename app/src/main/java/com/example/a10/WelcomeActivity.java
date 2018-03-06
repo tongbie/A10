@@ -16,13 +16,13 @@ import android.widget.Toast;
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Window window = this.getWindow();
+        window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         new ToolClass(getApplicationContext());
         requestPermission();
         startActivity(new Intent(WelcomeActivity.this,LoginActivity.class));

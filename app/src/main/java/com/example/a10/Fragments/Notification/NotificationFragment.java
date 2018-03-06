@@ -36,10 +36,11 @@ import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 
-public class NotificationFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class NotificationFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
     private ListView listView;
     private List<Message> messagesList;
     private View view;
+    private String userId="6925eb69db";
 
     @Nullable
     @Override
@@ -54,7 +55,6 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
             viewGroup.removeView(view);
         }
         initAnimation(view);
-        messagesList.add(new Message(null,null,null));
         return view;
     }
 
@@ -66,10 +66,10 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
                 @Override
                 public void done(String uid, BmobException e) {
                     if (e == null) {
-                        Toast.makeText(getContext(), "连接成功", Toast.LENGTH_SHORT).show();
+                        toast("连接成功");
                         initData();
                     } else {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        toast(e.getMessage());
                     }
                     ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
                 }
@@ -79,8 +79,7 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
 
     private void initData() {
         for(BmobIMConversation bimc:BmobIM.getInstance().loadAllConversation()){
-            Message message=new Message(bimc.getConversationIcon(),bimc.getConversationId(),bimc.getConversationTitle());
-            messagesList.add(message);
+            messagesList.add(new Message(bimc.getConversationIcon(),bimc.getConversationId(),bimc.getConversationTitle()));
         }
     }
 
@@ -89,19 +88,28 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
         messagesList = new ArrayList<>();
         listView.setAdapter(new MessageAdapter(getContext(), 0, messagesList));
         listView.setOnItemClickListener(this);
+        view.findViewById(R.id.refresh).setOnClickListener(this);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
 //        view.getId();
 //        startActivity(new Intent(getContext(), ChatActivity.class));
 //        getActivity().overridePendingTransition(R.anim.in_from_right, R.anim.empty);
         BmobIMUserInfo info =new BmobIMUserInfo();
-        info.setUserId("6925eb69db");
+        info.setName("test");
+        info.setUserId(userId);
         BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
             @Override
             public void done(BmobIMConversation bmobIMConversation, BmobException e) {
-                BmobIMTextMessage message=new BmobIMTextMessage();
+                if(e==null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("bmobIMConversation", bmobIMConversation);
+                    Intent intent=new Intent(getActivity(),ChatActivity.class);
+                    intent.putExtra("bmobIMConversation",bundle);
+                    getActivity().startActivity(intent);
+                /*BmobIMTextMessage message=new BmobIMTextMessage();
                 bmobIMConversation.sendMessage(message, new MessageSendListener() {
                     @Override
                     public void done(BmobIMMessage msg, BmobException e) {
@@ -110,7 +118,10 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
                         }else{
                         }
                     }
-                });
+                });*/
+                }else {
+                    toast(e.getMessage());
+                }
             }
         });
     }
@@ -123,5 +134,22 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
         lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
         LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
         linearLayout.setLayoutAnimation(lac);
+    }
+
+    private void toast(String text) {
+        try {
+            Toast.makeText(getContext(),text,Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.refresh:
+                messagesList.add(new Message(null,"别同","shit"));
+                break;
+        }
     }
 }

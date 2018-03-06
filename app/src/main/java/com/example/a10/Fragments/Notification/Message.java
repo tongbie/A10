@@ -11,6 +11,7 @@ public class Message extends BmobIMConversation {
     private String imageId;
     private String name;
     private String message;
+    private String objectId;
 
     public Message(String imageId,String name,String message){
         this.imageId=imageId;

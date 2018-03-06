@@ -27,7 +27,7 @@
                 android:textSize="20dp"></com.example.a10.MyView.MyTextView>
 
             <Button
-                android:id="@+id/menuButton"
+                android:id="@+id/refresh"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="56dp"
                 android:layout_height="match_parent"

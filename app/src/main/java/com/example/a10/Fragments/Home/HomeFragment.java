@@ -1,5 +1,6 @@
 package com.example.a10.Fragments.Home;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -105,7 +106,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void done(String s, BmobException e) {
                                 if (e != null) {
-                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                    toast(e.getMessage());
                                 }
                             }
                         });
@@ -125,12 +126,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 if (e == null) {
                                     addData();
                                 } else {
-                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                    toast(e.getMessage());
                                 }
                             }
                         });
                     } else {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        toast(e.getMessage());
                     }
                 }
                 ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
@@ -138,6 +139,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 ((MyButton)view.findViewById(R.id.save)).setLoading(false);
             }
         });
+    }
+
+    private void toast(String text) {
+        try {
+            Toast.makeText(getContext(),text,Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addDateSign() {
@@ -203,7 +212,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         String date = String.valueOf(time.year) + "-" + String.valueOf(time.month+1) + "-" + String.valueOf(time.monthDay);
         for(String day:dateSign){
             if(date.equals(day)){
-                Toast.makeText(getContext(), "今天已经签到了哦", Toast.LENGTH_SHORT).show();
+                toast("今天已经签到了哦");
                 return;
             }
         }
@@ -228,14 +237,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
-                                Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+                                toast(text);
                             } else {
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                toast(e.getMessage());
                             }
                         }
                     });
                 } else {
-                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    toast(e.getMessage());
                 }
                 ((MyButton) view.findViewById(R.id.save)).setLoading(false);
             }
@@ -303,7 +312,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             progressBar.setProgress(progress);
                             progressNum.setText(" " + String.valueOf(progress) + " %");
                         } catch (Exception e) {
-                            Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
+                            toast("error");
                         }
                     }
                 }).create();
