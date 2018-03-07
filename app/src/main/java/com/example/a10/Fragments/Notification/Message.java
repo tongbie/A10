@@ -1,27 +1,24 @@
 package com.example.a10.Fragments.Notification;
 
-
-import cn.bmob.newim.bean.BmobIMConversation;
-
 /**
- * Created by BieTong on 2018/2/9.
+ * Created by BieTong on 2018/2/10.
  */
 
-public class Message extends BmobIMConversation {
-    private String imageId;
+public class Message {
+    private int imageId;
     private String name;
     private String message;
-    private String objectId;
+    private int type;
 
-    public Message(String imageId,String name,String message){
+    public Message(int imageId, String name, String message, int type) {
         this.imageId=imageId;
         this.name=name;
-        this.message=message;
-
+        this.message = message;
+        this.type=type;
     }
 
     public int getImageId() {
-        return Integer.valueOf(imageId);
+        return imageId;
     }
 
     public String getName() {
@@ -30,5 +27,9 @@ public class Message extends BmobIMConversation {
 
     public String getMessage() {
         return message;
+    }
+
+    public int getType(){
+        return type;
     }
 }

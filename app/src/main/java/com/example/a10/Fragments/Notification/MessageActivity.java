@@ -1,6 +1,5 @@
 package com.example.a10.Fragments.Notification;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
@@ -9,9 +8,7 @@ import android.widget.Toast;
 import com.example.a10.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
@@ -20,9 +17,9 @@ import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.exception.BmobException;
 
-public class ChatActivity extends AppCompatActivity {
+public class MessageActivity extends AppCompatActivity {
     private ListView listView;
-    private List<Chat> chats;
+    private List<Message> messages;
     private BmobIMConversation bConversation;
 
     @Override
@@ -48,7 +45,7 @@ public class ChatActivity extends AppCompatActivity {
             bConversation.sendMessage(bMessage, new MessageSendListener() {
                 @Override
                 public void done(BmobIMMessage msg, BmobException e) {
-                    if (e != null) {
+                    if (e == null) {
                         toast("发送成功");
                     } else {
                         toast("发送失败\n"+e.getMessage());
@@ -60,8 +57,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private void initView() {
         listView = findViewById(R.id.listView);
-        chats = new ArrayList<>();
-        listView.setAdapter(new ChatAdapter(this, 0, chats));
+        messages = new ArrayList<>();
+        listView.setAdapter(new MessageAdapter(this, 0, messages));
     }
 
     private void toast(String text) {

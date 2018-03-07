@@ -13,17 +13,17 @@ import com.example.a10.R;
 import java.util.List;
 
 /**
- * Created by BieTong on 2018/2/10.
+ * Created by BieTong on 2018/2/9.
  */
 
-public class ChatAdapter extends ArrayAdapter {
-    private List<Chat> chats;
+public class ConversationAdapter extends ArrayAdapter {
+    private List<Conversation> conversations;
     private Context context;
 
-    public ChatAdapter(Context context,int resourseId, List<Chat> chats) {
-        super(context,resourseId,chats);
+    public ConversationAdapter(Context context, int resourseId, List<Conversation> conversations) {
+        super(context,resourseId, conversations);
         this.context=context;
-        this.chats = chats;
+        this.conversations = conversations;
     }
 
     @Override
@@ -31,34 +31,24 @@ public class ChatAdapter extends ArrayAdapter {
         ViewHolder viewHolder=null;
         if(view==null){
             viewHolder=new ViewHolder();
-            if(getItemViewType(position)==0){
-                view= LayoutInflater.from(context).inflate(R.layout.chat_item_in, viewGroup, false);
-            }else {
-                view= LayoutInflater.from(context).inflate(R.layout.chat_item_out, viewGroup, false);
-            }
+            view= LayoutInflater.from(context).inflate(R.layout.message_item, viewGroup, false);
             viewHolder.imageView= (ImageView) view.findViewById(R.id.imageView);
             viewHolder.nameView= (TextView) view.findViewById(R.id.nameView);
-            viewHolder.chatView= (TextView) view.findViewById(R.id.chatView);
+            viewHolder.messageView= (TextView) view.findViewById(R.id.messageView);
             view.setTag(viewHolder);//setTag()用以向View追加额外数据
         }else {
             viewHolder=(ViewHolder)view.getTag();
         }
-        Chat chat = (Chat) getItem(position);
-        viewHolder.imageView.setImageResource(chat.getImageId());
-        viewHolder.nameView.setText(chat.getName());
-        viewHolder.chatView.setText(chat.getChat());
+        Conversation conversation = (Conversation) getItem(position);
+        viewHolder.imageView.setImageResource(conversation.getImageId());
+        viewHolder.nameView.setText(conversation.getName());
+        viewHolder.messageView.setText(conversation.getConversation());
         return view;
     }
 
     public class ViewHolder{
         public ImageView imageView;
         public TextView nameView;
-        public TextView chatView;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        Chat chat=chats.get(position);
-        return chat.getType();
+        public TextView messageView;
     }
 }

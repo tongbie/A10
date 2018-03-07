@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.a10.Fragments.Home.HomeGson;
-import com.example.a10.LoginActivity;
-import com.example.a10.MainActivity;
-import com.example.a10.MyView.MyButton;
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
@@ -30,30 +28,26 @@ import java.util.List;
 
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
-import cn.bmob.newim.bean.BmobIMMessage;
-import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
-import cn.bmob.newim.core.BmobIMClient;
+import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.event.MessageEvent;
-import cn.bmob.newim.event.OfflineMessageEvent;
 import cn.bmob.newim.listener.ConnectListener;
+import cn.bmob.newim.listener.ConnectStatusChangeListener;
 import cn.bmob.newim.listener.ConversationListener;
-import cn.bmob.newim.listener.MessageSendListener;
+import cn.bmob.newim.listener.MessageListHandler;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.SaveListener;
 
-import static com.example.a10.Fragments.Notification.BmobIMApplication.getMyProcessName;
-
-public class NotificationFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener, AdapterView.OnItemLongClickListener {
+public class NotificationFragment extends Fragment
+        implements AdapterView.OnItemClickListener, View.OnClickListener, AdapterView.OnItemLongClickListener, MessageListHandler {
     private ListView listView;
-    private List<Message> messagesList;
+    private List<Conversation> messagesList;
     private View view;
     private EditText editText;
-    private boolean isLink=false;
-    private boolean isFristLoad=true;
+    private boolean isConnected = false;
+    private boolean isFristLoad = true;
 
     @Nullable
     @Override
@@ -80,13 +74,11 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
                 @Override
                 public void done(String uid, BmobException e) {
                     if (e == null) {
-                        isLink=true;
-                        if(isFristLoad) {
+                        if (isFristLoad) {
                             initData();
                         }
                     } else {
                         toast("无法连接至服务器");
-                        isLink=false;
                     }
                     ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
                 }
@@ -94,16 +86,25 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
+    @Override//消息接收回调
+    public void onMessageReceive(List<MessageEvent> messageEvents) {
+        for (MessageEvent messageEvent : messageEvents) {
+            BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
+            BmobIM.getInstance().updateConversation(messageEvent.getConversation());
+        }
+        initData();
+    }
+
     private void initData() {
-        if(!isLink){
+        if (!isConnected) {
             linkServer();
             return;
         }
         messagesList = new ArrayList<>();
         for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
-            messagesList.add(new Message(bimc.getConversationIcon(), bimc.getConversationTitle(),bimc.getMessages().get(bimc.getMessages().size()-1).toString()));
+            messagesList.add(new Conversation(String.valueOf(R.drawable.ic_personal), bimc.getConversationTitle(), bimc.getMessages().get(bimc.getMessages().size() - 1).getContent()));
         }
-        listView.setAdapter(new MessageAdapter(getContext(), 0, messagesList));
+        listView.setAdapter(new ConversationAdapter(getContext(), 0, messagesList));
     }
 
     private void initView() {
@@ -113,6 +114,17 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
         view.findViewById(R.id.refresh).setOnClickListener(this);
         editText = view.findViewById(R.id.editText);
         view.findViewById(R.id.add).setOnClickListener(this);
+        BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
+            @Override
+            public void onChange(ConnectionStatus status) {
+                Log.e("服务器连接状态：", status.getMsg() + " " + String.valueOf(status.getCode()));
+                if (status.getCode() == 2) {
+                    isConnected = true;
+                } else {
+                    isConnected = false;
+                }
+            }
+        });
     }
 
     private void initAnimation(View view) {
@@ -146,7 +158,7 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
     }
 
     private void startChat(String username) {
-        if(!isLink){
+        if (!isConnected) {
             linkServer();
             return;
         }
@@ -165,7 +177,7 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
                             if (e == null) {
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("bmobIMConversation", bmobIMConversation);
-                                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                                Intent intent = new Intent(getActivity(), MessageActivity.class);
                                 intent.putExtras(bundle);
                                 getActivity().startActivity(intent);
                             } else {
@@ -188,5 +200,17 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        BmobIM.getInstance().addMessageListHandler(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        BmobIM.getInstance().removeMessageListHandler(this);
+        super.onPause();
     }
 }
