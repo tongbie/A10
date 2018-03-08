@@ -24,8 +24,8 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
-    public static String username = "";
-    public static String password = "";
+    private String username = "";
+    private String password = "";
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
 
@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     }
 
     private void skipLogin() {
-        BmobUser user = BmobUser.getCurrentUser();
+        BmobUser user = BmobUser.getCurrentUser(BmobUser.class);
         if (null == user) {
             return;
         } else {

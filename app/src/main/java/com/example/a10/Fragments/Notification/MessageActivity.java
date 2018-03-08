@@ -2,6 +2,10 @@ package com.example.a10.Fragments.Notification;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -15,23 +19,31 @@ import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.listener.MessageSendListener;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 
-public class MessageActivity extends AppCompatActivity {
+public class MessageActivity extends AppCompatActivity implements View.OnClickListener {
     private ListView listView;
     private List<Message> messages;
     private BmobIMConversation bConversation;
+    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        Window window = this.getWindow();
+        window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+        setContentView(R.layout.activity_message);
         initView();
+        if(getIntent().getExtras().getSerializable("bmobIMConversation")==null){
+            finish();
+            return;
+        }
         bConversation = BmobIMConversation.obtain(
                     BmobIMClient.getInstance(),
                     (BmobIMConversation) getIntent().getExtras().getSerializable("bmobIMConversation"));
-        sendMessage("BieTong发了一条消息");
 
+        editText.setText(BmobUser.getCurrentUser().getUsername()+"发送了一条消息");
     }
 
     private void sendMessage(String message) {
@@ -49,6 +61,7 @@ public class MessageActivity extends AppCompatActivity {
                         toast("发送成功");
                     } else {
                         toast("发送失败\n"+e.getMessage());
+                        Log.e("发送失败：",e.getMessage()+" "+String.valueOf(e.getErrorCode()));
                     }
                 }
             });
@@ -59,6 +72,8 @@ public class MessageActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         messages = new ArrayList<>();
         listView.setAdapter(new MessageAdapter(this, 0, messages));
+        editText=findViewById(R.id.editText);
+        findViewById(R.id.send).setOnClickListener(this);
     }
 
     private void toast(String text) {
@@ -66,6 +81,15 @@ public class MessageActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.send:
+                sendMessage(editText.getText().toString());
+                break;
         }
     }
 }

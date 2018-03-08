@@ -11,6 +11,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.a10.LoginActivity;
@@ -24,21 +29,28 @@ import cn.bmob.v3.BmobUser;
 
 public class PersonalFragment extends Fragment implements View.OnClickListener {
     private View view;
+    private TextView userText;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_personal, container, false);
-        this.view = view;
-        initView();
-        TextView userText=view.findViewById(R.id.username);
-        userText.setText("当前用户：\n"+LoginActivity.username);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_personal, null);
+            initView();
+        }
+        ViewGroup viewGroup = (ViewGroup) view.getParent();
+        if (viewGroup != null) {
+            viewGroup.removeView(view);
+        }
+        initAnimation();
+        userText.setText("当前用户： "+BmobUser.getCurrentUser().getUsername());
         return view;
     }
 
 
     private void initView() {
         view.findViewById(R.id.logout).setOnClickListener(this);
+        userText=view.findViewById(R.id.userText);
     }
 
     @Override
@@ -69,5 +81,17 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 BmobIM.getInstance().disConnect();//断开服务器连接
                 getActivity().finish();
         }
+    }
+
+    private void initAnimation() {
+        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        sa.setInterpolator(new OvershootInterpolator());
+        sa.setDuration(300);
+        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
+        linearLayout.setLayoutAnimation(lac);
     }
 }

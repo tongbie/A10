@@ -62,7 +62,7 @@ public class NotificationFragment extends Fragment
             viewGroup.removeView(view);
         }
         initAnimation(view);
-        editText.setText("test");
+        editText.setText("王栋");
         return view;
     }
 
@@ -89,6 +89,7 @@ public class NotificationFragment extends Fragment
     @Override//消息接收回调
     public void onMessageReceive(List<MessageEvent> messageEvents) {
         for (MessageEvent messageEvent : messageEvents) {
+            Log.e("收到了新消息：", messageEvent.getMessage().getContent());
             BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
             BmobIM.getInstance().updateConversation(messageEvent.getConversation());
         }

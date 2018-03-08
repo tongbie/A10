@@ -45,19 +45,30 @@
 
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_margin="6dp"
+                android:background="#dcdcdc"
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
                 <EditText
                     android:id="@+id/editText"
                     android:layout_width="wrap_content"
                     android:layout_weight="1"
-                    android:layout_height="match_parent" />
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:paddingLeft="6dp"
+                    android:layout_height="40dp"
+                    android:hint="在此输入联系人账号"
+                    android:background="#ffffff"
+                    android:maxLines="1"/>
                 <Button
                     android:id="@+id/add"
-                    android:text="ok"
-                    android:layout_width="70dp"
-                    android:layout_height="match_parent" />
+                    android:text="发消息"
+                    android:textSize="16dp"
+                    android:textColor="#ffffff"
+                    android:layout_gravity="center"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/button"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp" />
             </LinearLayout>
 
             <ListView
