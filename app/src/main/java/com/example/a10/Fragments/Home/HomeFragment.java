@@ -160,7 +160,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         DPCManager dpcManager = new DPCManager();
         dpcManager.setDecorTR(dateSign);
         picker.setDPCManager(dpcManager);
-//        TODO:双位数日期未测试
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         String date = sdf.format(new java.util.Date());//获取日期
         picker.setDate(Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)));
@@ -226,14 +225,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         data.setProgress(progressBar.getProgress());
         data.setDataSign(dateSign);
         data.setUsername(BmobUser.getCurrentUser(BmobUser.class).getUsername());
-        data.update(BmobUser.getCurrentUser(BmobUser.class).getObjectId(), new UpdateListener() {
+        BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
+        query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
+        query.findObjects(new FindListener<HomeGson>() {
             @Override
-            public void done(BmobException e) {
+            public void done(List<HomeGson> list, BmobException e) {
                 if (e == null) {
-                    toast(text);
+                    data.update(list.get(0).getObjectId(), new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                toast(text);
+                            } else {
+                                toast("保存失败"+e.getMessage());
+                                addData();
+                            }
+                        }
+                    });
                 } else {
-                    toast(e.getMessage());
+                    toast("查找用户失败"+e.getMessage());
                 }
+                ((MyButton) view.findViewById(R.id.save)).setLoading(false);
             }
         });
     }

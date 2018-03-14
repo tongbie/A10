@@ -18,23 +18,28 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.a10.Fragments.Home.HomeGson;
+import com.example.a10.Fragments.Notification.Conversation;
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
+import cn.bmob.newim.bean.BmobIMMessage;
+import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
+import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.newim.listener.ConnectStatusChangeListener;
 import cn.bmob.newim.listener.ConversationListener;
 import cn.bmob.newim.listener.MessageListHandler;
+import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -102,8 +107,16 @@ public class NotificationFragment extends Fragment
             return;
         }
         messagesList = new ArrayList<>();
-        for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
-            messagesList.add(new Conversation(String.valueOf(R.drawable.ic_personal), bimc.getConversationTitle(), bimc.getMessages().get(bimc.getMessages().size() - 1).getContent()));
+        try {
+            for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
+                int size=bimc.getMessages().size();
+                messagesList.add(new Conversation(String.valueOf(R.drawable.ic_personal),
+                        bimc.getConversationTitle(),
+                        size>0?bimc.getMessages().get(size-1).getContent():null));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            toast("error");
         }
         listView.setAdapter(new ConversationAdapter(getContext(), 0, messagesList));
     }
@@ -163,15 +176,17 @@ public class NotificationFragment extends Fragment
             linkServer();
             return;
         }
-        BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
+
+        BmobQuery<BmobUser> query = new BmobQuery<BmobUser>();
         query.addWhereEqualTo("username", username);
-        query.findObjects(new FindListener<HomeGson>() {
+        query.findObjects(new FindListener<BmobUser>() {
             @Override
-            public void done(List<HomeGson> list, BmobException e) {
+            public void done(List<BmobUser> list, BmobException e) {
                 if (e == null) {
+                    BmobUser bUser=list.get(0);
                     BmobIMUserInfo info = new BmobIMUserInfo();
-                    info.setName(username);
-                    info.setUserId(list.get(0).getObjectId());
+                    info.setName(bUser.getUsername());
+                    info.setUserId(bUser.getObjectId());
                     BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
                         @Override
                         public void done(BmobIMConversation bmobIMConversation, BmobException e) {

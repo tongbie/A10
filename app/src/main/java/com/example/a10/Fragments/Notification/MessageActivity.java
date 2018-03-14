@@ -61,7 +61,6 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                         toast("发送成功");
                     } else {
                         toast("发送失败\n"+e.getMessage());
-                        Log.e("发送失败：",e.getMessage()+" "+String.valueOf(e.getErrorCode()));
                     }
                 }
             });

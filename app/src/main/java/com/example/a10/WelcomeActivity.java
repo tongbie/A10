@@ -23,6 +23,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Window window = this.getWindow();
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+        //TODO:闪退
         new ToolClass(getApplicationContext());
         requestPermission();
         startActivity(new Intent(WelcomeActivity.this,LoginActivity.class));
