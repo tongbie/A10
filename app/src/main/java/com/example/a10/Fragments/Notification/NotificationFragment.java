@@ -1,9 +1,11 @@
 package com.example.a10.Fragments.Notification;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -184,18 +186,19 @@ public class NotificationFragment extends Fragment
             public void done(List<BmobUser> list, BmobException e) {
                 if (e == null) {
                     BmobUser bUser=list.get(0);
-                    BmobIMUserInfo info = new BmobIMUserInfo();
-                    info.setName(bUser.getUsername());
-                    info.setUserId(bUser.getObjectId());
+                    BmobIMUserInfo info=new BmobIMUserInfo();
+                    String s1=bUser.getObjectId();
+                    String s2=bUser.getUsername();
+                    info.setUserId(s1);
+                    info.setName(s2);
+//                    Log.e("username+objectid",bUser.getUsername()+" "+bUser.getObjectId());
                     BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
                         @Override
                         public void done(BmobIMConversation bmobIMConversation, BmobException e) {
                             if (e == null) {
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("bmobIMConversation", bmobIMConversation);
-                                Intent intent = new Intent(getActivity(), MessageActivity.class);
-                                intent.putExtras(bundle);
-                                getActivity().startActivity(intent);
+                                startActivity(MessageActivity.class, bundle, false);
                             } else {
                                 toast("创建对话失败");
                             }
@@ -207,6 +210,17 @@ public class NotificationFragment extends Fragment
             }
         });
     }
+
+    private void startActivity(Class<? extends AppCompatActivity> target, Bundle bundle, boolean finish) {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), target);
+        if (bundle != null)
+            intent.putExtra(getActivity().getPackageName(), bundle);
+        getActivity().startActivity(intent);
+        if (finish)
+            getActivity().finish();
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

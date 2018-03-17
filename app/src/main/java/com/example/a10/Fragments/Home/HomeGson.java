@@ -12,7 +12,17 @@ import cn.bmob.v3.BmobObject;
 public class HomeGson extends BmobObject {
     private int progress=0;
     private String username="";
-    private List<String> DataSign =new ArrayList<>();
+    private List<String> dataSign =new ArrayList<>();
+
+    public HomeGson(){
+
+    }
+
+    public HomeGson(int progress,String username,List<String> dataSign){
+        this.progress=progress;
+        this.username=username;
+        this.dataSign =dataSign;
+    }
 
     public int getProgress() {
         return progress;
@@ -31,10 +41,10 @@ public class HomeGson extends BmobObject {
     }
 
     public List<String> getDataSign() {
-        return DataSign;
+        return dataSign;
     }
 
     public void setDataSign(List<String> dataSign) {
-        DataSign = dataSign;
+        this.dataSign = dataSign;
     }
 }

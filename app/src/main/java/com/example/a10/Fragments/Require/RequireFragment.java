@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,6 +15,17 @@ public class RequireGson extends BmobObject {
     private String date;
     private String introduce;
 
+    public RequireGson(){
+
+    }
+
+    public RequireGson(String title,String sender,String date,String introduce){
+        this.title=title;
+        this.sender=sender;
+        this.date=date;
+        this.introduce=introduce;
+    }
+
     public String getTitle() {
         return title;
     }

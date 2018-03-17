@@ -35,15 +35,25 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         setContentView(R.layout.activity_message);
         initView();
-        if(getIntent().getExtras().getSerializable("bmobIMConversation")==null){
-            finish();
-            return;
-        }
-        bConversation = BmobIMConversation.obtain(
-                    BmobIMClient.getInstance(),
-                    (BmobIMConversation) getIntent().getExtras().getSerializable("bmobIMConversation"));
-
+        BmobIMConversation conversationEntrance = (BmobIMConversation) getBundle().getSerializable("bmobIMConversation");
+        bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
+//        if(getIntent().getExtras().getSerializable("bmobIMConversation")==null){
+//            Log.e("错误","bmobIMConversation==null");
+//            toast("error");
+//            finish();
+//            return;
+//        }
+//        bConversation = BmobIMConversation.obtain(
+//                    BmobIMClient.getInstance(),
+//                    (BmobIMConversation) getBundle().getSerializable("bmobIMConversation"));
         editText.setText(BmobUser.getCurrentUser().getUsername()+"发送了一条消息");
+    }
+
+    public Bundle getBundle() {
+        if (getIntent() != null && getIntent().hasExtra(getPackageName()))
+            return getIntent().getBundleExtra(getPackageName());
+        else
+            return null;
     }
 
     private void sendMessage(String message) {

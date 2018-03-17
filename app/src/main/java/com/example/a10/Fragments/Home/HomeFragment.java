@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +32,14 @@ import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
 import com.example.a10.MyView.datepicker.views.DatePicker;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -60,6 +65,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_home, null);
             initView();
+            linkServer();
             addData();
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
@@ -86,6 +92,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         progressNum.setText(" " + String.valueOf(progressBar.getProgress()) + " %");
         /* 日历初始化 */
         dateLayout = view.findViewById(R.id.dateLayout);
+    }
+
+    private void linkServer() {
+        ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
+        BmobUser user = BmobUser.getCurrentUser(BmobUser.class);
+        if (!TextUtils.isEmpty(user.getObjectId())) {
+            BmobIM.connect(user.getObjectId(), new ConnectListener() {
+                @Override
+                public void done(String uid, BmobException e) {
+                    if (e == null) {
+
+                    } else {
+                        toast("无法连接至服务器");
+                    }
+                    ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
+                }
+            });
+        }
     }
 
     private void addData() {

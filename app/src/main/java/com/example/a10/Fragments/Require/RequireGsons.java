@@ -13,6 +13,15 @@ public class RequireGsons extends BmobObject {
     private List<RequireGson> requireGsons=new ArrayList<>();
     private String username;
 
+    public RequireGsons(){
+
+    }
+
+    public RequireGsons(List<RequireGson> requireGsons,String username){
+        this.requireGsons=requireGsons;
+        this.username=username;
+    }
+
     public String getUsername() {
         return username;
     }

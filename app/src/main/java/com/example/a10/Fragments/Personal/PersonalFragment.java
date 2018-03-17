@@ -43,7 +43,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
             viewGroup.removeView(view);
         }
         initAnimation();
-        userText.setText("当前用户： "+BmobUser.getCurrentUser().getUsername());
+        userText.setText(BmobUser.getCurrentUser().getUsername());
         return view;
     }
 
