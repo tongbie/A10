@@ -1,5 +1,8 @@
 package com.example.a10.Fragments.Home;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,12 +12,15 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.Time;
+import android.text.style.LineHeightSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.AnticipateInterpolator;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
@@ -189,7 +195,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         picker.setDate(Integer.valueOf(date.substring(0, 4)), Integer.valueOf(date.substring(5, 7)));
         picker.setDPDecor(new DPDecor());
         dateLayout.addView(picker);
-
     }
 
 
@@ -261,13 +266,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             if (e == null) {
                                 toast(text);
                             } else {
-                                toast("保存失败"+e.getMessage());
+                                toast("保存失败" + e.getMessage());
                                 addData();
                             }
                         }
                     });
                 } else {
-                    toast("查找用户失败"+e.getMessage());
+                    toast("查找用户失败" + e.getMessage());
                 }
                 ((MyButton) view.findViewById(R.id.save)).setLoading(false);
             }
@@ -277,26 +282,29 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void showMenuButton() {
         try {
             LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
-            LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
             if (menuLayout.getVisibility() == View.GONE) {
-                linearLayout.animate()
-                        .y(ToolClass.dp(200))
-                        .setDuration(200)
-                        .setInterpolator(new OvershootInterpolator())
-                        .start();
                 menuLayout.setVisibility(View.VISIBLE);
+                ValueAnimator animator=ToolClass.createDropAnimator(menuLayout,menuLayout.getLayoutParams(),0,(int) (140 * ToolClass.mDensity + 0.5));
+                animator.setInterpolator(new OvershootInterpolator());
+                animator.start();
             } else {
-                linearLayout.animate()
-                        .y(ToolClass.dp(62))
-                        .setDuration(200)
-                        .setInterpolator(new OvershootInterpolator())
-                        .start();
-                menuLayout.setVisibility(View.GONE);
+                int origHeight=menuLayout.getHeight();
+                ValueAnimator animator=ToolClass.createDropAnimator(menuLayout,menuLayout.getLayoutParams(),origHeight,0);
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        menuLayout.setVisibility(View.GONE);
+                    }
+                });
+                animator.setInterpolator(new AnticipateInterpolator());
+                animator.start();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 
     private void setProgress() {
         SeekBar seekBar = new SeekBar(getContext());

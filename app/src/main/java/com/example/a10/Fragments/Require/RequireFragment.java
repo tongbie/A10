@@ -10,12 +10,12 @@ import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.R;
 import com.example.a10.ToolClass;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,8 @@ import cn.bmob.v3.listener.UpdateListener;
 
 public class RequireFragment extends Fragment implements View.OnClickListener {
     View view;
-    LinearLayout root;
-    List<RequireGson> gsons =new ArrayList<>();
+    LinearLayout rootView;
+    List<RequireGson> requireData = new ArrayList<>();
 
     @Nullable
     @Override
@@ -50,6 +50,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     }
 
     private void addData() {
+        requireData =null;
         ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
         BmobQuery<RequireGsons> query = new BmobQuery<RequireGsons>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
@@ -71,7 +72,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                         addData();
                         return;
                     }
-                    gsons =list.get(0).getRequireGsons();
+                    requireData = list.get(0).getRequireGsons();
                     initItem();
                 } else {
                     if (e.getErrorCode() == 101) {
@@ -96,8 +97,8 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
 
     private void save(String text) {
         final RequireGsons data = new RequireGsons();
-        List<RequireGson> requireGsons=new ArrayList<>();
-        RequireGson requireGson=new RequireGson();
+        List<RequireGson> requireGsons = new ArrayList<>();
+        RequireGson requireGson = new RequireGson();
         requireGson.setTitle("智能外包管理平台");
         requireGson.setSender("虹软集团");
         requireGson.setDate("2018-1-10至2018-4-2");
@@ -123,6 +124,14 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                 "（2）\t在登录时检查登录人员是否与人脸特征库中的人脸信息相匹配。如果不匹配就不能登录系统。 \n" +
                 "（3）\t在访问高安全等级的资源和任务时，需要在访问期间没有第三方人脸（也就是除了指定的操作人脸外，不允许有第二个人脸）的介入，如果有，就暂停资源的显示。  \n");
         requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
+        requireGsons.add(requireGson);
         data.setRequireGsons(requireGsons);
         BmobQuery<RequireGsons> query = new BmobQuery<RequireGsons>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
@@ -136,27 +145,34 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                             if (e == null) {
                                 toast(text);
                             } else {
-                                toast("保存失败"+e.getMessage());
+                                toast("保存失败" + e.getMessage());
                                 addData();
                             }
                         }
                     });
                 } else {
-                    toast("查找用户失败"+e.getMessage());
+                    toast("查找用户失败" + e.getMessage());
                 }
             }
         });
     }
 
-    private void initView(){
-        root=view.findViewById(R.id.root);
+    private TextView spaceView;
+
+    private void initView() {
+        rootView = view.findViewById(R.id.root);
         view.findViewById(R.id.refresh).setOnClickListener(this);
+
+        spaceView = new TextView(getContext());
+        spaceView.setHeight(ToolClass.SCREEN_HEIGHT - ToolClass.px(240));
     }
 
-    private void initItem(){
-        for(RequireGson rg: gsons){
-            root.addView(new RequireItem(getContext(),rg.getTitle(),rg.getSender(),rg.getDate(),rg.getIntroduce()));
+    private void initItem() {
+        rootView.removeAllViews();
+        for (RequireGson rg : requireData) {
+            rootView.addView(new RequireItem(getContext(), rg.getTitle(), rg.getSender(), rg.getDate(), rg.getIntroduce()));
         }
+        rootView.addView(spaceView);
     }
 
     public void initAnimation() {
@@ -166,8 +182,8 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
             ta.setDuration(200);
             LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
             lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-            root.setLayoutAnimation(lac);
-        }catch (Exception e){
+            rootView.setLayoutAnimation(lac);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -182,6 +198,11 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-
+//        save("");
+        switch (v.getId()){
+            case R.id.refresh:
+                addData();
+                break;
+        }
     }
 }

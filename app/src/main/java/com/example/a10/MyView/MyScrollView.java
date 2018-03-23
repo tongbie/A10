@@ -27,13 +27,9 @@ public class MyScrollView extends ScrollView {
         super(context, attrs, defStyleAttr);
     }
 
-    public MyScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
+        /*switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastX = (int) event.getRawX();
                 lastY = (int) event.getRawY();
@@ -46,6 +42,9 @@ public class MyScrollView extends ScrollView {
                 if (Math.abs(dy)/2 > Math.abs(dx)) {
                     return true;
                 }
+        }*/
+        if(event.getAction()==MotionEvent.ACTION_DOWN){
+
         }
         return false;
     }
