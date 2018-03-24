@@ -1,4 +1,4 @@
-package com.example.a10.Fragments.Notification;
+package com.example.a10.BmobManagers;
 
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class BmobMessageHandler extends BmobIMMessageHandler {
     @Override
     public void onMessageReceive(final MessageEvent event) {
         //在线消息
-//        updateUserInfo(event);
+        updateUserInfo(event);
     }
 
     @Override

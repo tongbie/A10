@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.example.a10.LoginActivity;
 import com.example.a10.R;
+import com.example.a10.Tool;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        initAnimation();
+        Tool.scaleAnimation(view);
         userText.setText(BmobUser.getCurrentUser().getUsername());
         return view;
     }
@@ -81,17 +82,5 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 BmobIM.getInstance().disConnect();//断开服务器连接
                 getActivity().finish();
         }
-    }
-
-    private void initAnimation() {
-        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
-        sa.setInterpolator(new OvershootInterpolator());
-        sa.setDuration(300);
-        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-        linearLayout.setLayoutAnimation(lac);
     }
 }

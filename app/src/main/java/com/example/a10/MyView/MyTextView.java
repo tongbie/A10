@@ -5,10 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
-import com.example.a10.R;
-import com.example.a10.ToolClass;
+import com.example.a10.Tool;
 
 /**
  * Created by BieTong on 2018/3/4.
@@ -54,7 +52,7 @@ public class MyTextView extends android.support.v7.widget.AppCompatTextView {
         if(!isDraw){
             return;
         }
-        canvas.drawCircle(currentX,currentY, ToolClass.dp(6),paint);
+        canvas.drawCircle(currentX,currentY, Tool.dp(6),paint);
         if(isLeft){
             currentX-=5;
             if(currentX<positionX){

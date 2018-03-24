@@ -7,19 +7,22 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.a10.BmobManagers.User;
 import com.example.a10.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.listener.MessageSendListener;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 
 public class MessageActivity extends AppCompatActivity implements View.OnClickListener {
@@ -36,17 +39,12 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_message);
         initView();
         BmobIMConversation conversationEntrance = (BmobIMConversation) getBundle().getSerializable("bmobIMConversation");
+        if(conversationEntrance==null){
+            toast("开启会话失败，请重试");
+            return;
+        }
         bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
-//        if(getIntent().getExtras().getSerializable("bmobIMConversation")==null){
-//            Log.e("错误","bmobIMConversation==null");
-//            toast("error");
-//            finish();
-//            return;
-//        }
-//        bConversation = BmobIMConversation.obtain(
-//                    BmobIMClient.getInstance(),
-//                    (BmobIMConversation) getBundle().getSerializable("bmobIMConversation"));
-        editText.setText(BmobUser.getCurrentUser().getUsername()+"发送了一条消息");
+        ((TextView)findViewById(R.id.linkManView)).setText(getBundle().getString("linkMan"));
     }
 
     public Bundle getBundle() {
@@ -57,32 +55,27 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void sendMessage(String message) {
-        //可随意设置额外信息
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("level", "1");
-//        msg.setExtraMap(map);
-        BmobIMTextMessage bMessage = new BmobIMTextMessage();
-        bMessage.setContent(message);
-        if(bConversation!=null) {
-            bConversation.sendMessage(bMessage, new MessageSendListener() {
-                @Override
-                public void done(BmobIMMessage msg, BmobException e) {
-                    if (e == null) {
-                        toast("发送成功");
-                    } else {
-                        toast("发送失败\n"+e.getMessage());
-                    }
+        BmobIMTextMessage msg = new BmobIMTextMessage();
+        msg.setContent(message);
+        bConversation.sendMessage(msg, new MessageSendListener() {
+            @Override
+            public void done(BmobIMMessage msg, BmobException e) {
+                if (e != null) {
+                    toast(e.getMessage());
+                }else {
+                    toast("发送成功");
                 }
-            });
-        }
+            }
+        });
     }
 
     private void initView() {
         listView = findViewById(R.id.listView);
         messages = new ArrayList<>();
         listView.setAdapter(new MessageAdapter(this, 0, messages));
-        editText=findViewById(R.id.editText);
+        editText = findViewById(R.id.editText);
         findViewById(R.id.send).setOnClickListener(this);
+        findViewById(R.id.back).setOnClickListener(this);
     }
 
     private void toast(String text) {
@@ -95,9 +88,12 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.send:
                 sendMessage(editText.getText().toString());
+                break;
+            case R.id.back:
+                finish();
                 break;
         }
     }

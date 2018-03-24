@@ -4,29 +4,25 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AnticipateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.a10.R;
-import com.example.a10.ToolClass;
+import com.example.a10.Tool;
 
 
 /**
  * Created by BieTong on 2018/3/12.
  */
 
-public class RequireItem extends LinearLayout implements View.OnClickListener {
+public abstract class RequireItem extends LinearLayout implements View.OnClickListener {
     private Context context;
     private String title = "任务标题";
     private String introduce = "任务介绍";
@@ -37,7 +33,6 @@ public class RequireItem extends LinearLayout implements View.OnClickListener {
     private int scrollHeight = 0;
     private LinearLayout root;
     private ScrollView scrollView;
-    private int titleHeight = 0;
 
     public RequireItem(Context context, String title, String sender, String date, String introduce) {
         super(context);
@@ -70,10 +65,12 @@ public class RequireItem extends LinearLayout implements View.OnClickListener {
         ((TextView) view.findViewById(R.id.introduceView)).setText(introduce);
         ((Button) view.findViewById(R.id.showButton)).setOnClickListener(this);
         ((Button) view.findViewById(R.id.hideButton)).setOnClickListener(this);
+        view.findViewById(R.id.complete).setOnClickListener(this);
+        view.findViewById(R.id.refuse).setOnClickListener(this);
 
         scrollView = view.findViewById(R.id.scrollView);
         scrollView.setOnTouchListener(childScrollTouchListener);
-        scrollHeight = ToolClass.SCREEN_HEIGHT - ToolClass.px(240);
+        scrollHeight = Tool.SCREEN_HEIGHT - Tool.px(240);
 //        ViewGroup.LayoutParams scrollParams = scrollView.getLayoutParams();
 //        scrollParams.height = scrollHeight;
 //        scrollView.setLayoutParams(scrollParams);
@@ -110,11 +107,11 @@ public class RequireItem extends LinearLayout implements View.OnClickListener {
     private void showIntroduce() {
         if (scrollView.getVisibility() == GONE) {
             scrollView.setVisibility(VISIBLE);
-            ValueAnimator animator = ToolClass.createDropAnimator(scrollView, scrollView.getLayoutParams(), 0, scrollHeight);
+            ValueAnimator animator = Tool.createDropAnimator(scrollView, scrollView.getLayoutParams(), 0, scrollHeight);
             animator.start();
             view.findViewById(R.id.showButton).setBackground(getResources().getDrawable(R.drawable.button_hide));
         } else {
-            ValueAnimator animator = ToolClass.createDropAnimator(scrollView, scrollView.getLayoutParams(), scrollHeight, 0);
+            ValueAnimator animator = Tool.createDropAnimator(scrollView, scrollView.getLayoutParams(), scrollHeight, 0);
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -138,6 +135,16 @@ public class RequireItem extends LinearLayout implements View.OnClickListener {
             case R.id.hideButton:
                 showIntroduce();
                 break;
+            case R.id.complete:
+                complete();
+                break;
+            case R.id.refuse:
+                refuse();
+                break;
         }
     }
+
+    public abstract void complete();
+
+    public abstract void refuse();
 }

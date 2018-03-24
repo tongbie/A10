@@ -1,6 +1,8 @@
 package com.example.a10.Fragments.Notification;
 
 
+import android.support.annotation.Nullable;
+
 import cn.bmob.newim.bean.BmobIMConversation;
 
 /**
@@ -10,14 +12,14 @@ import cn.bmob.newim.bean.BmobIMConversation;
 public class Conversation extends BmobIMConversation {
     private String imageId;
     private String name;
-    private String conversation;
-    private String objectId;
+    private String lastMessage;
+    private BmobIMConversation bConversation;
 
-    public Conversation(String imageId, String name, String conversation){
-        this.imageId=imageId;
-        this.name=name;
-        this.conversation = conversation;
-
+    public Conversation(String imageId, String name, @Nullable String lastMessage, BmobIMConversation bConversation) {
+        this.imageId = imageId;
+        this.name = name;
+        this.lastMessage = lastMessage;
+        this.bConversation = bConversation;
     }
 
     public int getImageId() {
@@ -28,7 +30,11 @@ public class Conversation extends BmobIMConversation {
         return name;
     }
 
-    public String getConversation() {
-        return conversation;
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public BmobIMConversation getBConversation() {
+        return bConversation;
     }
 }

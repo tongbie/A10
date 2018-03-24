@@ -5,14 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.widget.Button;
 
 import com.example.a10.R;
-import com.example.a10.ToolClass;
+import com.example.a10.Tool;
 
 /**
  * Created by BieTong on 2018/3/3.
@@ -84,7 +80,7 @@ public class MyButton extends android.support.v7.widget.AppCompatButton {
         if(!isDraw){
             return;
         }
-        canvas.drawCircle(currentX,currentY,ToolClass.dp(6),paint);
+        canvas.drawCircle(currentX,currentY, Tool.dp(6),paint);
         if(isLeft){
             currentX-=5;
             if(currentX<positionX){

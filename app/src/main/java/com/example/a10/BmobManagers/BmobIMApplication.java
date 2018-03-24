@@ -1,4 +1,4 @@
-package com.example.a10.Fragments.Notification;
+package com.example.a10.BmobManagers;
 
 import android.app.Application;
 
@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 
 import cn.bmob.newim.BmobIM;
+import cn.bmob.v3.Bmob;
 
 /**
  * Created by BieTong on 2018/3/5.
@@ -18,6 +19,7 @@ public class BmobIMApplication extends Application{
     public void onCreate() {
         super.onCreate();
         if (getApplicationInfo().packageName.equals(getMyProcessName())){
+            Bmob.initialize(this,"c2c1321b56eef48e75db1371f8153b80");
             BmobIM.init(this);
             BmobIM.registerDefaultMessageHandler(new BmobMessageHandler());
         }

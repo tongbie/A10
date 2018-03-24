@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.a10.BmobManagers.User;
+
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -40,7 +42,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     }
 
     private void skipLogin() {
-        BmobUser user = BmobUser.getCurrentUser(BmobUser.class);
+        User user = User.getCurrentUser(User.class);
         if (null == user) {
             return;
         } else {
@@ -108,13 +110,15 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     }
 
     private void regist() {
-        final BmobUser user = new BmobUser();
+        final User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.signUp(new SaveListener<BmobUser>() {
+        //TODO:本应是头像
+        user.setAvatar(username);
+        user.signUp(new SaveListener<User>() {
 
             @Override
-            public void done(BmobUser bmobUser, BmobException e) {
+            public void done(User bmobUser, BmobException e) {
                 if (e == null) {
                     Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_SHORT).show();
                 } else {
@@ -125,12 +129,12 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     }
 
     private void login() {
-        BmobUser user = new BmobUser();
+        User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.login(new SaveListener<BmobUser>() {
+        user.login(new SaveListener<User>() {
             @Override
-            public void done(BmobUser bmobUser, BmobException e) {
+            public void done(User bmobUser, BmobException e) {
                 if (e == null) {
                     Toast.makeText(getApplicationContext(), "登陆成功", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));

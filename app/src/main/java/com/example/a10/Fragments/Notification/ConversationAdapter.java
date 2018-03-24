@@ -26,6 +26,10 @@ public class ConversationAdapter extends ArrayAdapter {
         this.conversations = conversations;
     }
 
+    public List<Conversation> getConversations(){
+        return conversations;
+    }
+
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder=null;
@@ -42,7 +46,7 @@ public class ConversationAdapter extends ArrayAdapter {
         Conversation conversation = (Conversation) getItem(position);
         viewHolder.imageView.setImageResource(conversation.getImageId());
         viewHolder.nameView.setText(conversation.getName());
-        viewHolder.messageView.setText(conversation.getConversation());
+        viewHolder.messageView.setText(conversation.getLastMessage());
         return view;
     }
 

@@ -3,51 +3,37 @@ package com.example.a10.Fragments.Home;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.text.format.Time;
-import android.text.style.LineHeightSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.AnticipateInterpolator;
-import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a10.LoginActivity;
+import com.example.a10.BmobManagers.User;
 import com.example.a10.MyView.MyButton;
 import com.example.a10.MyView.MyTextView;
 import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
 import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
 import com.example.a10.MyView.datepicker.views.DatePicker;
 import com.example.a10.R;
-import com.example.a10.ToolClass;
-import com.google.gson.Gson;
+import com.example.a10.Tool;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.bmob.newim.BmobIM;
-import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
@@ -71,14 +57,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_home, null);
             initView();
-            linkServer();
             addData();
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        initAnimation();
+        Tool.scaleAnimation(view);
         return view;
     }
 
@@ -100,37 +85,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dateLayout = view.findViewById(R.id.dateLayout);
     }
 
-    private void linkServer() {
-        ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
-        BmobUser user = BmobUser.getCurrentUser(BmobUser.class);
-        if (!TextUtils.isEmpty(user.getObjectId())) {
-            BmobIM.connect(user.getObjectId(), new ConnectListener() {
-                @Override
-                public void done(String uid, BmobException e) {
-                    if (e == null) {
-
-                    } else {
-                        toast("无法连接至服务器");
-                    }
-                    ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
-                }
-            });
-        }
-    }
-
     private void addData() {
         ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
         ((MyButton) view.findViewById(R.id.refresh)).setLoading(true);
         ((MyButton) view.findViewById(R.id.save)).setLoading(true);
         BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
-        query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
+        query.addWhereEqualTo("username", User.getCurrentUser(User.class).getUsername());
         query.findObjects(new FindListener<HomeGson>() {
             @Override
             public void done(List<HomeGson> list, BmobException e) {
                 if (e == null) {
                     HomeGson data = new HomeGson();
                     if (list.size() == 0) {
-                        data.setUsername(BmobUser.getCurrentUser(BmobUser.class).getUsername());
+                        data.setUsername(User.getCurrentUser(User.class).getUsername());
                         data.save(new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
@@ -170,14 +137,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void toast(String text) {
-        try {
-            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void addDateSign() {
         dateLayout.removeView(picker);
         picker = new DatePicker(getContext());
@@ -213,7 +172,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 setProgress();
                 break;
             case R.id.menuButton:
-                showMenuButton();
+                showMenu();
                 break;
             case R.id.save:
                 save("保存成功");
@@ -253,9 +212,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         final HomeGson data = new HomeGson();
         data.setProgress(progressBar.getProgress());
         data.setDataSign(dateSign);
-        data.setUsername(BmobUser.getCurrentUser(BmobUser.class).getUsername());
+        data.setUsername(User.getCurrentUser(User.class).getUsername());
         BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
-        query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
+        query.addWhereEqualTo("username", User.getCurrentUser(User.class).getUsername());
         query.findObjects(new FindListener<HomeGson>() {
             @Override
             public void done(List<HomeGson> list, BmobException e) {
@@ -279,17 +238,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void showMenuButton() {
+    private void showMenu() {
         try {
             LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
             if (menuLayout.getVisibility() == View.GONE) {
                 menuLayout.setVisibility(View.VISIBLE);
-                ValueAnimator animator=ToolClass.createDropAnimator(menuLayout,menuLayout.getLayoutParams(),0,(int) (140 * ToolClass.mDensity + 0.5));
+                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.mDensity + 0.5));
                 animator.setInterpolator(new OvershootInterpolator());
                 animator.start();
             } else {
-                int origHeight=menuLayout.getHeight();
-                ValueAnimator animator=ToolClass.createDropAnimator(menuLayout,menuLayout.getLayoutParams(),origHeight,0);
+                int origHeight = menuLayout.getHeight();
+                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), origHeight, 0);
                 animator.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -303,7 +262,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
     }
-
 
 
     private void setProgress() {
@@ -350,11 +308,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dialog.show();
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //获取图片路径
-        /*if (requestCode == 0x000 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == 0x000 && resultCode == Activity.RESULT_OK && data != null) {
             Uri uri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
@@ -366,18 +324,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }*/
-    }
+        }
+    }*/
 
-    private void initAnimation() {
-        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
-        sa.setInterpolator(new OvershootInterpolator());
-        sa.setDuration(300);
-        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-        linearLayout.setLayoutAnimation(lac);
+    private void toast(String text) {
+        try {
+            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

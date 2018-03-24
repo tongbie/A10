@@ -1,13 +1,9 @@
 package com.example.a10.Fragments.Notification;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,41 +16,25 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.a10.Fragments.Notification.Conversation;
-import com.example.a10.MyView.MyTextView;
+import com.example.a10.BmobManagers.User;
 import com.example.a10.R;
-import com.example.a10.ToolClass;
+import com.example.a10.Tool;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
-import cn.bmob.newim.bean.BmobIMMessage;
-import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
-import cn.bmob.newim.core.BmobIMClient;
-import cn.bmob.newim.core.ConnectionStatus;
-import cn.bmob.newim.event.MessageEvent;
-import cn.bmob.newim.listener.ConnectListener;
-import cn.bmob.newim.listener.ConnectStatusChangeListener;
 import cn.bmob.newim.listener.ConversationListener;
-import cn.bmob.newim.listener.MessageListHandler;
-import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
-public class NotificationFragment extends Fragment
-        implements AdapterView.OnItemClickListener, View.OnClickListener, AdapterView.OnItemLongClickListener, MessageListHandler {
+public class NotificationFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener, AdapterView.OnItemLongClickListener {
     private ListView listView;
-    private List<Conversation> messagesList;
+    private List<Conversation> conversationList;
     private View view;
-    private EditText editText;
-    private boolean isConnected = false;
-    private boolean isFristLoad = true;
 
     @Nullable
     @Override
@@ -62,65 +42,14 @@ public class NotificationFragment extends Fragment
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_notification, null);
             initView();
-            linkServer();
+            initData();
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
         initAnimation(view);
-        editText.setText("王栋");
         return view;
-    }
-
-    private void linkServer() {
-        ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
-        BmobUser user = BmobUser.getCurrentUser(BmobUser.class);
-        if (!TextUtils.isEmpty(user.getObjectId())) {
-            BmobIM.connect(user.getObjectId(), new ConnectListener() {
-                @Override
-                public void done(String uid, BmobException e) {
-                    if (e == null) {
-                        if (isFristLoad) {
-                            initData();
-                        }
-                    } else {
-                        toast("无法连接至服务器");
-                    }
-                    ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
-                }
-            });
-        }
-    }
-
-    @Override//消息接收回调
-    public void onMessageReceive(List<MessageEvent> messageEvents) {
-        for (MessageEvent messageEvent : messageEvents) {
-            Log.e("收到了新消息：", messageEvent.getMessage().getContent());
-            BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
-            BmobIM.getInstance().updateConversation(messageEvent.getConversation());
-        }
-        initData();
-    }
-
-    private void initData() {
-        if (!isConnected) {
-            linkServer();
-            return;
-        }
-        messagesList = new ArrayList<>();
-        try {
-            for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
-                int size=bimc.getMessages().size();
-                messagesList.add(new Conversation(String.valueOf(R.drawable.ic_personal),
-                        bimc.getConversationTitle(),
-                        size>0?bimc.getMessages().get(size-1).getContent():null));
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            toast("error");
-        }
-        listView.setAdapter(new ConversationAdapter(getContext(), 0, messagesList));
     }
 
     private void initView() {
@@ -128,37 +57,48 @@ public class NotificationFragment extends Fragment
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
         view.findViewById(R.id.refresh).setOnClickListener(this);
-        editText = view.findViewById(R.id.editText);
         view.findViewById(R.id.add).setOnClickListener(this);
-        BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
-            @Override
-            public void onChange(ConnectionStatus status) {
-                Log.e("服务器连接状态：", status.getMsg() + " " + String.valueOf(status.getCode()));
-                if (status.getCode() == 2) {
-                    isConnected = true;
-                } else {
-                    isConnected = false;
-                }
+    }
+
+    /*@Override//消息接收回调
+    public void onMessageReceive(List<MessageEvent> messageEvents) {
+        for (MessageEvent messageEvent : messageEvents) {
+            Log.e("收到了新消息：", messageEvent.getMessage().getContent());
+            BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
+            BmobIM.getInstance().updateConversation(messageEvent.getConversation());
+        }
+        initData();
+    }*/
+
+    public void initData() {
+        if (!Tool.isConnected) {
+            toast("正在重连...");
+            Tool.linkServer();
+            return;
+        }
+        conversationList = new ArrayList<>();
+        try {
+            for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
+                int size = bimc.getMessages().size();
+                conversationList.add(new Conversation(String.valueOf(R.drawable.ic_personal),
+                        bimc.getConversationTitle(),
+                        size > 0 ? bimc.getMessages().get(size - 1).getContent() : null
+                        , bimc));
             }
-        });
+        } catch (Exception e) {
+            toast(e.getMessage());
+        }
+        listView.setAdapter(new ConversationAdapter(getContext(), 0, conversationList));
     }
 
     private void initAnimation(View view) {
-        TranslateAnimation ta = new TranslateAnimation(0, 0, ToolClass.dp(-50), 0);
+        TranslateAnimation ta = new TranslateAnimation(0, 0, Tool.dp(-50), 0);
         ta.setInterpolator(new OvershootInterpolator());
         ta.setDuration(200);
         LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
         lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
         LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
         linearLayout.setLayoutAnimation(lac);
-    }
-
-    private void toast(String text) {
-        try {
-            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -168,37 +108,32 @@ public class NotificationFragment extends Fragment
                 initData();
                 break;
             case R.id.add:
-                startChat(editText.getText().toString());
+                startNewChat(((EditText) view.findViewById(R.id.editText)).getText().toString());
                 break;
         }
     }
 
-    private void startChat(String username) {
-        if (!isConnected) {
-            linkServer();
+    private void startNewChat(String username) {
+        if (!Tool.isConnected) {
+            Tool.linkServer();
             return;
         }
-
-        BmobQuery<BmobUser> query = new BmobQuery<BmobUser>();
+        BmobQuery<User> query = new BmobQuery<User>();
         query.addWhereEqualTo("username", username);
-        query.findObjects(new FindListener<BmobUser>() {
+        query.findObjects(new FindListener<User>() {
             @Override
-            public void done(List<BmobUser> list, BmobException e) {
+            public void done(List<User> list, BmobException e) {
                 if (e == null) {
-                    BmobUser bUser=list.get(0);
-                    BmobIMUserInfo info=new BmobIMUserInfo();
-                    String s1=bUser.getObjectId();
-                    String s2=bUser.getUsername();
-                    info.setUserId(s1);
-                    info.setName(s2);
-//                    Log.e("username+objectid",bUser.getUsername()+" "+bUser.getObjectId());
+                    User bUser = list.get(0);
+                    BmobIMUserInfo info = new BmobIMUserInfo();
+                    info.setUserId(bUser.getObjectId());
+                    info.setName(bUser.getUsername());
+                    info.setAvatar(bUser.getAvatar());
                     BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
                         @Override
                         public void done(BmobIMConversation bmobIMConversation, BmobException e) {
                             if (e == null) {
-                                Bundle bundle = new Bundle();
-                                bundle.putSerializable("bmobIMConversation", bmobIMConversation);
-                                startActivity(MessageActivity.class, bundle, false);
+                                startMessageActivity(bmobIMConversation, bUser.getUsername());
                             } else {
                                 toast("创建对话失败");
                             }
@@ -211,20 +146,23 @@ public class NotificationFragment extends Fragment
         });
     }
 
-    private void startActivity(Class<? extends AppCompatActivity> target, Bundle bundle, boolean finish) {
-        Intent intent = new Intent();
-        intent.setClass(getActivity(), target);
-        if (bundle != null)
+    private void startMessageActivity(BmobIMConversation bmobIMConversation, String linkMan) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("bmobIMConversation", bmobIMConversation);
+        bundle.putString("linkMan", linkMan);
+        Intent intent = new Intent(getActivity(), MessageActivity.class);
+        if (bundle != null) {
             intent.putExtra(getActivity().getPackageName(), bundle);
+        }
         getActivity().startActivity(intent);
-        if (finish)
-            getActivity().finish();
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        Conversation conversation= conversationList.get(position);
+        if (conversation != null) {
+            startMessageActivity(conversation.getBConversation(), conversation.getName());
+        }
     }
 
     @Override
@@ -234,13 +172,21 @@ public class NotificationFragment extends Fragment
 
     @Override
     public void onResume() {
-        BmobIM.getInstance().addMessageListHandler(this);
+//        BmobIM.getInstance().addMessageListHandler(this);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        BmobIM.getInstance().removeMessageListHandler(this);
+//        BmobIM.getInstance().removeMessageListHandler(this);
         super.onPause();
+    }
+
+    private void toast(String text) {
+        try {
+            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

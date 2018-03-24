@@ -25,7 +25,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name="com.example.a10.Fragments.Notification.BmobIMApplication"
+        android:name=".BmobManagers.BmobIMApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -35,7 +35,7 @@
 
         <meta-data
             android:name="Bmob_APP_KEY"
-            android:value="c2c1321b56eef48e75db1371f8153b80 " />
+            android:value="c2c1321b56eef48e75db1371f8153b80" />
 
         <!--TODO 集成：1.5、配置IM SDK需要的广播和服务-->
         <receiver android:name="cn.bmob.newim.core.ConnectChangeReceiver" >

@@ -1,7 +1,6 @@
 package com.example.a10;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -10,11 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
-
-import cn.bmob.v3.Bmob;
-import cn.bmob.v3.BmobUser;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -24,7 +19,7 @@ public class WelcomeActivity extends AppCompatActivity {
         Window window = this.getWindow();
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         //TODO:闪退
-        new ToolClass(getApplicationContext());
+        new Tool(getApplicationContext());
         requestPermission();
         startActivity(new Intent(WelcomeActivity.this,LoginActivity.class));
         finish();
