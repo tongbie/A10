@@ -48,6 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:clickable="false"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
         android:divider="@null">
 
     </ListView>
@@ -56,7 +58,9 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="#dcdcdc"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <EditText
             android:id="@+id/editText"

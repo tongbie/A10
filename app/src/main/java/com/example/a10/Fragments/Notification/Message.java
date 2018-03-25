@@ -11,14 +11,18 @@ public class Message {
     private int type;
 
     public Message(int imageId, String name, String message, int type) {
-        this.imageId=imageId;
-        this.name=name;
+        this.imageId = imageId;
+        this.name = name;
         this.message = message;
-        this.type=type;
+        this.type = type;
     }
 
     public int getImageId() {
         return imageId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -29,7 +33,11 @@ public class Message {
         return message;
     }
 
-    public int getType(){
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
         return type;
     }
 }

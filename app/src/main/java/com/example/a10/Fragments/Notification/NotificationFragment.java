@@ -1,5 +1,6 @@
 package com.example.a10.Fragments.Notification;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -80,6 +81,10 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
         try {
             for (BmobIMConversation bimc : BmobIM.getInstance().loadAllConversation()) {
                 int size = bimc.getMessages().size();
+//                if(bimc.getConversationTitle().equals(User.getCurrentUser().getUsername())){
+//                    size--;
+//                    return;
+//                }
                 conversationList.add(new Conversation(String.valueOf(R.drawable.ic_personal),
                         bimc.getConversationTitle(),
                         size > 0 ? bimc.getMessages().get(size - 1).getContent() : null
@@ -155,6 +160,7 @@ public class NotificationFragment extends Fragment implements AdapterView.OnItem
             intent.putExtra(getActivity().getPackageName(), bundle);
         }
         getActivity().startActivity(intent);
+//        getActivity().overridePendingTransition(R.anim.in_from_right, 0);
     }
 
     @Override

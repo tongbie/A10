@@ -1,6 +1,8 @@
 package com.example.a10.BmobManagers;
 
 
+import com.example.a10.Fragments.Notification.MessageActivity;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +25,6 @@ import cn.bmob.v3.exception.BmobException;
 public class BmobMessageHandler extends BmobIMMessageHandler {
     @Override
     public void onMessageReceive(final MessageEvent event) {
-        //在线消息
         updateUserInfo(event);
     }
 
@@ -44,40 +45,9 @@ public class BmobMessageHandler extends BmobIMMessageHandler {
 
     public void updateUserInfo(MessageEvent event) {
         BmobIMConversation bConversation = event.getConversation();
-        BmobIMUserInfo bUserInfo = event.getFromUserInfo();
-        BmobIMMessage bMessage = event.getMessage();
-        String bUserName = bUserInfo.getName();
-        String bTitle = bConversation.getConversationTitle();
-
+        BmobIMUserInfo bInfo = event.getFromUserInfo();
+//        BmobIMMessage bMessage = event.getMessage();
         BmobIM.getInstance().updateConversation(bConversation);
-        BmobIM.getInstance().updateUserInfo(bUserInfo);
-
-        //SDK内部将新会话的会话标题用objectId表示，因此需要比对用户名和私聊会话标题，后续会根据会话类型进行判断
-//        if (!bUserName.equals(bTitle)) {
-//            UserModel.getInstance().queryUserInfo(bUserInfo.getUserId(), new QueryUserListener() {
-//                @Override
-//                public void done(User s, BmobException e) {
-//                    if (e == null) {
-//                        String name = s.getUsername();
-//                        String avatar = s.getAvatar();
-//                        bConversation.setConversationIcon(avatar);
-//                        bConversation.setConversationTitle(name);
-//                        bUserInfo.setName(name);
-//                        bUserInfo.setAvatar(avatar);
-//                        //TODO 会话：2.7、更新用户资料，用于在会话页面、聊天页面以及个人信息页面显示
-//                        BmobIM.getInstance().updateUserInfo(bUserInfo);
-//                        //TODO 会话：4.7、更新会话资料-如果消息是暂态消息，则不更新会话资料
-//                        if (!bMessage.isTransient()) {
-//                            BmobIM.getInstance().updateConversation(bConversation);
-//                        }
-//                    } else {
-//                        Logger.e(e);
-//                    }
-//                    listener.done(null);
-//                }
-//            });
-//        } else {
-//            listener.done(null);
-//        }
+        BmobIM.getInstance().updateUserInfo(bInfo);
     }
 }

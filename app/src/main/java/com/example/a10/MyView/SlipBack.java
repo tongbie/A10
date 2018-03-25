@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.example.a10.R;
+import com.example.a10.Tool;
 
 /**
  * Created by BieTong on 2018/1/18.
@@ -23,10 +24,6 @@ public class SlipBack extends FrameLayout {
     private float lastY;
     private float currentX;
     private float currentY;
-    private float startY;//设置生效起始坐标
-    private float finishY;
-    private int SCREEN_WIDTH;
-    private int SCREEN_HEIGHT;
     private float SLIP;
 
 
@@ -34,11 +31,7 @@ public class SlipBack extends FrameLayout {
         super(activity);
         this.activity = activity;
         this.setOnTouchListener(new onTouch());
-        SCREEN_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
-        SCREEN_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
-        SLIP = SCREEN_WIDTH / 10;
-        startY = 0;
-        finishY = SCREEN_HEIGHT;
+        SLIP = Tool.SCREEN_WIDTH / 10;
         /* 替换原根布局 */
         viewGroup = (ViewGroup) activity.getWindow().getDecorView();//获取最顶层View
         view = viewGroup.getChildAt(0);//获取根LinearLayout
@@ -71,19 +64,8 @@ public class SlipBack extends FrameLayout {
         }
     }
 
-    public void setStartY(float startY){
-        this.startY=startY;
-    }
-
-    public void setFinishY(float finishY){
-        this.finishY=finishY;
-    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (event.getRawY() < startY || event.getRawY() > finishY) {
-            return false;
-        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastX = event.getRawX();
