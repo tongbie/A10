@@ -8,26 +8,29 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.a10.BmobManagers.BmobIMApplication;
 import com.example.a10.R;
 import com.example.a10.Tool;
 
 import java.util.List;
+
+import cn.bmob.newim.bean.BmobIMConversation;
 
 /**
  * Created by BieTong on 2018/2/9.
  */
 
 public class ConversationAdapter extends ArrayAdapter {
-    private List<Conversation> conversations;
+    private List<BmobIMConversation> conversations;
     private Context context;
 
-    public ConversationAdapter(Context context, int resourseId, List<Conversation> conversations) {
+    public ConversationAdapter(Context context, int resourseId, List<BmobIMConversation> conversations) {
         super(context,resourseId, conversations);
         this.context=context;
         this.conversations = conversations;
     }
 
-    public List<Conversation> getConversations(){
+    public List<BmobIMConversation> getConversations(){
         return conversations;
     }
 
@@ -44,10 +47,11 @@ public class ConversationAdapter extends ArrayAdapter {
         }else {
             viewHolder=(ViewHolder)view.getTag();
         }
-        Conversation conversation = (Conversation) getItem(position);
+        BmobIMConversation conversation = (BmobIMConversation) getItem(position);
+        int size=conversation.getMessages().size();
         viewHolder.imageView.setImageResource(Tool.imageId);
-        viewHolder.nameView.setText(conversation.getName());
-        viewHolder.messageView.setText(conversation.getLastMessage());
+        viewHolder.nameView.setText(conversation.getConversationTitle());
+        viewHolder.messageView.setText(conversation.getDraft());
         return view;
     }
 

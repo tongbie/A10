@@ -86,16 +86,6 @@ public class Tool {
                 }
             });
         }
-        BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
-            @Override
-            public void onChange(ConnectionStatus status) {
-                if (status.getCode() == 2) {
-                    isConnected = true;
-                } else {
-                    isConnected = false;
-                }
-            }
-        });
     }
 
     public static boolean isConnected=false;

@@ -40,10 +40,10 @@ public class NotificationFragment extends Fragment implements
         View.OnClickListener,
         AdapterView.OnItemLongClickListener,
         MessageListHandler {
+
     private ListView listView;
-    private List<Conversation> conversationList;
+    private List<BmobIMConversation> conversationList;
     private View view;
-    private HashMap<String,String> map=new HashMap<>();
 
     @Nullable
     @Override
@@ -75,17 +75,7 @@ public class NotificationFragment extends Fragment implements
             Tool.linkServer();
             return;
         }
-        conversationList = new ArrayList<>();
-        try {
-            for (BmobIMConversation bConversation : BmobIM.getInstance().loadAllConversation()) {
-                int size = bConversation.getMessages().size();
-                conversationList.add(new Conversation(bConversation.getConversationTitle(),
-                        size > 0 ? bConversation.getMessages().get(size - 1).getContent() : null
-                        , bConversation));
-            }
-        } catch (Exception e) {
-            toast(e.getMessage());
-        }
+        conversationList = BmobIM.getInstance().loadAllConversation();
         listView.setAdapter(new ConversationAdapter(getContext(), 0, conversationList));
     }
 
@@ -102,10 +92,10 @@ public class NotificationFragment extends Fragment implements
         }
     }
 
-    private void judgeRepeatConversation(String username){
-        for(Conversation conversation:conversationList){
-            if(username.equals(conversation.getName())){
-                startMessageActivity(conversation.getBConversation(),username);
+    private void judgeRepeatConversation(String username) {
+        for (BmobIMConversation conversation : conversationList) {
+            if (username.equals(conversation.getConversationTitle())) {
+                startMessageActivity(conversation, username);
                 return;
             }
         }
@@ -125,14 +115,16 @@ public class NotificationFragment extends Fragment implements
                 if (e == null) {
                     User bUser = list.get(0);
                     BmobIMUserInfo info = new BmobIMUserInfo();
+                    String bName = bUser.getUsername();
                     info.setUserId(bUser.getObjectId());
-                    info.setName(bUser.getUsername());
+                    info.setName(bName);
                     info.setAvatar(bUser.getAvatar());
                     BmobIM.getInstance().startPrivateConversation(info, new ConversationListener() {
                         @Override
                         public void done(BmobIMConversation bmobIMConversation, BmobException e) {
                             if (e == null) {
                                 startMessageActivity(bmobIMConversation, bUser.getUsername());
+                                bmobIMConversation.setConversationTitle(bName);
                                 BmobIM.getInstance().updateConversation(bmobIMConversation);
                                 updateMyConversation();
                             } else {
@@ -148,6 +140,10 @@ public class NotificationFragment extends Fragment implements
     }
 
     private void startMessageActivity(BmobIMConversation bmobIMConversation, String linkMan) {
+        if(!Tool.isConnected){
+            toast("服务器连接失败");
+            return;
+        }
         Bundle bundle = new Bundle();
         bundle.putSerializable("bmobIMConversation", bmobIMConversation);
         bundle.putString("linkMan", linkMan);
@@ -162,8 +158,10 @@ public class NotificationFragment extends Fragment implements
     public void onMessageReceive(List<MessageEvent> events) {
         for (MessageEvent event : events) {
             BmobIMConversation conversation = event.getConversation();
-            map.put(conversation.getConversationId(),event.getFromUserInfo().getName());
+            int size=conversation.getMessages().size();
             if (conversation != null) {
+                conversation.setConversationTitle(event.getFromUserInfo().getName());
+                conversation.setDraft(size > 0 ? conversation.getMessages().get(size-1).getContent() : null);
                 BmobIM.getInstance().updateConversation(conversation);
             }
         }
@@ -172,9 +170,9 @@ public class NotificationFragment extends Fragment implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Conversation conversation = conversationList.get(position);
-        if (conversation != null) {
-            startMessageActivity(conversation.getBConversation(), conversation.getName());
+        BmobIMConversation conversation = conversationList.get(position);
+        if (Tool.isConnected && conversation != null) {
+            startMessageActivity(conversation, conversation.getConversationTitle());
         }
     }
 
@@ -183,8 +181,8 @@ public class NotificationFragment extends Fragment implements
         PopupMenu popupMenu = new PopupMenu(getContext(), view);
         popupMenu.getMenuInflater().inflate(R.menu.delete, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
-            Conversation conversation=conversationList.get(position);
-            BmobIM.getInstance().deleteConversation(conversation.getBConversation().getConversationId());
+            BmobIMConversation conversation = conversationList.get(position);
+            BmobIM.getInstance().deleteConversation(conversation.getConversationId());
             updateMyConversation();
             return true;
         });

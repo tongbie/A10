@@ -19,6 +19,10 @@ import com.example.a10.Fragments.Require.RequireFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.newim.listener.ConnectStatusChangeListener;
+
 public class MainActivity extends AppCompatActivity implements BottomNavigationBar.OnTabSelectedListener {
     private List<Fragment> fragments = new ArrayList<>();
     private FragmentManager fragmentManager;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         setContentView(R.layout.activity_main);
         initView();
         initFragment();
+        initData();
         Tool.linkServer();
     }
 
@@ -70,6 +75,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.root, fragments.get(0));
         fragmentTransaction.commit();
+    }
+
+    private void initData(){
+        BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
+            @Override
+            public void onChange(ConnectionStatus status) {
+                if (status.getCode() == 2) {
+                    Tool.isConnected = true;
+                } else {
+                    Tool.isConnected = false;
+                }
+            }
+        });
     }
 
     /* 双击返回 */
