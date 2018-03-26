@@ -111,4 +111,14 @@ public class Tool {
         LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
         linearLayout.setLayoutAnimation(lac);
     }
+
+    public static void translateAnimation(View view) {
+        TranslateAnimation ta = new TranslateAnimation(0, 0, Tool.dp(-50), 0);
+        ta.setInterpolator(new OvershootInterpolator());
+        ta.setDuration(200);
+        LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
+        linearLayout.setLayoutAnimation(lac);
+    }
 }

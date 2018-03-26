@@ -1,6 +1,5 @@
 package com.example.a10.Fragments.Notification;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
@@ -22,6 +22,7 @@ import com.example.a10.R;
 import com.example.a10.Tool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cn.bmob.newim.BmobIM;
@@ -42,6 +43,7 @@ public class NotificationFragment extends Fragment implements
     private ListView listView;
     private List<Conversation> conversationList;
     private View view;
+    private HashMap<String,String> map=new HashMap<>();
 
     @Nullable
     @Override
@@ -55,7 +57,7 @@ public class NotificationFragment extends Fragment implements
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        initAnimation(view);
+        Tool.translateAnimation(view);
         return view;
     }
 
@@ -67,16 +69,6 @@ public class NotificationFragment extends Fragment implements
         view.findViewById(R.id.add).setOnClickListener(this);
     }
 
-    /*@Override//消息接收回调
-    public void onMessageReceive(List<MessageEvent> messageEvents) {
-        for (MessageEvent messageEvent : messageEvents) {
-            Log.e("收到了新消息：", messageEvent.getMessage().getContent());
-            BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
-            BmobIM.getInstance().updateConversation(messageEvent.getConversation());
-        }
-        initData();
-    }*/
-
     public void updateMyConversation() {
         if (!Tool.isConnected) {
             toast("正在重连...");
@@ -87,8 +79,7 @@ public class NotificationFragment extends Fragment implements
         try {
             for (BmobIMConversation bConversation : BmobIM.getInstance().loadAllConversation()) {
                 int size = bConversation.getMessages().size();
-                conversationList.add(new Conversation(String.valueOf(R.drawable.ic_personal),
-                        bConversation.getConversationTitle(),
+                conversationList.add(new Conversation(bConversation.getConversationTitle(),
                         size > 0 ? bConversation.getMessages().get(size - 1).getContent() : null
                         , bConversation));
             }
@@ -98,15 +89,6 @@ public class NotificationFragment extends Fragment implements
         listView.setAdapter(new ConversationAdapter(getContext(), 0, conversationList));
     }
 
-    private void initAnimation(View view) {
-        TranslateAnimation ta = new TranslateAnimation(0, 0, Tool.dp(-50), 0);
-        ta.setInterpolator(new OvershootInterpolator());
-        ta.setDuration(200);
-        LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-        linearLayout.setLayoutAnimation(lac);
-    }
 
     @Override
     public void onClick(View v) {
@@ -174,19 +156,18 @@ public class NotificationFragment extends Fragment implements
             intent.putExtra(getActivity().getPackageName(), bundle);
         }
         getActivity().startActivity(intent);
-//        getActivity().overridePendingTransition(R.anim.in_from_right, 0);
     }
 
     @Override
     public void onMessageReceive(List<MessageEvent> events) {
         for (MessageEvent event : events) {
             BmobIMConversation conversation = event.getConversation();
+            map.put(conversation.getConversationId(),event.getFromUserInfo().getName());
             if (conversation != null) {
                 BmobIM.getInstance().updateConversation(conversation);
             }
         }
         updateMyConversation();
-        listView.setAdapter(new ConversationAdapter(getContext(), 0, conversationList));
     }
 
     @Override
@@ -199,7 +180,16 @@ public class NotificationFragment extends Fragment implements
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        return false;
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        popupMenu.getMenuInflater().inflate(R.menu.delete, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            Conversation conversation=conversationList.get(position);
+            BmobIM.getInstance().deleteConversation(conversation.getBConversation().getConversationId());
+            updateMyConversation();
+            return true;
+        });
+        popupMenu.show();
+        return true;
     }
 
     @Override

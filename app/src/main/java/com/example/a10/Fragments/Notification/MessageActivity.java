@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import com.example.a10.BmobManagers.User;
 import com.example.a10.MyView.SlipBack;
 import com.example.a10.R;
+import com.example.a10.Tool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,14 +80,14 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                         for (BmobIMMessage bMessage : list) {
                             if (bMessage.getBmobIMUserInfo() == null) {
                                 //TODO:???为null???
-                                return;
+                                continue;
                             }
+                            //TODO:最后一条消息错位
                             Message message = new Message(R.drawable.ic_personal, "", bMessage.getContent(), 0);
                             if (bMessage.getBmobIMUserInfo().getUserId().equals(User.getCurrentUser().getObjectId())) {
                                 message.setName(User.getCurrentUser().getUsername());
                                 message.setType(1);
                             } else {
-                                //TODO:最后一项头像会错位
                                 message.setName(linkMan);
                                 message.setType(0);
                             }
@@ -112,7 +114,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                     BmobIM.getInstance().updateConversation(bConversation);
                     editText.setText("");
                 } else {
-                    toast(e.getMessage());
+                    toast("发送失败 "+e.getMessage());
                 }
             }
         });
@@ -125,6 +127,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
             if (conversation != null && conversation.getConversationId().equals(bConversation.getConversationId())) {
                 BmobIM.getInstance().updateConversation(conversation);
                 bConversation=conversation;
+                linkMan=event.getFromUserInfo().getName();
             }
         }
         updateMessages();

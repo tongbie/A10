@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.a10.R;
+import com.example.a10.Tool;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ConversationAdapter extends ArrayAdapter {
             viewHolder=(ViewHolder)view.getTag();
         }
         Conversation conversation = (Conversation) getItem(position);
-        viewHolder.imageView.setImageResource(conversation.getImageId());
+        viewHolder.imageView.setImageResource(Tool.imageId);
         viewHolder.nameView.setText(conversation.getName());
         viewHolder.messageView.setText(conversation.getLastMessage());
         return view;

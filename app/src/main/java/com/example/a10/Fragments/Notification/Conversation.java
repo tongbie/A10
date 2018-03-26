@@ -10,20 +10,14 @@ import cn.bmob.newim.bean.BmobIMConversation;
  */
 
 public class Conversation{
-    private String imageId;
     private String name;
     private String lastMessage;
     private BmobIMConversation bConversation;
 
-    public Conversation(String imageId, String name, @Nullable String lastMessage, BmobIMConversation bConversation) {
-        this.imageId = imageId;
+    public Conversation(String name, @Nullable String lastMessage, BmobIMConversation bConversation) {
         this.name = name;
         this.lastMessage = lastMessage;
         this.bConversation = bConversation;
-    }
-
-    public int getImageId() {
-        return Integer.valueOf(imageId);
     }
 
     public String getName() {

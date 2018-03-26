@@ -33,7 +33,7 @@ public class MessageAdapter extends ArrayAdapter {
             viewHolder=new ViewHolder();
             if(getItemViewType(position)==0){
                 view= LayoutInflater.from(context).inflate(R.layout.chat_item_in, viewGroup, false);
-            }else {
+            }else if(getItemViewType(position)==1){
                 view= LayoutInflater.from(context).inflate(R.layout.chat_item_out, viewGroup, false);
             }
             viewHolder.imageView= (ImageView) view.findViewById(R.id.imageView);
