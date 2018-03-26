@@ -37,6 +37,7 @@ public class Tool {
     public static int SCREEN_WIDTH;
     public static int SCREEN_HEIGHT;
     public static float mDensity;
+    public static int imageId=R.drawable.ic_personal;
 
     public Tool(Context context) {
         this.context = context;

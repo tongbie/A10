@@ -9,7 +9,7 @@ import cn.bmob.newim.bean.BmobIMConversation;
  * Created by BieTong on 2018/2/9.
  */
 
-public class Conversation extends BmobIMConversation {
+public class Conversation{
     private String imageId;
     private String name;
     private String lastMessage;

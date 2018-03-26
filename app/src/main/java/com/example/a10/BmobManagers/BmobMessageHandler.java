@@ -23,9 +23,16 @@ import cn.bmob.v3.exception.BmobException;
  */
 
 public class BmobMessageHandler extends BmobIMMessageHandler {
+    public static List<MessageEvent> events=new ArrayList<>();
+    public static List<OfflineMessageEvent> offEvents=new ArrayList<>();
+
+
     @Override
     public void onMessageReceive(final MessageEvent event) {
-        updateUserInfo(event);
+//        BmobIMConversation bConversation = event.getConversation();
+//        BmobIMUserInfo bInfo = event.getFromUserInfo();
+//        BmobIM.getInstance().updateConversation(bConversation);
+//        BmobIM.getInstance().updateUserInfo(bInfo);
     }
 
     @Override
