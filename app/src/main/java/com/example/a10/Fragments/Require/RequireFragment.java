@@ -50,7 +50,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     }
 
     private void addData() {
-        requireDatas =null;
+        requireDatas = null;
         ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
         BmobQuery<RequireGsons> query = new BmobQuery<RequireGsons>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
@@ -136,7 +136,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     private void initItem() {
         rootView.removeAllViews();
         for (RequireGson rg : requireDatas) {
-            RequireItem requireItem= new RequireItem(getContext(), rg.getTitle(), rg.getSender(), rg.getDate(), rg.getIntroduce()) {
+            RequireItem requireItem = new RequireItem(getContext(), rg.getTitle(), rg.getSender(), rg.getDate(), rg.getIntroduce()) {
                 @Override
                 public void complete() {
 
@@ -146,7 +146,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                 public void refuse() {
                     requireDatas.remove(rg);
                     save("已移除该任务");
-                    //TODO:需要手动刷新才能从列表中移除
+                    initItem();
                 }
             };
             rootView.addView(requireItem);
@@ -156,8 +156,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-//        save("");
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.refresh:
                 addData();
                 break;

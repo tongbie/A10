@@ -14,7 +14,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    packagingOptions{
+    packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/rxjava.properties'
     }
@@ -45,11 +45,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    //    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    //    compile 'com.google.code.gson:gson:2.7'
-    //    implementation files('src/main/jniLibs/facedetection.jar')
-    //    implementation files('src/main/jniLibs/facerecognition.jar')
-    //    implementation files('src/main/jniLibs/facetracking.jar')
+    implementation files('src/main/jniLibs/facedetection.jar')
+    implementation files('src/main/jniLibs/facerecognition.jar')
+    implementation files('src/main/jniLibs/facetracking.jar')
     compile 'cn.bmob.android:bmob-im:2.0.8@aar'
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     compile 'cn.bmob.android:bmob-push:0.8'
