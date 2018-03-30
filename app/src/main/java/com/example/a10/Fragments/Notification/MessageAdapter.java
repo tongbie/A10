@@ -1,6 +1,7 @@
 package com.example.a10.Fragments.Notification;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.a10.R;
+import com.example.a10.Tool;
 
 import java.util.List;
 
@@ -21,44 +23,41 @@ public class MessageAdapter extends ArrayAdapter {
     private Context context;
 
     public MessageAdapter(Context context, int resourseId, List<Message> messages) {
-        super(context,resourseId, messages);
-        this.context=context;
+        super(context, resourseId, messages);
+        this.context = context;
         this.messages = messages;
     }
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
-        ViewHolder viewHolder=null;
-        if(view==null){
-            viewHolder=new ViewHolder();
-            if(getItemViewType(position)==0){
-                view= LayoutInflater.from(context).inflate(R.layout.chat_item_in, viewGroup, false);
-            }else if(getItemViewType(position)==1){
-                view= LayoutInflater.from(context).inflate(R.layout.chat_item_out, viewGroup, false);
-            }
-            viewHolder.imageView= (ImageView) view.findViewById(R.id.imageView);
-            viewHolder.nameView= (TextView) view.findViewById(R.id.nameView);
-            viewHolder.chatView= (TextView) view.findViewById(R.id.chatView);
-            view.setTag(viewHolder);//setTag()用以向View追加额外数据
-        }else {
-            viewHolder=(ViewHolder)view.getTag();
-        }
         Message message = (Message) getItem(position);
-        viewHolder.imageView.setImageResource(message.getImageId());
-        viewHolder.nameView.setText(message.getName());
-        viewHolder.chatView.setText(message.getMessage());
+//        ViewHolder viewHolder = null;
+//        if (view == null) {
+//            viewHolder = new ViewHolder();
+        if (message.getType() == 0) {
+            view = LayoutInflater.from(context).inflate(R.layout.chat_item_in, viewGroup, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.chat_item_out, viewGroup, false);
+        }
+//            viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
+//            viewHolder.nameView = (TextView) view.findViewById(R.id.nameView);
+//            viewHolder.chatView = (TextView) view.findViewById(R.id.chatView);
+//            view.setTag(viewHolder);//setTag()用以向View追加额外数据
+//        } else {
+//            viewHolder = (ViewHolder) view.getTag();
+//        }
+//        viewHolder.imageView.setImageResource(Tool.imageId);
+//        viewHolder.nameView.setText(message.getName());
+//        viewHolder.chatView.setText(message.getMessage());
+        ((ImageView) view.findViewById(R.id.imageView)).setImageResource(Tool.imageId);
+        ((TextView) view.findViewById(R.id.nameView)).setText(message.getName());
+        ((TextView) view.findViewById(R.id.chatView)).setText(message.getMessage());
         return view;
     }
 
-    public class ViewHolder{
+    /*public class ViewHolder {
         public ImageView imageView;
         public TextView nameView;
         public TextView chatView;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        Message message = messages.get(position);
-        return message.getType();
-    }
+    }*/
 }

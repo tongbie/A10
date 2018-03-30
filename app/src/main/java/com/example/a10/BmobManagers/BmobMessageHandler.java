@@ -2,6 +2,8 @@ package com.example.a10.BmobManagers;
 
 
 import com.example.a10.Fragments.Notification.MessageActivity;
+import com.example.a10.Fragments.Notification.NotificationFragment;
+import com.example.a10.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,16 +25,14 @@ import cn.bmob.v3.exception.BmobException;
  */
 
 public class BmobMessageHandler extends BmobIMMessageHandler {
-    public static List<MessageEvent> events=new ArrayList<>();
-    public static List<OfflineMessageEvent> offEvents=new ArrayList<>();
+    public static List<MessageEvent> events = new ArrayList<>();
+    public static List<OfflineMessageEvent> offEvents = new ArrayList<>();
 
 
     @Override
     public void onMessageReceive(final MessageEvent event) {
-//        BmobIMConversation bConversation = event.getConversation();
-//        BmobIMUserInfo bInfo = event.getFromUserInfo();
-//        BmobIM.getInstance().updateConversation(bConversation);
-//        BmobIM.getInstance().updateUserInfo(bInfo);
+//        BmobIMConversation conversation = event.getConversation();
+//        BmobIM.getInstance().updateConversation(conversation);
     }
 
     @Override

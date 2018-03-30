@@ -2,6 +2,7 @@ package com.example.a10.Fragments.Notification;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -79,11 +80,9 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                     if (null != list && list.size() > 0) {
                         for (BmobIMMessage bMessage : list) {
                             if (bMessage.getBmobIMUserInfo() == null) {
-                                //TODO:???为null???
                                 continue;
                             }
-                            //TODO:最后一条消息错位
-                            Message message = new Message(R.drawable.ic_personal, "", bMessage.getContent(), 0);
+                            Message message = new Message(R.drawable.ic_personal, "", bMessage.getContent());
                             if (bMessage.getBmobIMUserInfo().getUserId().equals(User.getCurrentUser().getObjectId())) {
                                 message.setName(User.getCurrentUser().getUsername());
                                 message.setType(1);
@@ -109,12 +108,12 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void done(BmobIMMessage msg, BmobException e) {
                 if (e == null) {
-                    messages.add(new Message(R.drawable.ic_personal, User.getCurrentUser().getUsername(), message, 1));
-                    listView.setAdapter(new MessageAdapter(MessageActivity.this, 0, messages));
-                    BmobIM.getInstance().updateConversation(bConversation);
+//                    BmobIM.getInstance().updateConversation(bConversation);
+
+                    updateMessages();
                     editText.setText("");
                 } else {
-                    toast("发送失败 "+e.getMessage());
+                    toast("发送失败 " + e.getMessage()+e.getErrorCode());
                 }
             }
         });
@@ -126,8 +125,8 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
             BmobIMConversation conversation = event.getConversation();
             if (conversation != null && conversation.getConversationId().equals(bConversation.getConversationId())) {
                 BmobIM.getInstance().updateConversation(conversation);
-                bConversation=conversation;
-                linkMan=event.getFromUserInfo().getName();
+                bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversation);
+                linkMan = event.getFromUserInfo().getName();
             }
         }
         updateMessages();

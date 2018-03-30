@@ -113,7 +113,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         final User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        //TODO:本应是头像
         user.setAvatar(username);
         user.signUp(new SaveListener<User>() {
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,9 +72,13 @@ public class NotificationFragment extends Fragment implements
 
     public void updateMyConversation() {
         if (!Tool.isConnected) {
-            toast("正在重连...");
+            toast("服务器连接失败");
             Tool.linkServer();
             return;
+        }
+        if (conversationList != null) {
+            conversationList.clear();
+            conversationList = null;
         }
         conversationList = BmobIM.getInstance().loadAllConversation();
         listView.setAdapter(new ConversationAdapter(getContext(), 0, conversationList));
@@ -105,6 +110,7 @@ public class NotificationFragment extends Fragment implements
     private void startNewChat(String username) {
         if (!Tool.isConnected) {
             Tool.linkServer();
+            toast("服务器连接失败");
             return;
         }
         BmobQuery<User> query = new BmobQuery<User>();
@@ -140,7 +146,7 @@ public class NotificationFragment extends Fragment implements
     }
 
     private void startMessageActivity(BmobIMConversation bmobIMConversation, String linkMan) {
-        if(!Tool.isConnected){
+        if (!Tool.isConnected) {
             toast("服务器连接失败");
             return;
         }
@@ -158,10 +164,9 @@ public class NotificationFragment extends Fragment implements
     public void onMessageReceive(List<MessageEvent> events) {
         for (MessageEvent event : events) {
             BmobIMConversation conversation = event.getConversation();
-            int size=conversation.getMessages().size();
             if (conversation != null) {
                 conversation.setConversationTitle(event.getFromUserInfo().getName());
-                conversation.setDraft(size > 0 ? conversation.getMessages().get(size-1).getContent() : null);
+                conversation.setDraft(event.getMessage().getContent());
                 BmobIM.getInstance().updateConversation(conversation);
             }
         }
@@ -171,7 +176,12 @@ public class NotificationFragment extends Fragment implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         BmobIMConversation conversation = conversationList.get(position);
-        if (Tool.isConnected && conversation != null) {
+        if (!Tool.isConnected) {
+            toast("正在尝试连接服务器...");
+            Tool.linkServer();
+            return;
+        }
+        if (conversation != null) {
             startMessageActivity(conversation, conversation.getConversationTitle());
         }
     }

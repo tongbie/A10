@@ -10,11 +10,10 @@ public class Message {
     private String message;
     private int type;
 
-    public Message(int imageId, String name, String message, int type) {
+    public Message(int imageId, String name, String message) {
         this.imageId = imageId;
         this.name = name;
         this.message = message;
-        this.type = type;
     }
 
     public int getImageId() {

@@ -40,6 +40,10 @@
                 android:gravity="left|center"
                 android:padding="10dp"
                 android:textColor="#ffffff"
+                android:enabled="true"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:longClickable="true"
                 android:textSize="15dp" />
         </LinearLayout>
     </LinearLayout>

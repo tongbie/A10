@@ -24,7 +24,7 @@ import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.listener.ConnectStatusChangeListener;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationBar.OnTabSelectedListener {
-    private List<Fragment> fragments = new ArrayList<>();
+    public static List<Fragment> fragments = new ArrayList<>();
     private FragmentManager fragmentManager;
     private long backTime = 0;//双击返回计时
 

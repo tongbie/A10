@@ -11,11 +11,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.OvershootInterpolator;
-import android.view.animation.ScaleAnimation;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.a10.LoginActivity;
@@ -30,7 +25,6 @@ import cn.bmob.v3.BmobUser;
 
 public class PersonalFragment extends Fragment implements View.OnClickListener {
     private View view;
-    private TextView userText;
 
     @Nullable
     @Override
@@ -44,14 +38,14 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
             viewGroup.removeView(view);
         }
         Tool.scaleAnimation(view);
-        userText.setText(BmobUser.getCurrentUser().getUsername());
+        ((TextView)view.findViewById(R.id.username)).setText(BmobUser.getCurrentUser().getUsername());
+        ((TextView)view.findViewById(R.id.userId)).setText(BmobUser.getCurrentUser().getObjectId());
         return view;
     }
 
 
     private void initView() {
         view.findViewById(R.id.logout).setOnClickListener(this);
-        userText=view.findViewById(R.id.userText);
     }
 
     @Override

@@ -11,12 +11,6 @@ public class User extends BmobUser {
 
     public User(){}
 
-    public User(NewFriend friend){
-        setObjectId(friend.getUid());
-        setUsername(friend.getName());
-        setAvatar(friend.getAvatar());
-    }
-
     public String getAvatar() {
         return avatar;
     }

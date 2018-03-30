@@ -25,37 +25,37 @@ public class ConversationAdapter extends ArrayAdapter {
     private Context context;
 
     public ConversationAdapter(Context context, int resourseId, List<BmobIMConversation> conversations) {
-        super(context,resourseId, conversations);
-        this.context=context;
+        super(context, resourseId, conversations);
+        this.context = context;
         this.conversations = conversations;
     }
 
-    public List<BmobIMConversation> getConversations(){
+    public List<BmobIMConversation> getConversations() {
         return conversations;
     }
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
-        ViewHolder viewHolder=null;
-        if(view==null){
-            viewHolder=new ViewHolder();
-            view= LayoutInflater.from(context).inflate(R.layout.message_item, viewGroup, false);
-            viewHolder.imageView= (ImageView) view.findViewById(R.id.imageView);
-            viewHolder.nameView= (TextView) view.findViewById(R.id.nameView);
-            viewHolder.messageView= (TextView) view.findViewById(R.id.messageView);
+        ViewHolder viewHolder = null;
+        if (view == null) {
+            viewHolder = new ViewHolder();
+            view = LayoutInflater.from(context).inflate(R.layout.message_item, viewGroup, false);
+            viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
+            viewHolder.nameView = (TextView) view.findViewById(R.id.nameView);
+            viewHolder.messageView = (TextView) view.findViewById(R.id.messageView);
             view.setTag(viewHolder);//setTag()用以向View追加额外数据
-        }else {
-            viewHolder=(ViewHolder)view.getTag();
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
         }
         BmobIMConversation conversation = (BmobIMConversation) getItem(position);
-        int size=conversation.getMessages().size();
+        int size = conversation.getMessages().size();
         viewHolder.imageView.setImageResource(Tool.imageId);
         viewHolder.nameView.setText(conversation.getConversationTitle());
         viewHolder.messageView.setText(conversation.getDraft());
         return view;
     }
 
-    public class ViewHolder{
+    public class ViewHolder {
         public ImageView imageView;
         public TextView nameView;
         public TextView messageView;

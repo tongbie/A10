@@ -38,6 +38,7 @@ public class Tool {
     public static int SCREEN_HEIGHT;
     public static float mDensity;
     public static int imageId=R.drawable.ic_personal;
+    public static int imageIdN=R.drawable.ic_personal_new;
 
     public Tool(Context context) {
         this.context = context;
@@ -103,7 +104,7 @@ public class Tool {
     }
 
     public static void translateAnimation(View view) {
-        TranslateAnimation ta = new TranslateAnimation(0, 0, Tool.dp(-50), 0);
+        TranslateAnimation ta = new TranslateAnimation(0, 0, dp(-50), 0);
         ta.setInterpolator(new OvershootInterpolator());
         ta.setDuration(200);
         LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
