@@ -18,7 +18,7 @@ import com.example.a10.Tool;
  * 性能堪忧
  */
 
-public class MyButton extends android.support.v7.widget.AppCompatButton {
+public class LoadButton extends android.support.v7.widget.AppCompatButton {
     private Drawable background;
     private Paint paint;
     private float currentX;
@@ -33,19 +33,19 @@ public class MyButton extends android.support.v7.widget.AppCompatButton {
     private boolean isUp=false;
 
 
-    public MyButton(Context context) {
+    public LoadButton(Context context) {
         super(context);
         saveBackground();
         init();
     }
 
-    public MyButton(Context context, AttributeSet attrs) {
+    public LoadButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         saveBackground();
         init();
     }
 
-    public MyButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LoadButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         saveBackground();
         init();

@@ -8,4 +8,5 @@
     <!--Button-->
     <drawable name="clr_normal">#FFF37C7B</drawable>
     <drawable name="clr_pressed">#808080</drawable>
+    <color name="colorChoosed">#4170af</color>
 </resources>

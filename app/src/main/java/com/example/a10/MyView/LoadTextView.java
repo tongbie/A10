@@ -12,7 +12,7 @@ import com.example.a10.Tool;
  * Created by BieTong on 2018/3/4.
  */
 
-public class MyTextView extends android.support.v7.widget.AppCompatTextView {
+public class LoadTextView extends android.support.v7.widget.AppCompatTextView {
     private Paint paint;
     private float currentX;
     private float currentY;
@@ -25,15 +25,15 @@ public class MyTextView extends android.support.v7.widget.AppCompatTextView {
     private boolean isLeft=false;
     private boolean isUp=false;
 
-    public MyTextView(Context context) {
+    public LoadTextView(Context context) {
         super(context);
     }
 
-    public MyTextView(Context context, AttributeSet attrs) {
+    public LoadTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MyTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LoadTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

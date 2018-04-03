@@ -21,8 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
-import com.example.a10.MyView.MyButton;
-import com.example.a10.MyView.MyTextView;
+import com.example.a10.MyView.MenuButton;
+import com.example.a10.MyView.LoadButton;
+import com.example.a10.MyView.LoadTextView;
 import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
 import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
 import com.example.a10.MyView.datepicker.views.DatePicker;
@@ -86,9 +87,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void addData() {
-        ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
-        ((MyButton) view.findViewById(R.id.refresh)).setLoading(true);
-        ((MyButton) view.findViewById(R.id.save)).setLoading(true);
+        ((LoadTextView) view.findViewById(R.id.title)).setLoading(true);
+        ((LoadButton) view.findViewById(R.id.refresh)).setLoading(true);
+        ((LoadButton) view.findViewById(R.id.save)).setLoading(true);
         BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
         query.addWhereEqualTo("username", User.getCurrentUser(User.class).getUsername());
         query.findObjects(new FindListener<HomeGson>() {
@@ -130,9 +131,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         toast(e.getMessage());
                     }
                 }
-                ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
-                ((MyButton) view.findViewById(R.id.refresh)).setLoading(false);
-                ((MyButton) view.findViewById(R.id.save)).setLoading(false);
+                ((LoadTextView) view.findViewById(R.id.title)).setLoading(false);
+                ((LoadButton) view.findViewById(R.id.refresh)).setLoading(false);
+                ((LoadButton) view.findViewById(R.id.save)).setLoading(false);
             }
         });
     }
@@ -160,11 +161,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            /*case R.id.face:
-                Intent intent = new Intent("android.intent.action.GET_CONTENT");    //调用系统程序
-                intent.setType("image*//*");
-                startActivityForResult(intent, 0x000);
-                break;*/
             case R.id.addProgress:
                 progressSet(progressBar.getProgress() + 1);
                 break;
@@ -208,7 +204,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void save(String text) {
-        ((MyButton) view.findViewById(R.id.save)).setLoading(true);
+        ((LoadButton) view.findViewById(R.id.save)).setLoading(true);
         final HomeGson data = new HomeGson();
         data.setProgress(progressBar.getProgress());
         data.setDataSign(dateSign);
@@ -233,20 +229,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } else {
                     toast("查找用户失败" + e.getMessage());
                 }
-                ((MyButton) view.findViewById(R.id.save)).setLoading(false);
+                ((LoadButton) view.findViewById(R.id.save)).setLoading(false);
             }
         });
     }
 
     private void showMenu() {
         try {
+            MenuButton button=view.findViewById(R.id.menuButton);
             LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
             if (menuLayout.getVisibility() == View.GONE) {
+                button.setIsShow(1);
                 menuLayout.setVisibility(View.VISIBLE);
                 ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.mDensity + 0.5));
                 animator.setInterpolator(new OvershootInterpolator());
                 animator.start();
             } else {
+                button.setIsShow(0);
                 int origHeight = menuLayout.getHeight();
                 ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), origHeight, 0);
                 animator.addListener(new AnimatorListenerAdapter() {
@@ -307,25 +306,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }).create();
         dialog.show();
     }
-
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //获取图片路径
-        if (requestCode == 0x000 && resultCode == Activity.RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();// outputstream
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                byte[] appicon = byteArrayOutputStream.toByteArray();// 转为byte数组
-//                FD fd=new FD();
-//                fd.process(appicon,bitmap.getWidth(),bitmap.getHeight());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     private void toast(String text) {
         try {

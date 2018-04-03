@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.a10.Face.FD;
 import com.example.a10.LoginActivity;
 import com.example.a10.R;
 import com.example.a10.Tool;
@@ -60,8 +59,8 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();// outputstream
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
                 byte[] appicon = byteArrayOutputStream.toByteArray();// 转为byte数组
-                FD fd=new FD();
-                fd.process(appicon,bitmap.getWidth(),bitmap.getHeight());
+//                FD fd=new FD();
+//                fd.process(appicon,bitmap.getWidth(),bitmap.getHeight());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,13 +71,13 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.logout:
-                /*BmobUser.logOut();
+                BmobUser.logOut();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 BmobIM.getInstance().disConnect();//断开服务器连接
-                getActivity().finish();*/
-                Intent intent = new Intent("android.intent.action.GET_CONTENT");    //调用系统程序
-                intent.setType("image*//*");
-                startActivityForResult(intent, 0x000);
+                getActivity().finish();
+                /*Intent intent = new Intent("android.intent.action.GET_CONTENT");    //调用系统程序
+                intent.setType("image*//**//*");
+                startActivityForResult(intent, 0x000);*/
                 break;
         }
     }

@@ -9,11 +9,12 @@ import android.view.ViewGroup;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a10.MyView.MyTextView;
+import com.example.a10.MyView.LoadTextView;
 import com.example.a10.R;
 import com.example.a10.Tool;
 
@@ -32,6 +33,8 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     View view;
     LinearLayout rootView;
     List<RequireGson> requireDatas = new ArrayList<>();
+    Button accepted;
+    Button notYet;
 
     @Nullable
     @Override
@@ -51,7 +54,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
 
     private void addData() {
         requireDatas = null;
-        ((MyTextView) view.findViewById(R.id.title)).setLoading(true);
+        ((LoadTextView) view.findViewById(R.id.title)).setLoading(true);
         BmobQuery<RequireGsons> query = new BmobQuery<RequireGsons>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
         query.findObjects(new FindListener<RequireGsons>() {
@@ -90,7 +93,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                         toast(e.getMessage());
                     }
                 }
-                ((MyTextView) view.findViewById(R.id.title)).setLoading(false);
+                ((LoadTextView) view.findViewById(R.id.title)).setLoading(false);
             }
         });
     }
@@ -128,6 +131,10 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     private void initView() {
         rootView = view.findViewById(R.id.root);
         view.findViewById(R.id.refresh).setOnClickListener(this);
+        accepted=view.findViewById(R.id.accepted);
+        accepted.setOnClickListener(this);
+        notYet=view.findViewById(R.id.notYet);
+        notYet.setOnClickListener(this);
 
         spaceView = new TextView(getContext());
         spaceView.setHeight(Tool.SCREEN_HEIGHT - Tool.px(240));
@@ -157,6 +164,16 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.accepted:
+                v.setBackgroundColor(getResources().getColor(R.color.colorChoosed));
+                notYet.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                addData();
+                break;
+            case R.id.notYet:
+                accepted.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                v.setBackgroundColor(getResources().getColor(R.color.colorChoosed));
+                addData();
+                break;
             case R.id.refresh:
                 addData();
                 break;
