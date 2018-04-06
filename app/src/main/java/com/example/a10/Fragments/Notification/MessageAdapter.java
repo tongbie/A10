@@ -1,7 +1,6 @@
 package com.example.a10.Fragments.Notification;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,9 +34,9 @@ public class MessageAdapter extends ArrayAdapter {
 //        if (view == null) {
 //            viewHolder = new ViewHolder();
         if (message.getType() == 0) {
-            view = LayoutInflater.from(context).inflate(R.layout.chat_item_in, viewGroup, false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_in, viewGroup, false);
         } else {
-            view = LayoutInflater.from(context).inflate(R.layout.chat_item_out, viewGroup, false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_out, viewGroup, false);
         }
 //            viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
 //            viewHolder.nameView = (TextView) view.findViewById(R.id.nameView);

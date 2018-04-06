@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        Tool.scaleAnimation(view);
+        Tool.scaleAnimation(view,R.id.linearLayout);
         return view;
     }
 
@@ -90,8 +90,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ((LoadTextView) view.findViewById(R.id.title)).setLoading(true);
         ((LoadButton) view.findViewById(R.id.refresh)).setLoading(true);
         ((LoadButton) view.findViewById(R.id.save)).setLoading(true);
-        BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
+        BmobQuery<HomeGson> query = new BmobQuery<>();
         query.addWhereEqualTo("username", User.getCurrentUser(User.class).getUsername());
+        //通过username查HomeGson表
         query.findObjects(new FindListener<HomeGson>() {
             @Override
             public void done(List<HomeGson> list, BmobException e) {
@@ -209,12 +210,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         data.setProgress(progressBar.getProgress());
         data.setDataSign(dateSign);
         data.setUsername(User.getCurrentUser(User.class).getUsername());
-        BmobQuery<HomeGson> query = new BmobQuery<HomeGson>();
+        BmobQuery<HomeGson> query = new BmobQuery<>();
         query.addWhereEqualTo("username", User.getCurrentUser(User.class).getUsername());
         query.findObjects(new FindListener<HomeGson>() {
             @Override
             public void done(List<HomeGson> list, BmobException e) {
                 if (e == null) {
+                    //需要使用HomeGson表的ObjectId进行update 操作
                     data.update(list.get(0).getObjectId(), new UpdateListener() {
                         @Override
                         public void done(BmobException e) {

@@ -22,7 +22,7 @@ import com.example.a10.Tool;
  * Created by BieTong on 2018/3/12.
  */
 
-public abstract class RequireItem extends LinearLayout implements View.OnClickListener {
+public abstract class AcceptedItem extends LinearLayout implements View.OnClickListener {
     private Context context;
     private String title = "任务标题";
     private String introduce = "任务介绍";
@@ -34,7 +34,7 @@ public abstract class RequireItem extends LinearLayout implements View.OnClickLi
     private LinearLayout root;
     private ScrollView scrollView;
 
-    public RequireItem(Context context, String title, String sender, String date, String introduce) {
+    public AcceptedItem(Context context, String title, String sender, String date, String introduce) {
         super(context);
         root = this;
         this.context = context;
@@ -45,20 +45,20 @@ public abstract class RequireItem extends LinearLayout implements View.OnClickLi
         init();
     }
 
-    public RequireItem(Context context, @Nullable AttributeSet attrs) {
+    public AcceptedItem(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         init();
     }
 
-    public RequireItem(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AcceptedItem(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
         init();
     }
 
     private void init() {
-        view = LayoutInflater.from(context).inflate(R.layout.require_item, this);
+        view = LayoutInflater.from(context).inflate(R.layout.item_accepted, this);
         ((TextView) view.findViewById(R.id.titleView)).setText(title);
         ((TextView) view.findViewById(R.id.senderView)).setText(sender);
         ((TextView) view.findViewById(R.id.dateView)).setText(date);
@@ -70,7 +70,7 @@ public abstract class RequireItem extends LinearLayout implements View.OnClickLi
 
         scrollView = view.findViewById(R.id.scrollView);
         scrollView.setOnTouchListener(childScrollTouchListener);
-        scrollHeight = Tool.SCREEN_HEIGHT - Tool.px(240);
+        scrollHeight = Tool.SCREEN_HEIGHT - Tool.requireItemHeight;//这里指定item展开高度
 //        ViewGroup.LayoutParams scrollParams = scrollView.getLayoutParams();
 //        scrollParams.height = scrollHeight;
 //        scrollView.setLayoutParams(scrollParams);
@@ -131,9 +131,11 @@ public abstract class RequireItem extends LinearLayout implements View.OnClickLi
                 if(!isShow) {
                     int y = ((View) this).getTop();
                     ((ScrollView) ((this.getParent()).getParent())).smoothScrollTo(0, y);
+//                    v.setVisibility(GONE);
                 }
             case R.id.hideButton:
                 showIntroduce();
+//                view.findViewById(R.id.showButton).setVisibility(VISIBLE);
                 break;
             case R.id.complete:
                 complete();

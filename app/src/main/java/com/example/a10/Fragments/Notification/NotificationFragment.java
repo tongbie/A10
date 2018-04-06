@@ -58,7 +58,7 @@ public class NotificationFragment extends Fragment implements
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        Tool.translateAnimation(view);
+        Tool.translateAnimation(view,R.id.linearLayout);
         return view;
     }
 

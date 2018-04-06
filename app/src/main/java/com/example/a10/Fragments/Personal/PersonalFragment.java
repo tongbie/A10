@@ -37,7 +37,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        Tool.scaleAnimation(view);
+        Tool.scaleAnimation(view,R.id.linearLayout);
         ((TextView)view.findViewById(R.id.username)).setText(BmobUser.getCurrentUser().getUsername());
         ((TextView)view.findViewById(R.id.userId)).setText(BmobUser.getCurrentUser().getObjectId());
         return view;
@@ -49,25 +49,6 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //获取图片路径
-        if (requestCode == 0x000 && resultCode == Activity.RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();// outputstream
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                byte[] appicon = byteArrayOutputStream.toByteArray();// 转为byte数组
-//                FD fd=new FD();
-//                fd.process(appicon,bitmap.getWidth(),bitmap.getHeight());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.logout:
@@ -75,9 +56,6 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 BmobIM.getInstance().disConnect();//断开服务器连接
                 getActivity().finish();
-                /*Intent intent = new Intent("android.intent.action.GET_CONTENT");    //调用系统程序
-                intent.setType("image*//**//*");
-                startActivityForResult(intent, 0x000);*/
                 break;
         }
     }

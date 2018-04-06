@@ -15,15 +15,34 @@ public class RequireGson extends BmobObject {
     private String date;
     private String introduce;
 
+    private String username;
+    private int state;// 0.拒绝 1.接受 2.未处理
+
     public RequireGson(){
 
     }
 
-    public RequireGson(String title,String sender,String date,String introduce){
+    public RequireGson(String title, String sender, String date, String introduce){
         this.title=title;
         this.sender=sender;
         this.date=date;
         this.introduce=introduce;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     public String getTitle() {

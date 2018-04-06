@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.a10.BmobManagers.BmobIMApplication;
 import com.example.a10.R;
 import com.example.a10.Tool;
 
@@ -39,7 +38,7 @@ public class ConversationAdapter extends ArrayAdapter {
         ViewHolder viewHolder = null;
         if (view == null) {
             viewHolder = new ViewHolder();
-            view = LayoutInflater.from(context).inflate(R.layout.message_item, viewGroup, false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_message, viewGroup, false);
             viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
             viewHolder.nameView = (TextView) view.findViewById(R.id.nameView);
             viewHolder.messageView = (TextView) view.findViewById(R.id.messageView);

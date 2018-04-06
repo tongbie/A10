@@ -1,20 +1,24 @@
 package com.example.a10.Fragments.Require;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LayoutAnimationController;
+import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.MyView.LoadTextView;
+import com.example.a10.MyView.MenuButton;
+import com.example.a10.MyView.RefreshButton;
 import com.example.a10.R;
 import com.example.a10.Tool;
 
@@ -25,16 +29,15 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 
 public class RequireFragment extends Fragment implements View.OnClickListener {
     View view;
-    LinearLayout rootView;
+    LinearLayout listLayout;
+    LoadTextView titleView;
+
     List<RequireGson> requireDatas = new ArrayList<>();
-    Button accepted;
-    Button notYet;
 
     @Nullable
     @Override
@@ -48,65 +51,112 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        initAnimation();
+        Tool.translateAnimation(view, R.id.listLayout);
         return view;
     }
 
+    private int state = 1;//当前界面显示任务类型标志
+
     private void addData() {
-        requireDatas = null;
-        ((LoadTextView) view.findViewById(R.id.title)).setLoading(true);
-        BmobQuery<RequireGsons> query = new BmobQuery<RequireGsons>();
+        requireDatas = new ArrayList<>();
+        refreshButton.setRefreshing(true);
+        BmobQuery<RequireGson> query = new BmobQuery<>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
-        query.findObjects(new FindListener<RequireGsons>() {
+        query.addWhereEqualTo("state", state);//查询指定状态的任务
+        query.findObjects(new FindListener<RequireGson>() {
             @Override
-            public void done(List<RequireGsons> list, BmobException e) {
+            public void done(List<RequireGson> datas, BmobException e) {
+                Log.e("datas", String.valueOf(datas.size()));
                 if (e == null) {
-                    RequireGsons data = new RequireGsons();
-                    if (list.size() == 0) {
-                        data.setUsername(BmobUser.getCurrentUser(BmobUser.class).getUsername());
-                        data.save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                if (e != null) {
-                                    toast(e.getMessage());
-                                }
-                            }
-                        });
-                        addData();
+                    if(datas.size()==0){
+                        toast("任务列表为空");
+                        refreshButton.setRefreshing(false);
                         return;
                     }
-                    requireDatas = list.get(0).getRequireGsons();
-                    initItem();
-                } else {
-                    if (e.getErrorCode() == 101) {
-                        new RequireGsons().save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                if (e == null) {
-                                    addData();
-                                } else {
-                                    toast(e.getMessage());
-                                }
-                            }
-                        });
-                    } else {
-                        toast(e.getMessage());
+                    for (RequireGson data : datas) {
+                        requireDatas.add(data);
                     }
+                    addItems();
+                } else {
+                    toast(e.getMessage());
                 }
-                ((LoadTextView) view.findViewById(R.id.title)).setLoading(false);
+                refreshButton.setRefreshing(false);
             }
         });
     }
 
-    private void save(String text) {
-        final RequireGsons data = new RequireGsons();
-        data.setRequireGsons(requireDatas);
-        data.setUsername(BmobUser.getCurrentUser().getUsername());
-        BmobQuery<RequireGsons> query = new BmobQuery<RequireGsons>();
+    private void addItems() {
+        listLayout.removeAllViews();
+        for (int i=0;i<requireDatas.size();i++) {
+            RequireGson data=requireDatas.get(i);
+            int finalI=i;
+            if (state == 1) {
+                listLayout.addView(new AcceptedItem(getContext(),
+                        data.getTitle(),
+                        data.getDate(),
+                        data.getSender(),
+                        data.getIntroduce()) {
+                    @Override
+                    public void complete() {
+
+                    }
+
+                    @Override
+                    public void refuse() {
+                        requireDatas.get(finalI).setState(0);
+                        save("已拒绝此任务", data);
+                        addItems();
+                    }
+                });
+            } else if (state == 2) {
+                listLayout.addView(new WaitAcceptItem(getContext(),
+                        data.getTitle(),
+                        data.getDate(),
+                        data.getSender(),
+                        data.getIntroduce()) {
+                    @Override
+                    public void accept() {
+                        requireDatas.get(finalI).setState(1);
+                        save("已接受此任务", data);
+                        addItems();
+                    }
+
+                    @Override
+                    public void refuse() {
+                        requireDatas.get(finalI).setState(0);
+                        save("已拒绝此任务", data);
+                        addItems();
+                    }
+                });
+            }else if(state==0){
+                listLayout.addView(new WaitAcceptItem(getContext(),
+                        data.getTitle(),
+                        data.getDate(),
+                        data.getSender(),
+                        data.getIntroduce()) {
+                    @Override
+                    public void accept() {
+                        data.setState(1);
+                        save("已接受此任务", data);
+                        addItems();
+                    }
+
+                    @Override
+                    public void refuse() {
+                        toast("该任务已被拒绝");
+                    }
+                });
+            }
+        }
+    }
+
+    private void save(String text, RequireGson data) {
+        BmobQuery<RequireGson> query = new BmobQuery<>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
-        query.findObjects(new FindListener<RequireGsons>() {
+        query.addWhereEqualTo("title", data.getTitle());
+        query.findObjects(new FindListener<RequireGson>() {
             @Override
-            public void done(List<RequireGsons> list, BmobException e) {
+            public void done(List<RequireGson> list, BmobException e) {
                 if (e == null) {
                     data.update(list.get(0).getObjectId(), new UpdateListener() {
                         @Override
@@ -114,80 +164,90 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                             if (e == null) {
                                 toast(text);
                             } else {
-                                toast("保存失败" + e.getMessage());
-                                addData();
+                                toast(e.getMessage());
                             }
                         }
                     });
                 } else {
-                    toast("查找用户失败" + e.getMessage());
+                    toast(e.getMessage());
                 }
             }
         });
     }
 
-    private TextView spaceView;
+    private TextView spaceView;//用以添加空白，确保item展开后能完全显示
+    private RefreshButton refreshButton;
 
     private void initView() {
-        rootView = view.findViewById(R.id.root);
-        view.findViewById(R.id.refresh).setOnClickListener(this);
-        accepted=view.findViewById(R.id.accepted);
-        accepted.setOnClickListener(this);
-        notYet=view.findViewById(R.id.notYet);
-        notYet.setOnClickListener(this);
-
         spaceView = new TextView(getContext());
-        spaceView.setHeight(Tool.SCREEN_HEIGHT - Tool.px(240));
-    }
+        spaceView.setHeight(Tool.SCREEN_HEIGHT - Tool.px(275));//这里与RequireItem高度保持一致
 
-    private void initItem() {
-        rootView.removeAllViews();
-        for (RequireGson rg : requireDatas) {
-            RequireItem requireItem = new RequireItem(getContext(), rg.getTitle(), rg.getSender(), rg.getDate(), rg.getIntroduce()) {
-                @Override
-                public void complete() {
+        listLayout = view.findViewById(R.id.listLayout);
+        refreshButton = view.findViewById(R.id.refreshButton);
+        titleView = view.findViewById(R.id.titleView);
 
-                }
-
-                @Override
-                public void refuse() {
-                    requireDatas.remove(rg);
-                    save("已移除该任务");
-                    initItem();
-                }
-            };
-            rootView.addView(requireItem);
-        }
-        rootView.addView(spaceView);
+        refreshButton.setOnClickListener(this);
+        view.findViewById(R.id.menuButton).setOnClickListener(this);
+        view.findViewById(R.id.acceptButtion).setOnClickListener(this);
+        view.findViewById(R.id.waitAcceptButton).setOnClickListener(this);
+        view.findViewById(R.id.refusedButton).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.accepted:
-                v.setBackgroundColor(getResources().getColor(R.color.colorChoosed));
-                notYet.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                addData();
+            case R.id.menuButton:
+                ((MenuButton) view.findViewById(R.id.menuButton)).setIsShow(1);
+                showMenu();
                 break;
-            case R.id.notYet:
-                accepted.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                v.setBackgroundColor(getResources().getColor(R.color.colorChoosed));
+            case R.id.acceptButtion:
+                state = 1;
+                listLayout.removeAllViews();
                 addData();
+                showMenu();
                 break;
-            case R.id.refresh:
+            case R.id.waitAcceptButton:
+                state = 2;
+                listLayout.removeAllViews();
+                addData();
+                showMenu();
+                break;
+            case R.id.refusedButton:
+                state = 0;
+                listLayout.removeAllViews();
+                addData();
+                showMenu();
+                break;
+            case R.id.refreshButton:
+                listLayout.removeAllViews();
                 addData();
                 break;
         }
     }
 
-    public void initAnimation() {
+    private void showMenu() {
         try {
-            TranslateAnimation ta = new TranslateAnimation(0, 0, Tool.dp(-50), 0);
-            ta.setInterpolator(new OvershootInterpolator());
-            ta.setDuration(200);
-            LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
-            lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-            rootView.setLayoutAnimation(lac);
+            MenuButton button = view.findViewById(R.id.menuButton);
+            LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
+            if (menuLayout.getVisibility() == View.GONE) {
+                button.setIsShow(1);
+                menuLayout.setVisibility(View.VISIBLE);
+                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.mDensity + 0.5));
+                animator.setInterpolator(new OvershootInterpolator());
+                animator.start();
+            } else {
+                button.setIsShow(0);
+                int origHeight = menuLayout.getHeight();
+                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), origHeight, 0);
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        menuLayout.setVisibility(View.GONE);
+                    }
+                });
+                animator.setInterpolator(new AnticipateInterpolator());
+                animator.start();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

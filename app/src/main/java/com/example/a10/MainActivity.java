@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         fragments.add(personalFragment);
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.root, fragments.get(0));
+        fragmentTransaction.replace(R.id.listLayout, fragments.get(0));
         fragmentTransaction.commit();
     }
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
     public void onTabSelected(int position) {
         int fragmentId=position;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.root, fragments.get(fragmentId));
+        fragmentTransaction.replace(R.id.listLayout, fragments.get(fragmentId));
         fragmentTransaction.commit();
     }
 

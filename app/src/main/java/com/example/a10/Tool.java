@@ -39,6 +39,7 @@ public class Tool {
     public static float mDensity;
     public static int imageId=R.drawable.ic_personal;
     public static int imageIdN=R.drawable.ic_personal_new;
+    public static int requireItemHeight;
 
     public Tool(Context context) {
         this.context = context;
@@ -46,6 +47,7 @@ public class Tool {
         mDensity = dm.density;
         SCREEN_WIDTH = dm.widthPixels;
         SCREEN_HEIGHT = dm.heightPixels;
+        requireItemHeight= (int) dp(240);
     }
 
     public static float dp(float px) {
@@ -91,7 +93,8 @@ public class Tool {
 
     public static boolean isConnected=false;
 
-    public static void scaleAnimation(View view) {
+    /* 为LinearLayout添加缩放动画 */
+    public static void scaleAnimation(View view,int viewId) {
         ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
@@ -99,17 +102,18 @@ public class Tool {
         sa.setDuration(300);
         LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
         lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
+        LinearLayout linearLayout = view.findViewById(viewId);
         linearLayout.setLayoutAnimation(lac);
     }
 
-    public static void translateAnimation(View view) {
+    /* 为LinearLayout添加位移动画 */
+    public static void translateAnimation(View view,int viewId) {
         TranslateAnimation ta = new TranslateAnimation(0, 0, dp(-50), 0);
         ta.setInterpolator(new OvershootInterpolator());
         ta.setDuration(200);
         LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
         lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-        linearLayout.setLayoutAnimation(lac);
+        LinearLayout layout = view.findViewById(viewId);
+        layout.setLayoutAnimation(lac);
     }
 }
