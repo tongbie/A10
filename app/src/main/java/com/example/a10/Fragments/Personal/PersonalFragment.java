@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.a10.LoginActivity;
+import com.example.a10.MainActivity;
 import com.example.a10.R;
 import com.example.a10.Tool;
 
@@ -37,9 +38,9 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        Tool.scaleAnimation(view,R.id.linearLayout);
-        ((TextView)view.findViewById(R.id.username)).setText(BmobUser.getCurrentUser().getUsername());
-        ((TextView)view.findViewById(R.id.userId)).setText(BmobUser.getCurrentUser().getObjectId());
+        Tool.scaleAnimation(view, R.id.linearLayout);
+        ((TextView) view.findViewById(R.id.username)).setText(BmobUser.getCurrentUser().getUsername());
+        ((TextView) view.findViewById(R.id.userId)).setText(BmobUser.getCurrentUser().getObjectId());
         return view;
     }
 
@@ -50,11 +51,16 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.logout:
                 BmobUser.logOut();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 BmobIM.getInstance().disConnect();//断开服务器连接
+                MainActivity.fragments.clear();
+                MainActivity.homeFragment = null;
+                MainActivity.requireFragment = null;
+                MainActivity.requireFragment = null;
+                MainActivity.personalFragment = null;
                 getActivity().finish();
                 break;
         }

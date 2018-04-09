@@ -24,7 +24,6 @@ import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.listener.ConnectStatusChangeListener;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationBar.OnTabSelectedListener {
-    public static List<Fragment> fragments = new ArrayList<>();
     private FragmentManager fragmentManager;
     private long backTime = 0;//双击返回计时
 
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
                 .addItem(new BottomNavigationItem(R.drawable.ic_dashboard_black_24dp, "任务")
                         .setActiveColorResource(R.color.colorWrite))
                 .addItem(new BottomNavigationItem(R.drawable.ic_notifications_black_24dp, "消息")
-                        .setActiveColorResource(R.color.colorWrite)
+                                .setActiveColorResource(R.color.colorWrite)
                         /*.setBadgeItem(badgeItem)*/)//添加角标
                 .addItem(new BottomNavigationItem(R.drawable.ic_personal, "我的")
                         .setActiveColorResource(R.color.colorWrite))
@@ -61,12 +60,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
                 .initialise();//所有的设置需在调用该方法前完成
     }
 
+    public static List<Fragment> fragments = new ArrayList<>();
+    public static Fragment homeFragment;
+    public static Fragment requireFragment;
+    public static Fragment notificationFragment;
+    public static Fragment personalFragment;
+
     /* 初始化Fragment */
     private void initFragment() {
-        Fragment homeFragment = new HomeFragment();
-        Fragment requireFragment = new RequireFragment();
-        Fragment notificationFragment = new NotificationFragment();
-        Fragment personalFragment = new PersonalFragment();
+        homeFragment = new HomeFragment();
+        requireFragment = new RequireFragment();
+        notificationFragment = new NotificationFragment();
+        personalFragment = new PersonalFragment();
         fragments.add(homeFragment);
         fragments.add(requireFragment);
         fragments.add(notificationFragment);
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         fragmentTransaction.commit();
     }
 
-    private void initData(){
+    private void initData() {
         BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
             @Override
             public void onChange(ConnectionStatus status) {
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
 
     @Override
     public void onTabSelected(int position) {
-        int fragmentId=position;
+        int fragmentId = position;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.listLayout, fragments.get(fragmentId));
         fragmentTransaction.commit();
@@ -121,5 +126,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
     @Override
     public void onTabReselected(int position) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fragments.clear();
+        homeFragment = null;
+        requireFragment = null;
+        notificationFragment = null;
+        personalFragment = null;
     }
 }

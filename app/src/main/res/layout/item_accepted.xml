@@ -34,6 +34,7 @@
 
         <TextView
             android:id="@+id/dateView"
+            android:text="未指定任务期限"
             android:layout_width="match_parent"
             android:layout_height="27dp"
             android:layout_gravity="bottom"
@@ -64,6 +65,7 @@
 
             <TextView
                 android:id="@+id/introduceView"
+                android:text="无任务介绍"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

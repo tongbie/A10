@@ -18,7 +18,7 @@
             android:background="@color/colorPrimary"
             android:gravity="center|left"
             android:paddingLeft="12dp"
-            android:text="我的任务"
+            android:text="已接任务"
             android:textColor="#ffffff"
             android:textSize="20dp"></com.example.a10.MyView.LoadTextView>
 

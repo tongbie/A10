@@ -35,7 +35,6 @@ import cn.bmob.v3.listener.UpdateListener;
 public class RequireFragment extends Fragment implements View.OnClickListener {
     View view;
     LinearLayout listLayout;
-    LoadTextView titleView;
 
     List<RequireGson> requireDatas = new ArrayList<>();
 
@@ -66,12 +65,9 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
         query.findObjects(new FindListener<RequireGson>() {
             @Override
             public void done(List<RequireGson> datas, BmobException e) {
-                Log.e("datas", String.valueOf(datas.size()));
                 if (e == null) {
                     if(datas.size()==0){
                         toast("任务列表为空");
-                        refreshButton.setRefreshing(false);
-                        return;
                     }
                     for (RequireGson data : datas) {
                         requireDatas.add(data);
@@ -105,7 +101,6 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                     public void refuse() {
                         requireDatas.get(finalI).setState(0);
                         save("已拒绝此任务", data);
-                        addItems();
                     }
                 });
             } else if (state == 2) {
@@ -118,14 +113,12 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                     public void accept() {
                         requireDatas.get(finalI).setState(1);
                         save("已接受此任务", data);
-                        addItems();
                     }
 
                     @Override
                     public void refuse() {
                         requireDatas.get(finalI).setState(0);
                         save("已拒绝此任务", data);
-                        addItems();
                     }
                 });
             }else if(state==0){
@@ -136,9 +129,8 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                         data.getIntroduce()) {
                     @Override
                     public void accept() {
-                        data.setState(1);
+                        requireDatas.get(finalI).setState(1);
                         save("已接受此任务", data);
-                        addItems();
                     }
 
                     @Override
@@ -148,6 +140,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                 });
             }
         }
+        listLayout.addView(spaceView);
     }
 
     private void save(String text, RequireGson data) {
@@ -163,6 +156,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                         public void done(BmobException e) {
                             if (e == null) {
                                 toast(text);
+                                addData();
                             } else {
                                 toast(e.getMessage());
                             }
@@ -180,17 +174,27 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
 
     private void initView() {
         spaceView = new TextView(getContext());
-        spaceView.setHeight(Tool.SCREEN_HEIGHT - Tool.px(275));//这里与RequireItem高度保持一致
+        spaceView.setHeight(Tool.requireItemHeight);//这里与RequireItem高度保持一致
 
         listLayout = view.findViewById(R.id.listLayout);
         refreshButton = view.findViewById(R.id.refreshButton);
-        titleView = view.findViewById(R.id.titleView);
+        titleView=view.findViewById(R.id.titleView);
 
         refreshButton.setOnClickListener(this);
         view.findViewById(R.id.menuButton).setOnClickListener(this);
         view.findViewById(R.id.acceptButtion).setOnClickListener(this);
         view.findViewById(R.id.waitAcceptButton).setOnClickListener(this);
         view.findViewById(R.id.refusedButton).setOnClickListener(this);
+    }
+
+    LoadTextView titleView;
+    String[] titles=new String[]{"已拒任务","已接任务","未接任务"};
+
+    private void clickEvent(){
+        listLayout.removeAllViews();
+        titleView.setText(titles[state]);
+        addData();
+        showMenu();
     }
 
     @Override
@@ -202,21 +206,15 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.acceptButtion:
                 state = 1;
-                listLayout.removeAllViews();
-                addData();
-                showMenu();
+                clickEvent();
                 break;
             case R.id.waitAcceptButton:
                 state = 2;
-                listLayout.removeAllViews();
-                addData();
-                showMenu();
+                clickEvent();
                 break;
             case R.id.refusedButton:
                 state = 0;
-                listLayout.removeAllViews();
-                addData();
-                showMenu();
+                clickEvent();
                 break;
             case R.id.refreshButton:
                 listLayout.removeAllViews();

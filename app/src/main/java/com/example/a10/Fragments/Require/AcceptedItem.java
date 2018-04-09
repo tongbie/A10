@@ -70,10 +70,7 @@ public abstract class AcceptedItem extends LinearLayout implements View.OnClickL
 
         scrollView = view.findViewById(R.id.scrollView);
         scrollView.setOnTouchListener(childScrollTouchListener);
-        scrollHeight = Tool.SCREEN_HEIGHT - Tool.requireItemHeight;//这里指定item展开高度
-//        ViewGroup.LayoutParams scrollParams = scrollView.getLayoutParams();
-//        scrollParams.height = scrollHeight;
-//        scrollView.setLayoutParams(scrollParams);
+        scrollHeight = Tool.requireItemHeight;//这里指定item展开高度
     }
 
     private int lastY = 0;

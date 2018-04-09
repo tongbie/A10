@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
 
+import cn.bmob.newim.BmobIM;
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
@@ -131,6 +132,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
+        BmobIM.getInstance().disConnect();
         user.login(new SaveListener<User>() {
             @Override
             public void done(User bmobUser, BmobException e) {

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -50,7 +49,7 @@ public abstract class WaitAcceptItem extends LinearLayout implements View.OnClic
     }
 
     private void init() {
-        view = LayoutInflater.from(context).inflate(R.layout.item_notyet, this);
+        view = LayoutInflater.from(context).inflate(R.layout.item_waitaccept, this);
         ((TextView) view.findViewById(R.id.titleView)).setText(title);
         ((TextView) view.findViewById(R.id.senderView)).setText(sender);
         ((TextView) view.findViewById(R.id.dateView)).setText(date);
@@ -62,7 +61,7 @@ public abstract class WaitAcceptItem extends LinearLayout implements View.OnClic
 
         scrollView = view.findViewById(R.id.scrollView);
         scrollView.setOnTouchListener(childScrollTouchListener);
-        scrollHeight = Tool.SCREEN_HEIGHT - Tool.requireItemHeight;//这里指定item展开高度
+        scrollHeight = Tool.requireItemHeight;//这里指定item展开高度
     }
 
     private OnTouchListener childScrollTouchListener = (v, event) -> {

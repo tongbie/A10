@@ -44,7 +44,7 @@ public class NotificationFragment extends Fragment implements
 
     private ListView listView;
     private List<BmobIMConversation> conversationList;
-    private View view;
+    private View view=null;
 
     @Nullable
     @Override
@@ -113,7 +113,7 @@ public class NotificationFragment extends Fragment implements
             toast("服务器连接失败");
             return;
         }
-        BmobQuery<User> query = new BmobQuery<User>();
+        BmobQuery<User> query = new BmobQuery<>();
         query.addWhereEqualTo("username", username);
         query.findObjects(new FindListener<User>() {
             @Override
@@ -165,8 +165,9 @@ public class NotificationFragment extends Fragment implements
         for (MessageEvent event : events) {
             BmobIMConversation conversation = event.getConversation();
             if (conversation != null) {
-                conversation.setConversationTitle(event.getFromUserInfo().getName());
-                conversation.setDraft(event.getMessage().getContent());
+                String conversationName=event.getFromUserInfo().getName();
+                conversation.setConversationTitle(conversationName);
+                conversation.setDraft(event.getFromUserInfo().getName()+"："+event.getMessage().getContent());
                 BmobIM.getInstance().updateConversation(conversation);
             }
         }

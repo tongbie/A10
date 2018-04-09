@@ -37,8 +37,8 @@ public class Tool {
     public static int SCREEN_WIDTH;
     public static int SCREEN_HEIGHT;
     public static float mDensity;
-    public static int imageId=R.drawable.ic_personal;
-    public static int imageIdN=R.drawable.ic_personal_new;
+    public static int imageId = R.drawable.ic_personal;
+    public static int imageIdN = R.drawable.ic_personal_new;
     public static int requireItemHeight;
 
     public Tool(Context context) {
@@ -47,7 +47,7 @@ public class Tool {
         mDensity = dm.density;
         SCREEN_WIDTH = dm.widthPixels;
         SCREEN_HEIGHT = dm.heightPixels;
-        requireItemHeight= (int) dp(240);
+        requireItemHeight = SCREEN_HEIGHT - (int) dp(240);
     }
 
     public static float dp(float px) {
@@ -69,9 +69,9 @@ public class Tool {
         return animator;
     }
 
-    public static int px(float dp){
-        float scale=context.getResources().getDisplayMetrics().density;
-        return (int)(dp*scale+0.5f);
+    public static int px(float dp) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
 
     /* 连接聊天服务器 */
@@ -82,19 +82,19 @@ public class Tool {
                 @Override
                 public void done(String uid, BmobException e) {
                     if (e == null) {
-                        Toast.makeText(context,"已连接服务器",Toast.LENGTH_SHORT);
+                        Toast.makeText(context, "已连接服务器", Toast.LENGTH_SHORT);
                     } else {
-                        Toast.makeText(context,"无法连接至服务器",Toast.LENGTH_SHORT);
+                        Toast.makeText(context, "无法连接至服务器", Toast.LENGTH_SHORT);
                     }
                 }
             });
         }
     }
 
-    public static boolean isConnected=false;
+    public static boolean isConnected = false;
 
     /* 为LinearLayout添加缩放动画 */
-    public static void scaleAnimation(View view,int viewId) {
+    public static void scaleAnimation(View view, int viewId) {
         ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
@@ -107,7 +107,7 @@ public class Tool {
     }
 
     /* 为LinearLayout添加位移动画 */
-    public static void translateAnimation(View view,int viewId) {
+    public static void translateAnimation(View view, int viewId) {
         TranslateAnimation ta = new TranslateAnimation(0, 0, dp(-50), 0);
         ta.setInterpolator(new OvershootInterpolator());
         ta.setDuration(200);
