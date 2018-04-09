@@ -5,13 +5,9 @@ import android.text.TextUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import com.example.a10.MyView.datepicker.bizs.calendars.*;
-import com.example.a10.MyView.datepicker.entities.DPInfo;
-import com.example.a10.MyView.datepicker.views.DatePicker;
+import com.example.a10.MyView.datepicker.DPInfo;
 
 /**
  * 日期管理器
@@ -23,41 +19,10 @@ public class DPCManager {
     private HashMap<Integer, HashMap<Integer, DPInfo[][]>> DATE_CACHE = new HashMap<>();
     private HashMap<String, Set<String>> DECOR_CACHE_TR = new HashMap<>();
 
-    public DPCManager(){
-        String locale = Locale.getDefault().getCountry().toLowerCase();
-        if (locale.equals("cn")) {
-            initCalendar(new DPCNCalendar());
-        } else {
-            initCalendar(new DPUSCalendar());
-        }
+    public DPCManager() {
+        initCalendar(new DPCNCalendar());
     }
-
-    private static DPCManager sManager;
-
     private DPCalendar c;
-
-//    private DPCManager() {
-//        // 默认显示为中文日历
-//        String locale = Locale.getDefault().getCountry().toLowerCase();
-//        if (locale.equals("cn")) {
-//            initCalendar(new DPCNCalendar());
-//        } else {
-//            initCalendar(new DPUSCalendar());
-//        }
-//    }
-
-    /**
-     * 获取月历管理器
-     * Get calendar manager
-     *
-     * @return 月历管理器
-     */
-    public static DPCManager getInstance() {
-        if (null == sManager) {
-            sManager = new DPCManager();
-        }
-        return sManager;
-    }
 
     /**
      * 初始化日历对象
@@ -69,14 +34,6 @@ public class DPCManager {
     public void initCalendar(DPCalendar c) {
         this.c = c;
     }
-
-    /**
-     * 设置有背景标识物的日期
-     * <p/>
-     * Set date which has decor of background
-     *
-     * @param date 日期列表 List of date
-     */
 
     /**
      * 获取指定年月的日历对象数组

@@ -1,7 +1,5 @@
 package com.example.a10.MyView.datepicker.bizs.themes;
 
-import com.example.a10.MyView.datepicker.bizs.themes.*;
-import com.example.a10.MyView.datepicker.bizs.themes.DPCNTheme;
 
 public final class DPTManager {
     private static DPTManager sManager;

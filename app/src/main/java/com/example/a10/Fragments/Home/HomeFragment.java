@@ -25,7 +25,7 @@ import com.example.a10.MyView.MenuButton;
 import com.example.a10.MyView.LoadButton;
 import com.example.a10.MyView.LoadTextView;
 import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
-import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
+import com.example.a10.MyView.datepicker.DPDecor;
 import com.example.a10.MyView.datepicker.views.DatePicker;
 import com.example.a10.R;
 import com.example.a10.Tool;
@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private TextView progressNum;//进度条进度
     List<String> dateSign = new ArrayList<>();//标记日期
     private View view;
-    LinearLayout dateLayout;
+    DateLayout dateLayout;
     private DatePicker picker;
 
     @Nullable

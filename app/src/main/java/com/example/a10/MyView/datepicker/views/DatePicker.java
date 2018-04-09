@@ -2,24 +2,16 @@ package com.example.a10.MyView.datepicker.views;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.List;
-
 import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
-import com.example.a10.MyView.datepicker.bizs.decors.DPDecor;
-import com.example.a10.MyView.datepicker.bizs.languages.DPLManager;
-import com.example.a10.MyView.datepicker.bizs.themes.DPTManager;
-import com.example.a10.MyView.datepicker.cons.DPMode;
+import com.example.a10.MyView.datepicker.DPDecor;
 import com.example.a10.MyView.datepicker.utils.MeasureUtil;
-import com.example.a10.MyView.datepicker.views.*;
 import com.example.a10.R;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -30,31 +22,17 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * @author AigeStudio 2015-06-29
  */
 public class DatePicker extends LinearLayout {
-    private DPLManager mLManager;// 语言管理器
+
+    private String[] titleWeek = new String[]{"日", "一", "二", "三", "四", "五", "六"};
+    private String[] titleMonth = new String[]{"一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"};
+    private String titleBC = "公元前";
 
     private MonthView monthView;// 月视图
     private TextView tvYear, tvMonth;// 年份 月份显示
     private TextView tvEnsure;// 确定按钮显示
 
-    public TextView getTvEnsure(){
+    public TextView getTvEnsure() {
         return tvEnsure;
-    }
-
-
-    private OnDateSelectedListener onDateSelectedListener;// 日期多选后监听
-
-    /**
-     * 日期单选监听器
-     */
-    public interface OnDatePickedListener {
-        void onDatePicked(String date);
-    }
-
-    /**
-     * 日期多选监听器
-     */
-    public interface OnDateSelectedListener {
-        void onDateSelected(List<String> date);
     }
 
     public DatePicker(Context context) {
@@ -63,7 +41,6 @@ public class DatePicker extends LinearLayout {
 
     public DatePicker(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mLManager = DPLManager.getInstance();
 
         // 设置排列方向为竖向
         setOrientation(VERTICAL);
@@ -124,9 +101,9 @@ public class DatePicker extends LinearLayout {
         addView(rlTitle, llParams);
 
         // --------------------------------------------------------------------------------周视图
-        for (int i = 0; i < mLManager.titleWeek().length; i++) {
+        for (int i = 0; i < titleWeek.length; i++) {
             TextView tvWeek = new TextView(context);
-            tvWeek.setText(mLManager.titleWeek()[i]);
+            tvWeek.setText(titleWeek[i]);
             tvWeek.setGravity(Gravity.CENTER);
             tvWeek.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             tvWeek.setTextColor(Color.parseColor("#FFFFFF"));
@@ -139,14 +116,14 @@ public class DatePicker extends LinearLayout {
         monthView.setOnDateChangeListener(new MonthView.OnDateChangeListener() {
             @Override
             public void onMonthChange(int month) {
-                tvMonth.setText(mLManager.titleMonth()[month - 1]);
+                tvMonth.setText(titleMonth[month - 1]);
             }
 
             @Override
             public void onYearChange(int year) {
                 String tmp = String.valueOf(year);
                 if (tmp.startsWith("-")) {
-                    tmp = tmp.replace("-", mLManager.titleBC());
+                    tmp = tmp.replace("-", titleBC);
                 }
                 tvYear.setText(tmp);
             }
@@ -174,61 +151,7 @@ public class DatePicker extends LinearLayout {
         monthView.setDPDecor(decor);
     }
 
-    public void setDPCManager(DPCManager dpcManager){
+    public void setDPCManager(DPCManager dpcManager) {
         monthView.setDPCManager(dpcManager);
-    }
-
-    /**
-     * 设置日期选择模式
-     *
-     * @param mode ...
-     */
-    public void setMode(DPMode mode) {
-        if (mode != DPMode.MULTIPLE) {
-            tvEnsure.setVisibility(GONE);
-        }
-        monthView.setDPMode(mode);
-    }
-
-    public void setFestivalDisplay(boolean isFestivalDisplay) {
-        monthView.setFestivalDisplay(isFestivalDisplay);
-    }
-
-    public void setTodayDisplay(boolean isTodayDisplay) {
-        monthView.setTodayDisplay(isTodayDisplay);
-    }
-
-    public void setHolidayDisplay(boolean isHolidayDisplay) {
-        monthView.setHolidayDisplay(isHolidayDisplay);
-    }
-
-    public void setDeferredDisplay(boolean isDeferredDisplay) {
-        monthView.setDeferredDisplay(isDeferredDisplay);
-    }
-
-    /**
-     * 设置单选监听器
-     *
-     * @param onDatePickedListener ...
-     */
-    public void setOnDatePickedListener(OnDatePickedListener onDatePickedListener) {
-        if (monthView.getDPMode() != DPMode.SINGLE) {
-            throw new RuntimeException(
-                    "Current DPMode does not SINGLE! Please call setMode set DPMode to SINGLE!");
-        }
-        monthView.setOnDatePickedListener(onDatePickedListener);
-    }
-
-    /**
-     * 设置多选监听器
-     *
-     * @param onDateSelectedListener ...
-     */
-    public void setOnDateSelectedListener(OnDateSelectedListener onDateSelectedListener) {
-        if (monthView.getDPMode() != DPMode.MULTIPLE) {
-            throw new RuntimeException(
-                    "Current DPMode does not MULTIPLE! Please call setMode set DPMode to MULTIPLE!");
-        }
-        this.onDateSelectedListener = onDateSelectedListener;
     }
 }

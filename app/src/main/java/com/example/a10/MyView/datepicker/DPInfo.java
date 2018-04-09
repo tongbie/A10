@@ -1,4 +1,4 @@
-package com.example.a10.MyView.datepicker.entities;
+package com.example.a10.MyView.datepicker;
 
 /**
  * 日历数据实体
@@ -14,5 +14,5 @@ public class DPInfo {
     public boolean isToday, isWeekend;
     public boolean isSolarTerms, isFestival, isDeferred;
     public boolean isDecorBG;
-    public boolean isDecorTL, isDecorT, isDecorTR, isDecorL, isDecorR;
+    public boolean isDecorTR;
 }
