@@ -24,16 +24,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
-        destinationDir file("$projectDir/libs")
-        baseName "Native_Libs2"
-        extension "jar"
-        from fileTree(dir: "libs", include: "**/*.so")
-        into "lib"
-    }
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn(nativeLibsToJar)
-    }
+//    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
+//        destinationDir file("$projectDir/libs")
+//        baseName "Native_Libs2"
+//        extension "jar"
+//        from fileTree(dir: "libs", include: "**/*.so")
+//        into "lib"
+//    }
+//    tasks.withType(JavaCompile) {
+//        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+//    }
 }
 
 dependencies {
@@ -45,9 +45,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-//    implementation files('src/main/jniLibs/facedetection.jar')
-//    implementation files('src/main/jniLibs/facerecognition.jar')
-//    implementation files('src/main/jniLibs/facetracking.jar')
     compile 'cn.bmob.android:bmob-im:2.0.8@aar'
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     compile 'cn.bmob.android:http-legacy:1.0'
