@@ -27,9 +27,7 @@ import java.util.List;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMUserInfo;
-import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.listener.ConversationListener;
-import cn.bmob.newim.listener.MessageListHandler;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
@@ -221,18 +219,18 @@ public class NotificationFragment extends Fragment implements
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         EventBus.getDefault().unregister(this);//解除注册
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiver(BusEvent busEvent) {
-        if (busEvent.getEvent().equals("发送消息")) {
+        if (busEvent.getEventName().equals("发送消息")) {
 //            updateMyConversation();
-        } else if (busEvent.getEvent().equals("在线消息")) {
+        } else if (busEvent.getEventName().equals("在线消息")) {
             updateMyConversation();
-        }else if (busEvent.getEvent().equals("离线消息")){
+        }else if (busEvent.getEventName().equals("离线消息")){
             updateMyConversation();
         }
     }

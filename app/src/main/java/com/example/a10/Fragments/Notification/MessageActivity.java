@@ -26,8 +26,6 @@ import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMTextMessage;
 import cn.bmob.newim.core.BmobIMClient;
-import cn.bmob.newim.event.MessageEvent;
-import cn.bmob.newim.listener.MessageListHandler;
 import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.newim.listener.MessagesQueryListener;
 import cn.bmob.v3.exception.BmobException;
@@ -141,7 +139,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiver(BusEvent busEvent) {
-        if (busEvent.getEvent().equals("在线消息")) {
+        if (busEvent.getEventName().equals("在线消息")) {
             bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), busEvent.getConversation());
             linkMan = busEvent.getSenderName();
             updateMessages();

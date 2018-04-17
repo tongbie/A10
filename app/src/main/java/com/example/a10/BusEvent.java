@@ -8,18 +8,24 @@ import cn.bmob.newim.event.MessageEvent;
  */
 
 public class BusEvent {
-    String event;
-    String senderName;
-    String text;
-    MessageEvent messageEvent;
-    BmobIMConversation conversation;
+    private String eventName;
+    private String senderName;
+    private String text;
+    private MessageEvent messageEvent;
+    private BmobIMConversation conversation;
+    private byte[] bytes;
 
-    public BusEvent(String event) {
-        this.event = event;
+    public BusEvent(String eventName) {
+        this.eventName = eventName;
     }
 
-    public String getEvent() {
-        return event;
+    public BusEvent(String eventName, String text){
+        this.eventName = eventName;
+        this.text=text;
+    }
+
+    public String getEventName() {
+        return eventName;
     }
 
     public String getSenderName() {
@@ -52,5 +58,13 @@ public class BusEvent {
 
     public BmobIMConversation getConversation(){
         return conversation;
+    }
+
+    public void setBytes(byte[] bytes){
+        this.bytes=bytes;
+    }
+
+    public byte[] getBytes(){
+        return bytes;
     }
 }

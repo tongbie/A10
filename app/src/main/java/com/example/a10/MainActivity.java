@@ -16,6 +16,10 @@ import com.example.a10.Fragments.Personal.PersonalFragment;
 import com.example.a10.Fragments.Notification.NotificationFragment;
 import com.example.a10.Fragments.Require.RequireFragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         initView();
         initFragment();
         initData();
+        EventBus.getDefault().register(this);//注册EventBus
         Tool.linkServer();
     }
 
@@ -136,5 +141,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         requireFragment = null;
         notificationFragment = null;
         personalFragment = null;
+        EventBus.getDefault().unregister(this);//解除注册
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiver(BusEvent busEvent) {
+        if(busEvent.getEventName().equals("Toast")){
+            Toast.makeText(MainActivity.this,busEvent.getText(),Toast.LENGTH_SHORT).show();
+        }
     }
 }

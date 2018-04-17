@@ -74,7 +74,9 @@
             </intent-filter>
         </activity>
 
-
+        <activity android:name=".Fragments.Personal.CameraActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
     </application>
 </manifest>
 
