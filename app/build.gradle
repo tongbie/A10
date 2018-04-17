@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -49,4 +49,7 @@ dependencies {
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     compile 'cn.bmob.android:http-legacy:1.0'
     compile 'com.ashokvarma.android:bottom-navigation-bar:1.4.1'
+    //EventBus
+    compile 'org.greenrobot:eventbus:3.0.0'
+    implementation files('src/main/jniLibs/facedetection.jar')
 }

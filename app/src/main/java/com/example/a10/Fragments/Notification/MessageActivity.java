@@ -2,19 +2,21 @@ package com.example.a10.Fragments.Notification;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
+import com.example.a10.BusEvent;
 import com.example.a10.MyView.SlipBack;
 import com.example.a10.R;
-import com.example.a10.Tool;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.newim.listener.MessagesQueryListener;
 import cn.bmob.v3.exception.BmobException;
 
-public class MessageActivity extends AppCompatActivity implements View.OnClickListener, MessageListHandler {
+public class MessageActivity extends AppCompatActivity implements View.OnClickListener/*, MessageListHandler*/ {
     private ListView listView;
     private List<Message> messages;
     private BmobIMConversation bConversation;
@@ -46,6 +48,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
         getConversation();
         initView();
         updateMessages();
+        EventBus.getDefault().register(this);//注册EventBus
         new SlipBack(this);
     }
 
@@ -108,28 +111,41 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void done(BmobIMMessage msg, BmobException e) {
                 if (e == null) {
-//                    BmobIM.getInstance().updateConversation(bConversation);
-
                     updateMessages();
                     editText.setText("");
+
+                    BmobIM.getInstance().updateConversation(bConversation);
+
+                    BusEvent event = new BusEvent("发送消息");
+                    event.setText(message);
+                    EventBus.getDefault().post(event);
                 } else {
-                    toast("发送失败 " + e.getMessage()+e.getErrorCode());
+                    toast("发送失败 " + e.getMessage() + e.getErrorCode());
                 }
             }
         });
     }
 
-    @Override
-    public void onMessageReceive(List<MessageEvent> events) {
-        for (MessageEvent event : events) {
-            BmobIMConversation conversation = event.getConversation();
-            if (conversation != null && conversation.getConversationId().equals(bConversation.getConversationId())) {
-                BmobIM.getInstance().updateConversation(conversation);
-                bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversation);
-                linkMan = event.getFromUserInfo().getName();
-            }
+//    @Override
+//    public void onMessageReceive(List<MessageEvent> events) {
+//        for (MessageEvent event : events) {
+//            BmobIMConversation conversation = event.getConversation();
+//            if (conversation != null && conversation.getConversationId().equals(bConversation.getConversationId())) {
+//                BmobIM.getInstance().updateConversation(conversation);
+//                bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversation);
+//                linkMan = event.getFromUserInfo().getName();
+//            }
+//        }
+//        updateMessages();
+//    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiver(BusEvent busEvent) {
+        if (busEvent.getEvent().equals("在线消息")) {
+            bConversation = BmobIMConversation.obtain(BmobIMClient.getInstance(), busEvent.getConversation());
+            linkMan = busEvent.getSenderName();
+            updateMessages();
         }
-        updateMessages();
     }
 
     @Override
@@ -162,12 +178,18 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
-        BmobIM.getInstance().addMessageListHandler(this);
+//        BmobIM.getInstance().addMessageListHandler(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        BmobIM.getInstance().removeMessageListHandler(this);
+//        BmobIM.getInstance().removeMessageListHandler(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);//解除注册
     }
 }

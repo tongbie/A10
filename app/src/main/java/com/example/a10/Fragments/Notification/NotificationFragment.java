@@ -4,26 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.OvershootInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
+import com.example.a10.BusEvent;
 import com.example.a10.R;
 import com.example.a10.Tool;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import cn.bmob.newim.BmobIM;
@@ -39,12 +37,12 @@ import cn.bmob.v3.listener.FindListener;
 public class NotificationFragment extends Fragment implements
         AdapterView.OnItemClickListener,
         View.OnClickListener,
-        AdapterView.OnItemLongClickListener,
-        MessageListHandler {
+        AdapterView.OnItemLongClickListener/*,
+        MessageListHandler*/ {
 
     private ListView listView;
     private List<BmobIMConversation> conversationList;
-    private View view=null;
+    private View view = null;
 
     @Nullable
     @Override
@@ -52,13 +50,14 @@ public class NotificationFragment extends Fragment implements
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_notification, null);
             initView();
+            EventBus.getDefault().register(this);//注册EventBus
             updateMyConversation();
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
         if (viewGroup != null) {
             viewGroup.removeView(view);
         }
-        Tool.translateAnimation(view,R.id.linearLayout);
+        Tool.translateAnimation(view, R.id.linearLayout);
         return view;
     }
 
@@ -160,19 +159,19 @@ public class NotificationFragment extends Fragment implements
         getActivity().startActivity(intent);
     }
 
-    @Override
+    /*@Override
     public void onMessageReceive(List<MessageEvent> events) {
         for (MessageEvent event : events) {
             BmobIMConversation conversation = event.getConversation();
             if (conversation != null) {
-                String conversationName=event.getFromUserInfo().getName();
+                String conversationName = event.getFromUserInfo().getName();
                 conversation.setConversationTitle(conversationName);
-                conversation.setDraft(event.getFromUserInfo().getName()+"："+event.getMessage().getContent());
+                conversation.setDraft(event.getFromUserInfo().getName() + "：" + event.getMessage().getContent());
                 BmobIM.getInstance().updateConversation(conversation);
             }
         }
         updateMyConversation();
-    }
+    }*/
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -203,13 +202,13 @@ public class NotificationFragment extends Fragment implements
 
     @Override
     public void onResume() {
-        BmobIM.getInstance().addMessageListHandler(this);
+//        BmobIM.getInstance().addMessageListHandler(this);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        BmobIM.getInstance().removeMessageListHandler(this);
+//        BmobIM.getInstance().removeMessageListHandler(this);
         super.onPause();
     }
 
@@ -218,6 +217,23 @@ public class NotificationFragment extends Fragment implements
             Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);//解除注册
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiver(BusEvent busEvent) {
+        if (busEvent.getEvent().equals("发送消息")) {
+//            updateMyConversation();
+        } else if (busEvent.getEvent().equals("在线消息")) {
+            updateMyConversation();
+        }else if (busEvent.getEvent().equals("离线消息")){
+            updateMyConversation();
         }
     }
 }

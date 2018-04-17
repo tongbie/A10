@@ -1,9 +1,10 @@
 package com.example.a10.BmobManagers;
 
+import android.util.Log;
 
-import com.example.a10.Fragments.Notification.MessageActivity;
-import com.example.a10.Fragments.Notification.NotificationFragment;
-import com.example.a10.MainActivity;
+import com.example.a10.BusEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,48 +14,95 @@ import java.util.Set;
 
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
-import cn.bmob.newim.bean.BmobIMMessage;
-import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.event.OfflineMessageEvent;
 import cn.bmob.newim.listener.BmobIMMessageHandler;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 /**
  * Created by BieTong on 2018/3/5.
  */
 
 public class BmobMessageHandler extends BmobIMMessageHandler {
-    public static List<MessageEvent> events = new ArrayList<>();
-    public static List<OfflineMessageEvent> offEvents = new ArrayList<>();
-
 
     @Override
-    public void onMessageReceive(final MessageEvent event) {
-//        BmobIMConversation conversation = event.getConversation();
-//        BmobIM.getInstance().updateConversation(conversation);
+    public void onMessageReceive(final MessageEvent messageEvent) {
+        String senderId = messageEvent.getFromUserInfo().getUserId();
+        queryUserName(senderId, messageEvent);
+    }
+
+    private void queryUserName(String objectId, MessageEvent messageEvent) {
+        BmobQuery<User> query = new BmobQuery<>();
+        query.addWhereEqualTo("objectId", objectId);
+        query.findObjects(new FindListener<User>() {
+            @Override
+            public void done(List<User> list, BmobException e) {
+                if (e == null) {
+                    User bUser = list.get(0);
+                    String senderName = bUser.getUsername();
+                    upDateMessage(senderName, messageEvent);
+                }
+            }
+        });
+    }
+
+    private void queryOfflineUserName(String objectId, MessageEvent messageEvent) {
+        BmobQuery<User> query = new BmobQuery<>();
+        query.addWhereEqualTo("objectId", objectId);
+        query.findObjects(new FindListener<User>() {
+            @Override
+            public void done(List<User> list, BmobException e) {
+                if (e == null) {
+                    User bUser = list.get(0);
+                    String senderName = bUser.getUsername();
+                    upDateOfflineMessage(senderName, messageEvent);
+                }
+            }
+        });
+    }
+
+    private void upDateMessage(String senderName, MessageEvent messageEvent) {
+        BmobIMConversation conversation = messageEvent.getConversation();
+        conversation.setConversationTitle(senderName);
+        conversation.setDraft(senderName + "：" + messageEvent.getMessage().getContent());
+
+//        BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
+        BmobIM.getInstance().updateConversation(conversation);
+
+        BusEvent busEvent = new BusEvent("在线消息");
+        busEvent.setSenderName(messageEvent.getFromUserInfo().getName());
+        busEvent.setConversation(conversation);
+        EventBus.getDefault().post(busEvent);
+    }
+
+    private void upDateOfflineMessage(String senderName, MessageEvent messageEvent) {
+        BmobIMConversation bmobIMConversation = messageEvent.getConversation();
+        bmobIMConversation.setConversationTitle(senderName);
+        bmobIMConversation.setDraft(senderName + "：" + messageEvent.getMessage().getContent());
+
+//            BmobIM.getInstance().updateUserInfo(messageEvent.getFromUserInfo());
+        BmobIM.getInstance().updateConversation(bmobIMConversation);
+
+        BusEvent busEvent = new BusEvent("离线消息");
+        busEvent.setSenderName(senderName);
+        busEvent.setConversation(bmobIMConversation);
+        EventBus.getDefault().post(busEvent);
     }
 
     @Override
-    public void onOfflineReceive(final OfflineMessageEvent event) {
-        //离线消息，每次connect的时候会查询离线消息，如果有，此方法会被调用
-        /*List<MessageEvent> bMessageEvents = new ArrayList<>();
-        Set<Map.Entry<String, List<MessageEvent>>> entrySet = event.getEventMap().entrySet();
+    public void onOfflineReceive(final OfflineMessageEvent offlineMessageEvent) {
+        List<MessageEvent> messageEventList = new ArrayList<>();
+        Set<Map.Entry<String, List<MessageEvent>>> entrySet = offlineMessageEvent.getEventMap().entrySet();
         Iterator<Map.Entry<String, List<MessageEvent>>> it = entrySet.iterator();
         while (it.hasNext()) {
-            bMessageEvents = it.next().getValue();
+            messageEventList = it.next().getValue();
         }
-        for (int i = 0; i < bMessageEvents.size(); i++) {
-            BmobIM.getInstance().updateConversation(bMessageEvents.get(i).getConversation());
-            BmobIM.getInstance().updateUserInfo(bMessageEvents.get(i).getFromUserInfo());
-        }*/
-    }
-
-    public void updateUserInfo(MessageEvent event) {
-        BmobIMConversation bConversation = event.getConversation();
-        BmobIMUserInfo bInfo = event.getFromUserInfo();
-//        BmobIMMessage bMessage = event.getMessage();
-        BmobIM.getInstance().updateConversation(bConversation);
-        BmobIM.getInstance().updateUserInfo(bInfo);
+        for (int i = 0; i < messageEventList.size(); i++) {
+            MessageEvent messageEvent = messageEventList.get(i);
+            String senderId = messageEvent.getFromUserInfo().getUserId();
+            queryOfflineUserName(senderId, messageEvent);
+        }
     }
 }
