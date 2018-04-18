@@ -23,7 +23,7 @@ public class FR {
     /* 获取人脸特征信息（字节流数据，宽，高，脸框矩阵，角度 */
     public AFR_FSDKFace getFace(byte[] bytes, int width, int height, Rect rect, int drgree) {
         AFR_FSDKFace face = new AFR_FSDKFace();
-        engine.AFR_FSDK_ExtractFRFeature(bytes, width, height, AFR_FSDKEngine.CP_PAF_NV21, rect, AFR_FSDKEngine.AFR_FOC_0, face);
+        engine.AFR_FSDK_ExtractFRFeature(bytes, width, height, AFR_FSDKEngine.CP_PAF_NV21, rect, drgree, face);
         return face;
     }
 

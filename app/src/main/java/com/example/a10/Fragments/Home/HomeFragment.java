@@ -4,11 +4,15 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +24,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arcsoft.facedetection.AFD_FSDKFace;
+import com.arcsoft.facerecognition.AFR_FSDKFace;
 import com.example.a10.BmobManagers.User;
+import com.example.a10.BusEvent;
+import com.example.a10.Fragments.Personal.CameraActivity;
+import com.example.a10.Fragments.Personal.FaceData;
+import com.example.a10.LoginActivity;
+import com.example.a10.MainActivity;
 import com.example.a10.MyView.MenuButton;
 import com.example.a10.MyView.LoadButton;
 import com.example.a10.MyView.LoadTextView;
@@ -29,11 +40,19 @@ import com.example.a10.MyView.datepicker.DPDecor;
 import com.example.a10.MyView.datepicker.views.DatePicker;
 import com.example.a10.R;
 import com.example.a10.Tool;
+import com.example.a10.Utils.BitmapUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import Face.FD;
+import Face.FR;
+import Face.FaceRegist;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
@@ -59,6 +78,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             view = inflater.inflate(R.layout.fragment_home, null);
             initView();
             addData();
+            EventBus.getDefault().register(this);
         }
         ViewGroup viewGroup = (ViewGroup) view.getParent();
         if (viewGroup != null) {
@@ -199,9 +219,73 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
             }
         }
-        dateSign.add(date);
-        save("签到成功");
-        addDateSign();
+        startActivity(new Intent(getActivity(), CameraActivity.class));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiver(BusEvent busEvent) {
+        if(busEvent.getEventName().equals("拍照完成")){
+            byte[] data=busEvent.getBytes();
+            Bitmap bitmap= BitmapFactory.decodeByteArray(data, 0, data.length);
+            bitmap = BitmapUtil.cutBitmap(getContext(),bitmap);//裁剪
+            if (bitmap == null) {//判空
+                Toast.makeText(getContext(),"图像获取异常",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            byte[] bytes = BitmapUtil.bitmapToNV21Bytes(bitmap);//转格式
+            getFDData(bytes, bitmap.getWidth(), bitmap.getHeight());//获取信息
+        }
+    }
+
+    public void getFDData(byte[] bytes, int width, int height) {
+        FD fd = new FD();//人脸检测
+        List<AFD_FSDKFace> fdData = fd.process(bytes, width, height);
+        if (fdData.size() == 0) {
+            Toast.makeText(getContext(), "未检测到人脸", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (fdData.size() >= 2) {
+            Toast.makeText(getContext(), "检测到多个人脸，请重试", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AFD_FSDKFace fdFace = fdData.get(0);
+        FR fr = new FR();
+        AFR_FSDKFace frFace = fr.getFace(bytes, width, height, fdFace.getRect(), fdFace.getDegree());
+        String username = User.getCurrentUser().getUsername();
+        FaceRegist faceRegist = new FaceRegist(username, frFace);
+        faceLogin(username,faceRegist);
+    }
+
+    private void faceLogin(String username,FaceRegist faceLocal) {
+        BmobQuery<FaceData> query = new BmobQuery<>();
+        query.addWhereEqualTo("username", username);
+        query.findObjects(new FindListener<FaceData>() {
+            @Override
+            public void done(List<FaceData> list, BmobException e) {
+                if (e == null) {
+                    if (list.size() == 0) {
+                        EventBus.getDefault().post(new BusEvent("LoginToast","未注册人脸"));
+                        return;
+                    } else {
+                        FaceRegist faceNet = list.get(0).getFaceRegist();
+                        FR fr=new FR();
+                        float score=fr.getSimilarity(faceNet.getFace(),faceLocal.getFace());
+                        if(score>=0.6f){
+                            Time time = new Time("GMT+8");
+                            time.setToNow();
+                            String date = String.valueOf(time.year) + "-" + String.valueOf(time.month + 1) + "-" + String.valueOf(time.monthDay);
+                            dateSign.add(date);
+                            save("签到成功");
+                            addDateSign();
+                        }else {
+                            EventBus.getDefault().post(new BusEvent("LoginToast","人脸不匹配"));
+                            return;
+                        }
+                    }
+                } else {
+                    Toast.makeText(getContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void save(String text) {
@@ -315,5 +399,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
 }

@@ -53,7 +53,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         initView();
         mUsernameView.setText("别同");
         mPasswordView.setText("12345678");
-        EventBus.getDefault().register(this);//注册EventBus
     }
 
     private void skipLogin() {
@@ -166,86 +165,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                 }
             }
         });
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiver(BusEvent busEvent) {
-        if(busEvent.getEventName().equals("拍照完成")){
-            byte[] data=busEvent.getBytes();
-            Bitmap bitmap= BitmapFactory.decodeByteArray(data, 0, data.length);
-            bitmap = BitmapUtil.cutBitmap(getApplicationContext(),bitmap);//裁剪
-            if (bitmap == null) {//判空
-                Toast.makeText(getApplicationContext(),"图像获取异常",Toast.LENGTH_SHORT).show();
-                return;
-            }
-            byte[] bytes = BitmapUtil.bitmapToNV21Bytes(bitmap);//转格式
-            getFDData(bytes, bitmap.getWidth(), bitmap.getHeight());//获取信息
-        }else if(busEvent.getEventName().equals("LoginToast")){
-            Toast.makeText(LoginActivity.this,busEvent.getText(),Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /* 获取人脸检测信息 */
-    public void getFDData(byte[] bytes, int width, int height) {
-        FD fd = new FD();//人脸检测
-        List<AFD_FSDKFace> fdData = fd.process(bytes, width, height);
-        if (fdData.size() == 0) {
-            Toast.makeText(LoginActivity.this, "未检测到人脸", Toast.LENGTH_SHORT).show();
-            return;
-        } else if (fdData.size() >= 2) {
-            Toast.makeText(LoginActivity.this, "检测到多个人脸，请重试", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        AFD_FSDKFace fdFace = fdData.get(0);
-        FR fr = new FR();
-        AFR_FSDKFace frFace = fr.getFace(bytes, width, height, fdFace.getRect(), fdFace.getDegree());
-        String username = mUsernameView.getText().toString();
-        FaceRegist faceRegist = new FaceRegist(username, frFace);
-        faceLogin(username,faceRegist);
-    }
-
-    private FaceRegist faceRegist;
-
-    private void faceLogin(String username,FaceRegist face1) {
-        faceLogin.setLoading(true);
-        BmobQuery<FaceData> query = new BmobQuery<>();
-        query.addWhereEqualTo("username", username);
-        query.findObjects(new FindListener<FaceData>() {
-            @Override
-            public void done(List<FaceData> list, BmobException e) {
-                if (e == null) {
-                    if (list.size() == 0) {
-                        EventBus.getDefault().post(new BusEvent("LoginToast","未注册人脸"));
-                        faceLogin.setLoading(false);
-                        return;
-                    } else {
-                        faceRegist = list.get(0).getFaceRegist();
-                        FR fr=new FR();
-                        float score=fr.getSimilarity(faceRegist.getFace(),face1.getFace());
-                        Log.e("face2",faceRegist.getFace().toString());
-                        if(score>=0.6f){
-                            Log.e("SCORE", String.valueOf(score));
-                            startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                            finish();
-                        }else {
-                            Log.e("SCORE", String.valueOf(score));
-                            EventBus.getDefault().post(new BusEvent("LoginToast","人脸不匹配"));
-                            faceLogin.setLoading(false);
-                            return;
-                        }
-                    }
-                } else {
-                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    faceLogin.setLoading(false);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);//解除注册
     }
 }
 
