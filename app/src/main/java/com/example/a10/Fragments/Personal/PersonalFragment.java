@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -124,6 +125,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.CAMERA}, 0x000);
+                    registButton.setLoading(false);
                 } else {
                     startActivity(new Intent(getActivity(), CameraActivity.class));
                 }
@@ -143,12 +145,15 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 0x000:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    startActivity(new Intent(getActivity(), CameraActivity.class));
+                    return;
+                }
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startActivity(new Intent(getActivity(), CameraActivity.class));
                 } else {
                     Toast.makeText(getContext(), "未获得相机权限，无法拍照", Toast.LENGTH_SHORT).show();
                 }
-                setRegistButton(false);
         }
     }
 

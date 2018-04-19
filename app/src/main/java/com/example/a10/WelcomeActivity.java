@@ -3,6 +3,7 @@ package com.example.a10;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,7 +21,12 @@ public class WelcomeActivity extends AppCompatActivity {
         Window window = this.getWindow();
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         new Tool(getApplicationContext());
-        requestPermission();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermission();
+        } else {
+            startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+            finish();
+        }
     }
 
     private void requestPermission(){
