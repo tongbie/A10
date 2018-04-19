@@ -1,12 +1,9 @@
 package com.example.a10;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,27 +13,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.facedetection.AFD_FSDKFace;
-import com.arcsoft.facerecognition.AFR_FSDKFace;
 import com.example.a10.BmobManagers.User;
-import com.example.a10.Fragments.Personal.CameraActivity;
-import com.example.a10.Fragments.Personal.FaceData;
-import com.example.a10.MyView.LoadButton;
-import com.example.a10.Utils.BitmapUtil;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
-
-import Face.FD;
-import Face.FR;
-import Face.FaceRegist;
 import cn.bmob.newim.BmobIM;
-import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
@@ -66,8 +46,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         }
     }
 
-    LoadButton faceLogin;
-
     private void initView() {
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
@@ -83,8 +61,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         });
         findViewById(R.id.login).setOnClickListener(this);
         findViewById(R.id.regist).setOnClickListener(this);
-        faceLogin = findViewById(R.id.faceLogin);
-        faceLogin.setOnClickListener(this);
     }
 
     private void attemptLogin() {
@@ -123,9 +99,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                 break;
             case R.id.login:
                 login();
-                break;
-            case R.id.faceLogin:
-                startActivity(new Intent(LoginActivity.this, CameraActivity.class));
                 break;
         }
     }

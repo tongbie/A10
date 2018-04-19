@@ -352,5 +352,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().post(new BusEvent("未拍照"));
     }
 }

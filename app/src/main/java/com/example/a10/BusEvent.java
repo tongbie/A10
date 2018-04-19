@@ -11,7 +11,6 @@ public class BusEvent {
     private String eventName;
     private String senderName;
     private String text;
-    private MessageEvent messageEvent;
     private BmobIMConversation conversation;
     private byte[] bytes;
 
@@ -42,14 +41,6 @@ public class BusEvent {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public void setMessageEvent(MessageEvent messageEvent) {
-        this.messageEvent = messageEvent;
-    }
-
-    public MessageEvent getMessageEvent() {
-        return messageEvent;
     }
 
     public void setConversation(BmobIMConversation conversation) {

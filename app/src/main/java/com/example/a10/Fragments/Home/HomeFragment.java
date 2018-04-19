@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +29,10 @@ import com.example.a10.BmobManagers.User;
 import com.example.a10.BusEvent;
 import com.example.a10.Fragments.Personal.CameraActivity;
 import com.example.a10.Fragments.Personal.FaceData;
-import com.example.a10.LoginActivity;
-import com.example.a10.MainActivity;
 import com.example.a10.MyView.MenuButton;
 import com.example.a10.MyView.LoadButton;
 import com.example.a10.MyView.LoadTextView;
+import com.example.a10.MyView.RefreshButton;
 import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
 import com.example.a10.MyView.datepicker.DPDecor;
 import com.example.a10.MyView.datepicker.views.DatePicker;
@@ -88,15 +86,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    RefreshButton refreshButton;
+
     private void initView() {
         /* 控件 */
-//        view.findViewById(R.id.face).setOnClickListener(this);
         view.findViewById(R.id.addProgress).setOnClickListener(this);
         view.findViewById(R.id.setProgress).setOnClickListener(this);
         view.findViewById(R.id.menuButton).setOnClickListener(this);
         view.findViewById(R.id.save).setOnClickListener(this);
         view.findViewById(R.id.refresh).setOnClickListener(this);
         view.findViewById(R.id.signIn).setOnClickListener(this);
+        refreshButton=view.findViewById(R.id.refreshButton);
         /* 进度条 */
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setMax(100);
@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void addData() {
-        ((LoadTextView) view.findViewById(R.id.title)).setLoading(true);
+        ((LoadTextView)view.findViewById(R.id.title)).setLoading(true);
         ((LoadButton) view.findViewById(R.id.refresh)).setLoading(true);
         ((LoadButton) view.findViewById(R.id.save)).setLoading(true);
         BmobQuery<HomeGson> query = new BmobQuery<>();
@@ -152,7 +152,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         toast(e.getMessage());
                     }
                 }
-                ((LoadTextView) view.findViewById(R.id.title)).setLoading(false);
+                ((LoadTextView)view.findViewById(R.id.title)).setLoading(false);
                 ((LoadButton) view.findViewById(R.id.refresh)).setLoading(false);
                 ((LoadButton) view.findViewById(R.id.save)).setLoading(false);
             }
@@ -219,43 +219,66 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return;
             }
         }
+        setRefreshButtonLoading(true);
         startActivity(new Intent(getActivity(), CameraActivity.class));
     }
 
+    Bitmap faceBitmap=null;
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiver(BusEvent busEvent) {
-        if(busEvent.getEventName().equals("拍照完成")){
+        String eventName=busEvent.getEventName();
+        if(eventName.equals("拍照完成")){
             byte[] data=busEvent.getBytes();
             Bitmap bitmap= BitmapFactory.decodeByteArray(data, 0, data.length);
-            bitmap = BitmapUtil.cutBitmap(getContext(),bitmap);//裁剪
-            if (bitmap == null) {//判空
-                Toast.makeText(getContext(),"图像获取异常",Toast.LENGTH_SHORT).show();
-                return;
-            }
-            byte[] bytes = BitmapUtil.bitmapToNV21Bytes(bitmap);//转格式
-            getFDData(bytes, bitmap.getWidth(), bitmap.getHeight());//获取信息
+            faceBitmap=bitmap;
+            getFaceData();
+        }else if(eventName.equals("未拍照")){
+            setRefreshButtonLoading(false);
         }
     }
 
-    public void getFDData(byte[] bytes, int width, int height) {
+    private void getFaceData(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                faceBitmap = BitmapUtil.cutBitmap(getContext(),faceBitmap);//裁剪
+                if (faceBitmap == null) {//判空
+                    EventBus.getDefault().post(new BusEvent("Toast","图像获取异常"));
+                    setRefreshButtonLoading(false);
+                    return;
+                }
+                byte[] bytes = BitmapUtil.bitmapToNV21Bytes(faceBitmap);//转格式
+                FaceRegist faceRegist=getFDData(bytes, faceBitmap.getWidth(), faceBitmap.getHeight());//获取信息
+                if(faceRegist==null){
+                    setRefreshButtonLoading(false);
+                    return;
+                }
+                String username = User.getCurrentUser().getUsername();
+                faceSignIn(username,faceRegist);
+            }
+        }).start();
+    }
+
+    public FaceRegist getFDData(byte[] bytes, int width, int height) {
         FD fd = new FD();//人脸检测
         List<AFD_FSDKFace> fdData = fd.process(bytes, width, height);
         if (fdData.size() == 0) {
-            Toast.makeText(getContext(), "未检测到人脸", Toast.LENGTH_SHORT).show();
-            return;
+            EventBus.getDefault().post(new BusEvent("Toast", "未检测到人脸"));
+            return null;
         } else if (fdData.size() >= 2) {
-            Toast.makeText(getContext(), "检测到多个人脸，请重试", Toast.LENGTH_SHORT).show();
-            return;
+            EventBus.getDefault().post(new BusEvent("Toast", "检测到多个人脸，请重新录入"));
+            return null;
         }
         AFD_FSDKFace fdFace = fdData.get(0);
         FR fr = new FR();
         AFR_FSDKFace frFace = fr.getFace(bytes, width, height, fdFace.getRect(), fdFace.getDegree());
         String username = User.getCurrentUser().getUsername();
         FaceRegist faceRegist = new FaceRegist(username, frFace);
-        faceLogin(username,faceRegist);
+        return faceRegist;
     }
 
-    private void faceLogin(String username,FaceRegist faceLocal) {
+    private void faceSignIn(String username, FaceRegist faceLocal) {
         BmobQuery<FaceData> query = new BmobQuery<>();
         query.addWhereEqualTo("username", username);
         query.findObjects(new FindListener<FaceData>() {
@@ -263,26 +286,49 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void done(List<FaceData> list, BmobException e) {
                 if (e == null) {
                     if (list.size() == 0) {
-                        EventBus.getDefault().post(new BusEvent("LoginToast","未注册人脸"));
+                        EventBus.getDefault().post(new BusEvent("Toast","未注册人脸"));
+                        setRefreshButtonLoading(false);
                         return;
                     } else {
                         FaceRegist faceNet = list.get(0).getFaceRegist();
                         FR fr=new FR();
                         float score=fr.getSimilarity(faceNet.getFace(),faceLocal.getFace());
                         if(score>=0.6f){
-                            Time time = new Time("GMT+8");
-                            time.setToNow();
-                            String date = String.valueOf(time.year) + "-" + String.valueOf(time.month + 1) + "-" + String.valueOf(time.monthDay);
-                            dateSign.add(date);
-                            save("签到成功");
-                            addDateSign();
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Time time = new Time("GMT+8");
+                                    time.setToNow();
+                                    String date = String.valueOf(time.year) + "-" + String.valueOf(time.month + 1) + "-" + String.valueOf(time.monthDay);
+                                    dateSign.add(date);
+                                    save("签到成功");
+                                    addDateSign();
+                                    setRefreshButtonLoading(false);
+                                }
+                            });
                         }else {
-                            EventBus.getDefault().post(new BusEvent("LoginToast","人脸不匹配"));
+                            EventBus.getDefault().post(new BusEvent("Toast","人脸不匹配"));
+                            setRefreshButtonLoading(false);
                             return;
                         }
                     }
                 } else {
-                    Toast.makeText(getContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(new BusEvent("Toast",e.getMessage()));
+                    setRefreshButtonLoading(false);
+                }
+            }
+        });
+    }
+
+    private void setRefreshButtonLoading(boolean isLoading){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(isLoading){
+                    refreshButton.setVisibility(View.VISIBLE);
+                    refreshButton.setRefreshing(true);
+                }else {
+                    refreshButton.setVisibility(View.GONE);
                 }
             }
         });

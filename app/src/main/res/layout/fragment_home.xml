@@ -23,6 +23,14 @@
             android:textColor="#ffffff"
             android:textSize="20dp"></com.example.a10.MyView.LoadTextView>
 
+        <com.example.a10.MyView.RefreshButton
+            android:id="@id/refreshButton"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            style="?android:attr/borderlessButtonStyle"
+            android:visibility="gone"
+            android:focusableInTouchMode="false"/>
+
         <com.example.a10.MyView.MenuButton
             android:id="@+id/menuButton"
             style="?android:attr/borderlessButtonStyle"

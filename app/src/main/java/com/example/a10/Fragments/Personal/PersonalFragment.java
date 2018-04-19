@@ -72,12 +72,12 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    LoadButton regist;
+    LoadButton registButton;
 
     private void initView() {
         view.findViewById(R.id.logout).setOnClickListener(this);
-        regist = view.findViewById(R.id.regist);
-        regist.setOnClickListener(this);
+        registButton = view.findViewById(R.id.regist);
+        registButton.setOnClickListener(this);
     }
 
     @Override
@@ -87,53 +87,71 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 BmobUser.logOut();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 BmobIM.getInstance().disConnect();//断开服务器连接
-                MainActivity.fragments.clear();
-                MainActivity.homeFragment = null;
-                MainActivity.requireFragment = null;
-                MainActivity.requireFragment = null;
-                MainActivity.personalFragment = null;
+                clearAllFragments();
                 getActivity().finish();
                 break;
             case R.id.regist:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-                dialog.setCancelable(true);
-                dialog.setTitle("选择图片：");
-                dialog.setNegativeButton("相册", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(intent, 0x000);
-                    }
-                });
-                dialog.setPositiveButton("拍照", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//                            Toast.makeText(getContext(),"未获得相机权限，无法拍照",Toast.LENGTH_SHORT).show();
-                            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.CAMERA}, 0x000);
-                        }else {
-                            startActivity(new Intent(getActivity(), CameraActivity.class));
-                        }
-                    }
-                });
-                dialog.show();
+                registButton.setLoading(true);
+                shouRegistFaceDialog();
                 break;
         }
+    }
+
+    /* 移除Fragment */
+    private void clearAllFragments() {
+        MainActivity.fragments.clear();
+        MainActivity.homeFragment = null;
+        MainActivity.requireFragment = null;
+        MainActivity.requireFragment = null;
+        MainActivity.personalFragment = null;
+    }
+
+    /* 显示Dialog */
+    private void shouRegistFaceDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        dialog.setCancelable(true);
+        dialog.setTitle("选择图片：");
+        dialog.setNegativeButton("相册", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 0x000);
+            }
+        });
+        dialog.setPositiveButton("拍照", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.CAMERA}, 0x000);
+                } else {
+                    startActivity(new Intent(getActivity(), CameraActivity.class));
+                }
+            }
+        });
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                registButton.setLoading(false);
+            }
+        });
+        dialog.show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case 0x000:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startActivity(new Intent(getActivity(), CameraActivity.class));
-                }else {
-                    Toast.makeText(getContext(),"未获得相机权限，无法拍照",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "未获得相机权限，无法拍照", Toast.LENGTH_SHORT).show();
                 }
         }
     }
+
+    private Bitmap faceBitmap = null;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,44 +169,58 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                     }
                     break;
             }
-
-            bitmap = BitmapUtil.cutBitmap(getContext(), bitmap);//裁剪
-            if (bitmap == null) {//判空
-                Toast.makeText(getContext(), "图像获取异常", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            byte[] bytes = BitmapUtil.bitmapToNV21Bytes(bitmap);//转格式
-            getFDData(bytes, bitmap.getWidth(), bitmap.getHeight());//获取信息
+            faceBitmap = bitmap;
+            getFaceData();
         } else {
-            BusEvent busEvent = new BusEvent("Toast");
-            busEvent.setText("选择照片失败，请重新尝试");
-            EventBus.getDefault().post(busEvent);
+            EventBus.getDefault().post(new BusEvent("Toast","选择照片失败，请重新尝试"));
+            registButton.setLoading(false);
             return;
         }
     }
 
+    private void getFaceData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                faceBitmap = BitmapUtil.cutBitmap(getContext(), faceBitmap);
+                if (faceBitmap == null) {
+                    EventBus.getDefault().post(new BusEvent("Toast", "图像获取异常"));
+                    return;
+                }
+                byte[] bytes = BitmapUtil.bitmapToNV21Bytes(faceBitmap);//转格式
+                FaceRegist faceLocal = getFDData(bytes, faceBitmap.getWidth(), faceBitmap.getHeight());//获取信息
+                if (faceLocal == null) {
+                    setRegistButton(false);
+                    return;
+                }
+                String username = User.getCurrentUser().getUsername();
+                registFace(username, faceLocal);
+            }
+        }).start();
+    }
+
+
     /* 获取人脸检测信息 */
-    public void getFDData(byte[] bytes, int width, int height) {
+    public FaceRegist getFDData(byte[] bytes, int width, int height) {
         FD fd = new FD();//人脸检测
         List<AFD_FSDKFace> fdData = fd.process(bytes, width, height);
         if (fdData.size() == 0) {
-            Toast.makeText(getContext(), "未检测到人脸", Toast.LENGTH_SHORT).show();
-            return;
+            EventBus.getDefault().post(new BusEvent("Toast", "未检测到人脸"));
+            return null;
         } else if (fdData.size() >= 2) {
-            Toast.makeText(getContext(), "检测到多个人脸，请重新录入", Toast.LENGTH_SHORT).show();
-            return;
+            EventBus.getDefault().post(new BusEvent("Toast", "检测到多个人脸，请重新录入"));
+            return null;
         }
         AFD_FSDKFace fdFace = fdData.get(0);
         FR fr = new FR();
         AFR_FSDKFace frFace = fr.getFace(bytes, width, height, fdFace.getRect(), fdFace.getDegree());
         String username = User.getCurrentUser().getUsername();
         FaceRegist faceRegist = new FaceRegist(username, frFace);
-        addData(username, faceRegist);
+        return faceRegist;
     }
 
-
-    private void addData(String username, FaceRegist faceRegist) {
-        regist.setLoading(true);
+    private void registFace(String username, FaceRegist faceRegist) {
+        setRegistButton(true);
         BmobQuery<FaceData> query = new BmobQuery<>();
         query.addWhereEqualTo("username", username);
         query.findObjects(new FindListener<FaceData>() {
@@ -202,48 +234,42 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                         data.save(new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
-                                if (e != null) {
-                                    EventBus.getDefault().post(new BusEvent("Toast", e.getMessage()));
-                                } else {
+                                if (e == null) {
                                     EventBus.getDefault().post(new BusEvent("Toast", "注册成功"));
+                                } else {
+                                    EventBus.getDefault().post(new BusEvent("Toast", e.getMessage()));
                                 }
-                                regist.setLoading(false);
+                                setRegistButton(false);
+                                return;
                             }
                         });
-                        addData(username, faceRegist);
-                        return;
                     } else {
                         data.update(list.get(0).getObjectId(), new UpdateListener() {
                             @Override
                             public void done(BmobException e) {
                                 if (e == null) {
-                                    EventBus.getDefault().post(new BusEvent("Toast", "注册成功"));
+                                    EventBus.getDefault().post(new BusEvent("Toast", "修改成功"));
                                 } else {
-                                    EventBus.getDefault().post(new BusEvent("Toast", "注册失败"));
-                                    addData(username, faceRegist);
+                                    EventBus.getDefault().post(new BusEvent("Toast", "修改失败"));
+                                    registFace(username, faceRegist);
                                 }
-                                regist.setLoading(false);
+                                setRegistButton(false);
                             }
                         });
                     }
                 } else {
-                    if (e.getErrorCode() == 101) {
-                        new FaceData().save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                if (e == null) {
-                                    addData(username, faceRegist);
-                                } else {
-                                    EventBus.getDefault().post(new BusEvent("Toast", e.getMessage()));
-                                    regist.setLoading(false);
-                                }
-                            }
-                        });
-                    } else {
-                        EventBus.getDefault().post(new BusEvent("Toast", e.getMessage()));
-                        regist.setLoading(false);
-                    }
+                    EventBus.getDefault().post(new BusEvent("Toast", e.getMessage()));
                 }
+                setRegistButton(false);
+            }
+        });
+    }
+
+    private void setRegistButton(boolean isLoading) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                registButton.setLoading(isLoading);
             }
         });
     }
@@ -257,16 +283,13 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiver(BusEvent busEvent) {
-        if(busEvent.getEventName().equals("拍照完成")){
-            byte[] data=busEvent.getBytes();
-            Bitmap bitmap=BitmapFactory.decodeByteArray(data, 0, data.length);
-            bitmap = BitmapUtil.cutBitmap(getContext(),bitmap);//裁剪
-            if (bitmap == null) {//判空
-                Toast.makeText(getContext(),"图像获取异常",Toast.LENGTH_SHORT).show();
-                return;
-            }
-            byte[] bytes = BitmapUtil.bitmapToNV21Bytes(bitmap);//转格式
-            getFDData(bytes, bitmap.getWidth(), bitmap.getHeight());//获取信息
+        if (busEvent.getEventName().equals("拍照完成")) {
+            byte[] data = busEvent.getBytes();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            faceBitmap = bitmap;
+            getFaceData();
+        }else if(busEvent.getEventName().equals("未拍照")){
+            registButton.setLoading(false);
         }
     }
 }
