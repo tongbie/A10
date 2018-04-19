@@ -148,6 +148,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 } else {
                     Toast.makeText(getContext(), "未获得相机权限，无法拍照", Toast.LENGTH_SHORT).show();
                 }
+                setRegistButton(false);
         }
     }
 
@@ -266,12 +267,16 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setRegistButton(boolean isLoading) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                registButton.setLoading(isLoading);
-            }
-        });
+        try {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    registButton.setLoading(isLoading);
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     //TODO:
