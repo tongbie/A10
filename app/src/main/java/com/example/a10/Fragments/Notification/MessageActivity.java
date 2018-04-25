@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
 import com.example.a10.BusEvent;
+import com.example.a10.MainActivity;
 import com.example.a10.MyView.SlipBack;
 import com.example.a10.R;
 
@@ -167,7 +168,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
 
     private void toast(String text) {
         try {
-            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MessageActivity.this, text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }

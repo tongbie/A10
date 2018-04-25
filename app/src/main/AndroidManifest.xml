@@ -46,8 +46,7 @@
             </intent-filter>
         </receiver>
         <service
-            android:name="cn.bmob.newim.core.service.BmobIMService"
-            android:process=":bmobcore" />
+            android:name="cn.bmob.newim.core.service.BmobIMService" />
         <service
             android:name="cn.bmob.newim.core.service.NotifyService"
             android:process=":bmobcore" />

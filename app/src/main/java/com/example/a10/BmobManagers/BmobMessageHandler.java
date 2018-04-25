@@ -72,7 +72,7 @@ public class BmobMessageHandler extends BmobIMMessageHandler {
         BmobIM.getInstance().updateConversation(conversation);
 
         BusEvent busEvent = new BusEvent("在线消息");
-        busEvent.setSenderName(messageEvent.getFromUserInfo().getName());
+        busEvent.setSenderName(senderName);
         busEvent.setConversation(conversation);
         EventBus.getDefault().post(busEvent);
     }
