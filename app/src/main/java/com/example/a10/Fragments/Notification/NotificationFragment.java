@@ -14,9 +14,9 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
-import com.example.a10.BusEvent;
+import com.example.a10.Utils.BusEvent;
 import com.example.a10.R;
-import com.example.a10.Tool;
+import com.example.a10.Utils.Tool;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

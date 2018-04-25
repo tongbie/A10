@@ -31,7 +31,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.example.a10.BusEvent;
+import com.example.a10.Utils.BusEvent;
 import com.example.a10.R;
 
 import org.greenrobot.eventbus.EventBus;

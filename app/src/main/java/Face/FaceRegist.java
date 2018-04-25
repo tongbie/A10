@@ -1,13 +1,6 @@
 package Face;
 
 import com.arcsoft.facerecognition.AFR_FSDKFace;
-import com.example.a10.BusEvent;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 /**
  * Created by BieTong on 2018/4/9.

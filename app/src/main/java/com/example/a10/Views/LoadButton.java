@@ -1,18 +1,25 @@
-package com.example.a10.MyView;
+package com.example.a10.Views;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import com.example.a10.Tool;
+import com.example.a10.R;
+import com.example.a10.Utils.Tool;
 
 /**
- * Created by BieTong on 2018/3/4.
+ * Created by BieTong on 2018/3/3.
+ * 用以实现网络延时按钮功能
+ * 点击后setLoading()可变成灰色且不可点击
+ * 然后有小球的弹跳动画
+ * 性能堪忧
  */
 
-public class LoadTextView extends android.support.v7.widget.AppCompatTextView {
+public class LoadButton extends android.support.v7.widget.AppCompatButton {
+    private Drawable background;
     private Paint paint;
     private float currentX;
     private float currentY;
@@ -25,23 +32,44 @@ public class LoadTextView extends android.support.v7.widget.AppCompatTextView {
     private boolean isLeft=false;
     private boolean isUp=false;
 
-    public LoadTextView(Context context) {
+
+    public LoadButton(Context context) {
         super(context);
+        saveBackground();
+        init();
     }
 
-    public LoadTextView(Context context, AttributeSet attrs) {
+    public LoadButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        saveBackground();
+        init();
     }
 
-    public LoadTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LoadButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        saveBackground();
+        init();
+    }
+
+    private void init(){
+        paint=new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.YELLOW);
+    }
+
+    private void saveBackground(){
+        this.background=this.getBackground();
     }
 
     public void setLoading(boolean isLoading){
         if(isLoading) {
+            this.setClickable(false);
+            this.setBackground(getResources().getDrawable(R.drawable.pressedbutton));
             isDraw=true;
             invalidate();
         }else {
+            this.setClickable(true);
+            this.setBackground(this.background);
             isDraw=false;
         }
     }
@@ -91,8 +119,5 @@ public class LoadTextView extends android.support.v7.widget.AppCompatTextView {
         currentX=positionX;
         currentY=positionY+this.getMeasuredHeight()/2;
         isFirstMeasure=false;
-        paint=new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.YELLOW);
     }
 }

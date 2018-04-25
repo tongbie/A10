@@ -1,4 +1,4 @@
-package com.example.a10;
+package com.example.a10.Utils;
 
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.event.MessageEvent;

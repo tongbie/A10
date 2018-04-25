@@ -1,4 +1,4 @@
-package com.example.a10.MyView;
+package com.example.a10.Views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 
 import com.example.a10.R;
-import com.example.a10.Tool;
+import com.example.a10.Utils.Tool;
 
 /**
  * Created by BieTong on 2018/4/1.

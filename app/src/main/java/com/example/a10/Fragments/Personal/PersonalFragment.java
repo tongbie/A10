@@ -26,12 +26,12 @@ import android.widget.Toast;
 import com.arcsoft.facedetection.AFD_FSDKFace;
 import com.arcsoft.facerecognition.AFR_FSDKFace;
 import com.example.a10.BmobManagers.User;
-import com.example.a10.BusEvent;
+import com.example.a10.Utils.BusEvent;
 import com.example.a10.LoginActivity;
 import com.example.a10.MainActivity;
-import com.example.a10.MyView.LoadButton;
+import com.example.a10.Views.LoadButton;
 import com.example.a10.R;
-import com.example.a10.Tool;
+import com.example.a10.Utils.Tool;
 import com.example.a10.Utils.BitmapUtil;
 
 import org.greenrobot.eventbus.EventBus;

@@ -1,11 +1,7 @@
-package com.example.a10.MyView;
+package com.example.a10.Views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.Button;
-
-import com.example.a10.R;
-import com.example.a10.Tool;
 
 /**
  * Created by BieTong on 2018/4/3.

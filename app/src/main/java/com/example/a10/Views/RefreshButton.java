@@ -1,4 +1,4 @@
-package com.example.a10.MyView;
+package com.example.a10.Views;
 
 import android.content.Context;
 import android.graphics.Bitmap;

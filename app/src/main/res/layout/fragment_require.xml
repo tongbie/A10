@@ -10,7 +10,7 @@
         android:layout_height="56dp"
         android:orientation="horizontal">
 
-        <com.example.a10.MyView.LoadTextView
+        <com.example.a10.Views.LoadTextView
             android:id="@+id/titleView"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
@@ -20,15 +20,15 @@
             android:paddingLeft="12dp"
             android:text="已接任务"
             android:textColor="#ffffff"
-            android:textSize="20dp"></com.example.a10.MyView.LoadTextView>
+            android:textSize="20dp"></com.example.a10.Views.LoadTextView>
 
-        <com.example.a10.MyView.RefreshButton
+        <com.example.a10.Views.RefreshButton
             android:id="@+id/refreshButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="56dp"
             android:layout_height="match_parent" />
 
-        <com.example.a10.MyView.MenuButton
+        <com.example.a10.Views.MenuButton
             android:id="@+id/menuButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="56dp"
@@ -44,7 +44,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <com.example.a10.MyView.LoadButton
+        <com.example.a10.Views.LoadButton
             android:id="@+id/acceptButtion"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -54,7 +54,7 @@
             android:textColor="#ffffff"
             android:textSize="18dp" />
 
-        <com.example.a10.MyView.LoadButton
+        <com.example.a10.Views.LoadButton
             android:id="@+id/waitAcceptButton"
             android:layout_width="match_parent"
             android:layout_height="40dp"

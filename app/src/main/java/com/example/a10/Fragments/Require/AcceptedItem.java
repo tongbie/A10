@@ -15,7 +15,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.a10.R;
-import com.example.a10.Tool;
+import com.example.a10.Utils.Tool;
 
 
 /**

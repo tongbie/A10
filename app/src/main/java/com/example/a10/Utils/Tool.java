@@ -1,4 +1,4 @@
-package com.example.a10;
+package com.example.a10.Utils;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
+import com.example.a10.R;
 
 import java.util.concurrent.TimeUnit;
 

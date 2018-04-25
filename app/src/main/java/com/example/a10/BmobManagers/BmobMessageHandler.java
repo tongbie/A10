@@ -1,8 +1,6 @@
 package com.example.a10.BmobManagers;
 
-import android.util.Log;
-
-import com.example.a10.BusEvent;
+import com.example.a10.Utils.BusEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

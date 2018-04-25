@@ -15,6 +15,8 @@ import com.example.a10.Fragments.Home.HomeFragment;
 import com.example.a10.Fragments.Personal.PersonalFragment;
 import com.example.a10.Fragments.Notification.NotificationFragment;
 import com.example.a10.Fragments.Require.RequireFragment;
+import com.example.a10.Utils.BusEvent;
+import com.example.a10.Utils.Tool;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

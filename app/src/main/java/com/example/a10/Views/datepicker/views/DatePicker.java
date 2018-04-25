@@ -1,4 +1,4 @@
-package com.example.a10.MyView.datepicker.views;
+package com.example.a10.Views.datepicker.views;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,9 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
-import com.example.a10.MyView.datepicker.DPDecor;
-import com.example.a10.MyView.datepicker.utils.MeasureUtil;
+import com.example.a10.Views.datepicker.bizs.calendars.DPCManager;
+import com.example.a10.Views.datepicker.DPDecor;
+import com.example.a10.Views.datepicker.utils.MeasureUtil;
 import com.example.a10.R;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;

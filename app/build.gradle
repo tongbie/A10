@@ -24,16 +24,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-//    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
-//        destinationDir file("$projectDir/libs")
-//        baseName "Native_Libs2"
-//        extension "jar"
-//        from fileTree(dir: "libs", include: "**/*.so")
-//        into "lib"
-//    }
-//    tasks.withType(JavaCompile) {
-//        compileTask -> compileTask.dependsOn(nativeLibsToJar)
-//    }
 }
 
 dependencies {
@@ -45,11 +35,16 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    //Bmob即时通讯
     compile 'cn.bmob.android:bmob-im:2.0.8@aar'
+    //Bmob_SDK
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
-    compile 'cn.bmob.android:http-legacy:1.0'
+    //底部导航栏
     compile 'com.ashokvarma.android:bottom-navigation-bar:1.4.1'
     //EventBus
     compile 'org.greenrobot:eventbus:3.0.0'
+    //人脸检测
     implementation files('libs/facedetection.jar')
+    //RecyclerView
+    compile 'com.android.support:recyclerview-v7:26.1.0'
 }

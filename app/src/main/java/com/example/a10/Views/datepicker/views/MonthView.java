@@ -1,4 +1,4 @@
-package com.example.a10.MyView.datepicker.views;
+package com.example.a10.Views.datepicker.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.a10.MyView.datepicker.bizs.calendars.DPCManager;
-import com.example.a10.MyView.datepicker.DPDecor;
-import com.example.a10.MyView.datepicker.bizs.themes.DPTManager;
-import com.example.a10.MyView.datepicker.DPInfo;
+import com.example.a10.Views.datepicker.bizs.calendars.DPCManager;
+import com.example.a10.Views.datepicker.DPDecor;
+import com.example.a10.Views.datepicker.bizs.themes.DPTManager;
+import com.example.a10.Views.datepicker.DPInfo;
 
 /**
  * MonthView

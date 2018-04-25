@@ -10,9 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a10.BmobManagers.User;
-import com.example.a10.BusEvent;
-import com.example.a10.MainActivity;
-import com.example.a10.MyView.SlipBack;
+import com.example.a10.Utils.BusEvent;
+import com.example.a10.Views.SlipBack;
 import com.example.a10.R;
 
 import org.greenrobot.eventbus.EventBus;

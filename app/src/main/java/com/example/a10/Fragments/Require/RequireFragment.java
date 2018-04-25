@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a10.MyView.LoadTextView;
-import com.example.a10.MyView.MenuButton;
-import com.example.a10.MyView.RefreshButton;
+import com.example.a10.Views.LoadTextView;
+import com.example.a10.Views.MenuButton;
+import com.example.a10.Views.RefreshButton;
 import com.example.a10.R;
-import com.example.a10.Tool;
+import com.example.a10.Utils.Tool;
 
 import java.util.ArrayList;
 import java.util.List;

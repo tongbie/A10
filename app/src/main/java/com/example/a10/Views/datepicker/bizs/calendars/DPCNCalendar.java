@@ -1,4 +1,4 @@
-package com.example.a10.MyView.datepicker.bizs.calendars;
+package com.example.a10.Views.datepicker.bizs.calendars;
 
 import android.text.TextUtils;
 
@@ -6,9 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.example.a10.MyView.datepicker.bizs.calendars.*;
-import com.example.a10.MyView.datepicker.bizs.calendars.SolarTerm;
 
 /**
  * 中国月历
