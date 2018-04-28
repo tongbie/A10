@@ -45,7 +45,7 @@
         android:visibility="gone">
 
         <com.example.a10.Views.LoadButton
-            android:id="@+id/acceptButtion"
+            android:id="@+id/taskAcceptButton"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
@@ -55,7 +55,7 @@
             android:textSize="18dp" />
 
         <com.example.a10.Views.LoadButton
-            android:id="@+id/waitAcceptButton"
+            android:id="@+id/taskWaitAcceptButton"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
@@ -65,7 +65,7 @@
             android:textSize="18dp" />
 
         <Button
-            android:id="@+id/refusedButton"
+            android:id="@+id/taskRefusedButton"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="6dp"
@@ -76,7 +76,7 @@
 
     </LinearLayout>
 
-    <ScrollView
+    <!--<ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="6dp">
@@ -86,6 +86,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"></LinearLayout>
-    </ScrollView>
+    </ScrollView>-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:paddingTop="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         initFragment();
         initData();
         EventBus.getDefault().register(this);//注册EventBus
-        Tool.linkServer();
+        Tool.linkServer(MainActivity.this);
     }
 
     private void initView() {

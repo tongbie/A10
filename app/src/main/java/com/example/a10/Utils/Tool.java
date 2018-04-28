@@ -34,24 +34,25 @@ import cn.bmob.v3.exception.BmobException;
  */
 
 public class Tool {
-    private static Context context;
-    public static int SCREEN_WIDTH;
-    public static int SCREEN_HEIGHT;
-    public static float mDensity;
     public static int imageId = R.drawable.ic_personal;
-    public static int imageIdN = R.drawable.ic_personal_new;
-    public static int requireItemHeight;
 
-    public Tool(Context context) {
-        this.context = context;
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        mDensity = dm.density;
-        SCREEN_WIDTH = dm.widthPixels;
-        SCREEN_HEIGHT = dm.heightPixels;
-        requireItemHeight = SCREEN_HEIGHT - (int) dp(240);
+    public static int getDensity(Context context){
+        return (int) context.getResources().getDisplayMetrics().density;
     }
 
-    public static float dp(float px) {
+    public static int getScreenWidth(Context context){
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeight(Context context){
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    public static int getTaskItemHeight(Context context){
+        return getScreenHeight(context)-(int)dp(context,240);
+    }
+
+    public static float dp(Context context,float px) {
         float scale = context.getResources().getDisplayMetrics().density;
         return px * scale + 0.5f;
     }
@@ -70,13 +71,13 @@ public class Tool {
         return animator;
     }
 
-    public static int px(float dp) {
+    public static int px(Context context,float dp) {
         float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
 
     /* 连接聊天服务器 */
-    public static void linkServer() {
+    public static void linkServer(Context context) {
         User user = User.getCurrentUser(User.class);
         if (!TextUtils.isEmpty(user.getObjectId())) {
             BmobIM.connect(user.getObjectId(), new ConnectListener() {
@@ -96,25 +97,33 @@ public class Tool {
 
     /* 为LinearLayout添加缩放动画 */
     public static void scaleAnimation(View view, int viewId) {
-        ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
-        sa.setInterpolator(new OvershootInterpolator());
-        sa.setDuration(300);
-        LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout linearLayout = view.findViewById(viewId);
-        linearLayout.setLayoutAnimation(lac);
+        try {
+            ScaleAnimation sa = new ScaleAnimation(0.9f, 1f, 0.9f, 1f,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            sa.setInterpolator(new OvershootInterpolator());
+            sa.setDuration(300);
+            LayoutAnimationController lac = new LayoutAnimationController(sa, 0.3f);
+            lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+            LinearLayout linearLayout = view.findViewById(viewId);
+            linearLayout.setLayoutAnimation(lac);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /* 为LinearLayout添加位移动画 */
-    public static void translateAnimation(View view, int viewId) {
-        TranslateAnimation ta = new TranslateAnimation(0, 0, dp(-50), 0);
-        ta.setInterpolator(new OvershootInterpolator());
-        ta.setDuration(200);
-        LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-        LinearLayout layout = view.findViewById(viewId);
-        layout.setLayoutAnimation(lac);
+    public static void translateAnimation(Context context,View view, int viewId) {
+        try {
+            TranslateAnimation ta = new TranslateAnimation(0, 0, dp(context,-50), 0);
+            ta.setInterpolator(new OvershootInterpolator());
+            ta.setDuration(200);
+            LayoutAnimationController lac = new LayoutAnimationController(ta, 0.3f);
+            lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+            LinearLayout layout = view.findViewById(viewId);
+            layout.setLayoutAnimation(lac);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

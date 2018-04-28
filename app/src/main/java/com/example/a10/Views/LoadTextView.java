@@ -52,7 +52,7 @@ public class LoadTextView extends android.support.v7.widget.AppCompatTextView {
         if(!isDraw){
             return;
         }
-        canvas.drawCircle(currentX,currentY, Tool.dp(6),paint);
+        canvas.drawCircle(currentX,currentY, Tool.dp(getContext(),6),paint);
         if(isLeft){
             currentX-=5;
             if(currentX<positionX){

@@ -36,7 +36,7 @@ public class MenuButton extends android.support.v7.widget.AppCompatButton {
         this.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         paint.setAntiAlias(true);
         paint.setColor(getResources().getColor(R.color.colorWrite));
-        paint.setStrokeWidth(Tool.dp(4));
+        paint.setStrokeWidth(Tool.dp(getContext(),4));
     }
 
     private int isShow = 2;

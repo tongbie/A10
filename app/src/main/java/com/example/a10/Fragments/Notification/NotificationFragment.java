@@ -35,8 +35,7 @@ import cn.bmob.v3.listener.FindListener;
 public class NotificationFragment extends Fragment implements
         AdapterView.OnItemClickListener,
         View.OnClickListener,
-        AdapterView.OnItemLongClickListener/*,
-        MessageListHandler*/ {
+        AdapterView.OnItemLongClickListener{
 
     private ListView listView;
     private List<BmobIMConversation> conversationList;
@@ -51,11 +50,11 @@ public class NotificationFragment extends Fragment implements
             EventBus.getDefault().register(this);//注册EventBus
             updateMyConversation();
         }
-        ViewGroup viewGroup = (ViewGroup) view.getParent();
-        if (viewGroup != null) {
-            viewGroup.removeView(view);
-        }
-        Tool.translateAnimation(view, R.id.linearLayout);
+//        ViewGroup viewGroup = (ViewGroup) view.getParent();
+//        if (viewGroup != null) {
+//            viewGroup.removeView(view);
+//        }
+        Tool.translateAnimation(getContext(),view, R.id.linearLayout);
         return view;
     }
 
@@ -70,7 +69,7 @@ public class NotificationFragment extends Fragment implements
     public void updateMyConversation() {
         if (!Tool.isConnected) {
             toast("服务器连接失败");
-            Tool.linkServer();
+            Tool.linkServer(getContext());
             return;
         }
         if (conversationList != null) {
@@ -106,7 +105,7 @@ public class NotificationFragment extends Fragment implements
 
     private void startNewChat(String username) {
         if (!Tool.isConnected) {
-            Tool.linkServer();
+            Tool.linkServer(getContext());
             toast("服务器连接失败");
             return;
         }
@@ -157,26 +156,12 @@ public class NotificationFragment extends Fragment implements
         getActivity().startActivity(intent);
     }
 
-    /*@Override
-    public void onMessageReceive(List<MessageEvent> events) {
-        for (MessageEvent event : events) {
-            BmobIMConversation conversation = event.getConversation();
-            if (conversation != null) {
-                String conversationName = event.getFromUserInfo().getName();
-                conversation.setConversationTitle(conversationName);
-                conversation.setDraft(event.getFromUserInfo().getName() + "：" + event.getMessage().getContent());
-                BmobIM.getInstance().updateConversation(conversation);
-            }
-        }
-        updateMyConversation();
-    }*/
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         BmobIMConversation conversation = conversationList.get(position);
         if (!Tool.isConnected) {
             toast("正在尝试连接服务器...");
-            Tool.linkServer();
+            Tool.linkServer(getContext());
             return;
         }
         if (conversation != null) {

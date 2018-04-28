@@ -63,10 +63,10 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
             initView();
             EventBus.getDefault().register(this);//注册EventBus
         }
-        ViewGroup viewGroup = (ViewGroup) view.getParent();
-        if (viewGroup != null) {
-            viewGroup.removeView(view);
-        }
+//        ViewGroup viewGroup = (ViewGroup) view.getParent();
+//        if (viewGroup != null) {
+//            viewGroup.removeView(view);
+//        }
         Tool.scaleAnimation(view, R.id.linearLayout);
         ((TextView) view.findViewById(R.id.username)).setText(BmobUser.getCurrentUser().getUsername());
         ((TextView) view.findViewById(R.id.userId)).setText(BmobUser.getCurrentUser().getObjectId());

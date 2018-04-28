@@ -78,10 +78,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             addData();
             EventBus.getDefault().register(this);
         }
-        ViewGroup viewGroup = (ViewGroup) view.getParent();
-        if (viewGroup != null) {
-            viewGroup.removeView(view);
-        }
+//        ViewGroup viewGroup = (ViewGroup) view.getParent();
+//        if (viewGroup != null) {
+//            viewGroup.removeView(view);
+//        }
         Tool.scaleAnimation(view,R.id.linearLayout);
         return view;
     }
@@ -373,7 +373,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (menuLayout.getVisibility() == View.GONE) {
                 button.setIsShow(1);
                 menuLayout.setVisibility(View.VISIBLE);
-                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.mDensity + 0.5));
+                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.getDensity(getContext()) + 0.5));
                 animator.setInterpolator(new OvershootInterpolator());
                 animator.start();
             } else {

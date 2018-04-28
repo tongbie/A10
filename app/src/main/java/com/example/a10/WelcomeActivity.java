@@ -21,7 +21,6 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Window window = this.getWindow();
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
-        new Tool(getApplicationContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermission();
         } else {

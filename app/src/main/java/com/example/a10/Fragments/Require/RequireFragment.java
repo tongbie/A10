@@ -6,6 +6,8 @@ import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +34,11 @@ import cn.bmob.v3.listener.UpdateListener;
 
 
 public class RequireFragment extends Fragment implements View.OnClickListener {
-    View view;
-    LinearLayout listLayout;
-
-    List<RequireGson> requireDatas = new ArrayList<>();
+    private View view;
+    private List<TaskItem> taskItemList = new ArrayList<>();
+    private List<RequireGson> requireDatas = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private TaskItemAdapter adapter;
 
     @Nullable
     @Override
@@ -45,11 +48,10 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
             initView();
             addData();
         }
-        ViewGroup viewGroup = (ViewGroup) view.getParent();
-        if (viewGroup != null) {
-            viewGroup.removeView(view);
-        }
-        Tool.translateAnimation(view, R.id.listLayout);
+//        ViewGroup viewGroup = (ViewGroup) view.getParent();
+//        if (viewGroup != null) {
+//            viewGroup.removeView(view);
+//        }
         return view;
     }
 
@@ -65,105 +67,71 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
             @Override
             public void done(List<RequireGson> datas, BmobException e) {
                 if (e == null) {
-                    if(datas.size()==0){
-                        toast("任务列表为空");
+                    if (datas.size() == 0) {
+                        Toast.makeText(getContext(), "任务列表为空", Toast.LENGTH_SHORT).show();
                     }
                     for (RequireGson data : datas) {
                         requireDatas.add(data);
                     }
                     addItems();
-                } else {
-                    toast(e.getMessage());
+                    return;
                 }
+                Toast.makeText(getContext(), "数据获取失败", Toast.LENGTH_SHORT).show();
                 refreshButton.setRefreshing(false);
             }
         });
     }
 
     private void addItems() {
-        listLayout.removeAllViews();
-        for (int i=0;i<requireDatas.size();i++) {
-            RequireGson data=requireDatas.get(i);
-            int finalI=i;
+        taskItemList = new ArrayList<>();
+        for (int i = 0; i < requireDatas.size(); i++) {
+            RequireGson data = requireDatas.get(i);
+            String[] buttonText = null;
             if (state == 1) {
-                listLayout.addView(new AcceptedItem(getContext(),
-                        data.getTitle(),
-                        data.getDate(),
-                        data.getSender(),
-                        data.getIntroduce()) {
-                    @Override
-                    public void complete() {
-
-                    }
-
-                    @Override
-                    public void refuse() {
-                        requireDatas.get(finalI).setState(0);
-                        save("已拒绝此任务", data);
-                    }
-                });
+                buttonText = new String[]{"完 成", "拒 绝"};
             } else if (state == 2) {
-                listLayout.addView(new WaitAcceptItem(getContext(),
-                        data.getTitle(),
-                        data.getDate(),
-                        data.getSender(),
-                        data.getIntroduce()) {
-                    @Override
-                    public void accept() {
-                        requireDatas.get(finalI).setState(1);
-                        save("已接受此任务", data);
-                    }
-
-                    @Override
-                    public void refuse() {
-                        requireDatas.get(finalI).setState(0);
-                        save("已拒绝此任务", data);
-                    }
-                });
-            }else if(state==0){
-                listLayout.addView(new WaitAcceptItem(getContext(),
-                        data.getTitle(),
-                        data.getDate(),
-                        data.getSender(),
-                        data.getIntroduce()) {
-                    @Override
-                    public void accept() {
-                        requireDatas.get(finalI).setState(1);
-                        save("已接受此任务", data);
-                    }
-
-                    @Override
-                    public void refuse() {
-                        toast("该任务已被拒绝");
-                    }
-                });
+                buttonText = new String[]{"接 受", "拒 绝"};
+            } else if (state == 0) {
+                buttonText = new String[]{"接 受", "确 定"};
             }
+            TaskItem taskItem = new TaskItem(
+                    data.getTitle(),
+                    data.getSender(),
+                    data.getDate(),
+                    data.getIntroduce());
+            taskItem.setLeftButtonText(buttonText[0]);
+            taskItem.setRightButtonText(buttonText[1]);
+            taskItemList.add(taskItem);
         }
-        listLayout.addView(spaceView);
+        taskItemList.add(new TaskItem(null, null, null, null));
+//        adapter.notifyDataSetChanged();
+        adapter.setTaskItemList(taskItemList);
+        recyclerView.setAdapter(adapter);
+        refreshButton.setRefreshing(false);
     }
 
-    private void save(String text, RequireGson data) {
+    private void updateChange(String text, RequireGson data,boolean isRefresh) {
         BmobQuery<RequireGson> query = new BmobQuery<>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
         query.addWhereEqualTo("title", data.getTitle());
         query.findObjects(new FindListener<RequireGson>() {
             @Override
             public void done(List<RequireGson> list, BmobException e) {
-                if (e == null) {
+                if (e == null && list.size() > 0) {
                     data.update(list.get(0).getObjectId(), new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
-                                toast(text);
-                                addData();
-                            } else {
-                                toast(e.getMessage());
+                                Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+                                if(isRefresh) {
+                                    addData();
+                                }
                             }
                         }
                     });
-                } else {
-                    toast(e.getMessage());
+                    return;
                 }
+                Toast.makeText(getContext(), "修改失败", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -173,24 +141,53 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
 
     private void initView() {
         spaceView = new TextView(getContext());
-        spaceView.setHeight(Tool.requireItemHeight);//这里与RequireItem高度保持一致
-
-        listLayout = view.findViewById(R.id.listLayout);
+        spaceView.setHeight(Tool.getTaskItemHeight(getContext()));//这里与RequireItem高度保持一致
         refreshButton = view.findViewById(R.id.refreshButton);
-        titleView=view.findViewById(R.id.titleView);
+        titleView = view.findViewById(R.id.titleView);
+
+        LinearLayoutManager layoutmanager = new LinearLayoutManager(getActivity());
+        layoutmanager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(layoutmanager);
 
         refreshButton.setOnClickListener(this);
         view.findViewById(R.id.menuButton).setOnClickListener(this);
-        view.findViewById(R.id.acceptButtion).setOnClickListener(this);
-        view.findViewById(R.id.waitAcceptButton).setOnClickListener(this);
-        view.findViewById(R.id.refusedButton).setOnClickListener(this);
+        view.findViewById(R.id.taskAcceptButton).setOnClickListener(this);
+        view.findViewById(R.id.taskWaitAcceptButton).setOnClickListener(this);
+        view.findViewById(R.id.taskRefusedButton).setOnClickListener(this);
+
+        adapter = new TaskItemAdapter(getContext(), taskItemList);
+        adapter.setTaskItemList(taskItemList);
+        adapter.setOnItemButtonClickListener(new TaskItemAdapter.OnItemButtonClickListener() {
+            @Override
+            public void OnItemButtonClick(View v, int position, boolean isLeft) {
+                RequireGson data = requireDatas.get(position);
+                if (isLeft) {
+                    if (state == 0 || state == 2) {
+                        data.setState(1);
+                        updateChange("已接受此任务", data,false);
+                        adapter.removeItem(position);
+                    } else if (state == 1) {
+                        //TODO:完成任务
+                    }
+                } else {
+                    if (state == 1 || state == 2) {
+                        data.setState(0);
+                        updateChange("已拒绝此任务", data,false);
+                        adapter.removeItem(position);
+                    } else if (state == 0) {
+                        Toast.makeText(getContext(), "此任务已被拒绝", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
     }
 
     LoadTextView titleView;
-    String[] titles=new String[]{"已拒任务","已接任务","未接任务"};
+    String[] titles = new String[]{"已拒任务", "已接任务", "未接任务"};
 
-    private void clickEvent(){
-        listLayout.removeAllViews();
+    private void itemButtonClickEvent() {
+        recyclerView.removeAllViews();
         titleView.setText(titles[state]);
         addData();
         showMenu();
@@ -203,20 +200,20 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                 ((MenuButton) view.findViewById(R.id.menuButton)).setIsShow(1);
                 showMenu();
                 break;
-            case R.id.acceptButtion:
+            case R.id.taskAcceptButton:
                 state = 1;
-                clickEvent();
+                itemButtonClickEvent();
                 break;
-            case R.id.waitAcceptButton:
+            case R.id.taskWaitAcceptButton:
                 state = 2;
-                clickEvent();
+                itemButtonClickEvent();
                 break;
-            case R.id.refusedButton:
+            case R.id.taskRefusedButton:
                 state = 0;
-                clickEvent();
+                itemButtonClickEvent();
                 break;
             case R.id.refreshButton:
-                listLayout.removeAllViews();
+                recyclerView.removeAllViews();
                 addData();
                 break;
         }
@@ -229,7 +226,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
             if (menuLayout.getVisibility() == View.GONE) {
                 button.setIsShow(1);
                 menuLayout.setVisibility(View.VISIBLE);
-                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.mDensity + 0.5));
+                ValueAnimator animator = Tool.createDropAnimator(menuLayout, menuLayout.getLayoutParams(), 0, (int) (140 * Tool.getDensity(getContext()) + 0.5));
                 animator.setInterpolator(new OvershootInterpolator());
                 animator.start();
             } else {
@@ -245,14 +242,6 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
                 animator.setInterpolator(new AnticipateInterpolator());
                 animator.start();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void toast(String text) {
-        try {
-            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }

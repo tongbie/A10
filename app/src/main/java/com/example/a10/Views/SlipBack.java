@@ -31,7 +31,7 @@ public class SlipBack extends FrameLayout {
         super(activity);
         this.activity = activity;
         this.setOnTouchListener(new onTouch());
-        SLIP = Tool.SCREEN_WIDTH / 10;
+        SLIP = Tool.getScreenWidth(getContext()) / 10;
         /* 替换原根布局 */
         viewGroup = (ViewGroup) activity.getWindow().getDecorView();//获取最顶层View
         view = viewGroup.getChildAt(0);//获取根LinearLayout
