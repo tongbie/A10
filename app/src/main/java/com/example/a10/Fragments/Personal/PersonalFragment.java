@@ -225,7 +225,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         return faceRegist;
     }
 
-    private void registFace(String username, FaceRegist faceRegist) {
+    private void registFace(final String username, final FaceRegist faceRegist) {
         setRegistButton(true);
         BmobQuery<FaceData> query = new BmobQuery<>();
         query.addWhereEqualTo("username", username);
@@ -271,7 +271,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void setRegistButton(boolean isLoading) {
+    private void setRegistButton(final boolean isLoading) {
         try {
             getActivity().runOnUiThread(new Runnable() {
                 @Override

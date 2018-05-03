@@ -44,26 +44,27 @@ public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_accepted, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_task, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         if (taskItemList.size() > 0 && position == taskItemList.size() - 1) {
             LinearLayout linearLayout = (LinearLayout) holder.titleView.getParent();
             linearLayout.setMinimumHeight(Tool.getTaskItemHeight(context));
-            linearLayout.removeAllViews();
+//            linearLayout.removeAllViews();
+            linearLayout.findViewById(R.id.showButton).setVisibility(GONE);
             linearLayout.setBackgroundColor(Color.parseColor("#00000000"));
             return;
         }
-        TaskItem item = taskItemList.get(position);
+        final TaskItem item = taskItemList.get(position);
         holder.titleView.setText(item.getTitle());
         holder.dateView.setText(item.getDate());
         holder.senderView.setText(item.getSender());
         holder.introduceView.setText(item.getIntroduce());
-        ScrollView scrollView = holder.scrollView;
+        final ScrollView scrollView = holder.scrollView;
         scrollView.setOnTouchListener(childScrollTouchListener);
         holder.showButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +99,7 @@ public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.ViewHo
         });
     }
 
-    private void showIntroduceView(ScrollView scrollView, View v, TaskItemAdapter.ViewHolder holder, TaskItem item) {
+    private void showIntroduceView(final ScrollView scrollView, View v, TaskItemAdapter.ViewHolder holder, TaskItem item) {
         if (scrollView.getVisibility() == GONE) {
             scrollView.setVisibility(VISIBLE);
             ValueAnimator animator = Tool.createDropAnimator(scrollView, scrollView.getLayoutParams(), 0, Tool.getTaskItemHeight(context));

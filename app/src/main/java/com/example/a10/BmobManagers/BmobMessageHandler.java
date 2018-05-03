@@ -31,7 +31,7 @@ public class BmobMessageHandler extends BmobIMMessageHandler {
         queryUserName(senderId, messageEvent);
     }
 
-    private void queryUserName(String objectId, MessageEvent messageEvent) {
+    private void queryUserName(String objectId, final MessageEvent messageEvent) {
         BmobQuery<User> query = new BmobQuery<>();
         query.addWhereEqualTo("objectId", objectId);
         query.findObjects(new FindListener<User>() {
@@ -46,7 +46,7 @@ public class BmobMessageHandler extends BmobIMMessageHandler {
         });
     }
 
-    private void queryOfflineUserName(String objectId, MessageEvent messageEvent) {
+    private void queryOfflineUserName(String objectId, final MessageEvent messageEvent) {
         BmobQuery<User> query = new BmobQuery<>();
         query.addWhereEqualTo("objectId", objectId);
         query.findObjects(new FindListener<User>() {

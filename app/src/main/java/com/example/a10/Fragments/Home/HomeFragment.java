@@ -278,7 +278,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return faceRegist;
     }
 
-    private void faceSignIn(String username, FaceRegist faceLocal) {
+    private void faceSignIn(String username, final FaceRegist faceLocal) {
         BmobQuery<FaceData> query = new BmobQuery<>();
         query.addWhereEqualTo("username", username);
         query.findObjects(new FindListener<FaceData>() {
@@ -320,7 +320,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void setRefreshButtonLoading(boolean isLoading){
+    private void setRefreshButtonLoading(final boolean isLoading){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -334,7 +334,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void save(String text) {
+    private void save(final String text) {
         ((LoadButton) view.findViewById(R.id.save)).setLoading(true);
         final HomeGson data = new HomeGson();
         data.setProgress(progressBar.getProgress());
@@ -369,7 +369,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void showMenu() {
         try {
             MenuButton button=view.findViewById(R.id.menuButton);
-            LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
+            final LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
             if (menuLayout.getVisibility() == View.GONE) {
                 button.setIsShow(1);
                 menuLayout.setVisibility(View.VISIBLE);
@@ -396,7 +396,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 
     private void setProgress() {
-        SeekBar seekBar = new SeekBar(getContext());
+        final SeekBar seekBar = new SeekBar(getContext());
         seekBar.setMax(100);
         seekBar.setProgress(progressBar.getProgress());
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

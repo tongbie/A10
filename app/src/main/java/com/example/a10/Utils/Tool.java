@@ -58,7 +58,7 @@ public class Tool {
     }
 
     /* 展开动画 */
-    public static ValueAnimator createDropAnimator(final View view1, ViewGroup.LayoutParams layoutParams, int start, int end) {
+    public static ValueAnimator createDropAnimator(final View view1, final ViewGroup.LayoutParams layoutParams, int start, int end) {
         ValueAnimator animator = ValueAnimator.ofInt(start, end);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -77,7 +77,7 @@ public class Tool {
     }
 
     /* 连接聊天服务器 */
-    public static void linkServer(Context context) {
+    public static void linkServer(final Context context) {
         User user = User.getCurrentUser(User.class);
         if (!TextUtils.isEmpty(user.getObjectId())) {
             BmobIM.connect(user.getObjectId(), new ConnectListener() {

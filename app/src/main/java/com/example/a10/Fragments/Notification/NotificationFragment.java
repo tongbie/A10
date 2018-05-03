@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,7 +36,7 @@ import cn.bmob.v3.listener.FindListener;
 public class NotificationFragment extends Fragment implements
         AdapterView.OnItemClickListener,
         View.OnClickListener,
-        AdapterView.OnItemLongClickListener{
+        AdapterView.OnItemLongClickListener {
 
     private ListView listView;
     private List<BmobIMConversation> conversationList;
@@ -54,7 +55,7 @@ public class NotificationFragment extends Fragment implements
 //        if (viewGroup != null) {
 //            viewGroup.removeView(view);
 //        }
-        Tool.translateAnimation(getContext(),view, R.id.linearLayout);
+        Tool.translateAnimation(getContext(), view, R.id.linearLayout);
         return view;
     }
 
@@ -115,9 +116,9 @@ public class NotificationFragment extends Fragment implements
             @Override
             public void done(List<User> list, BmobException e) {
                 if (e == null) {
-                    User bUser = list.get(0);
+                    final User bUser = list.get(0);
                     BmobIMUserInfo info = new BmobIMUserInfo();
-                    String bName = bUser.getUsername();
+                    final String bName = bUser.getUsername();
                     info.setUserId(bUser.getObjectId());
                     info.setName(bName);
                     info.setAvatar(bUser.getAvatar());
@@ -170,14 +171,17 @@ public class NotificationFragment extends Fragment implements
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
         PopupMenu popupMenu = new PopupMenu(getContext(), view);
         popupMenu.getMenuInflater().inflate(R.menu.delete, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(item -> {
-            BmobIMConversation conversation = conversationList.get(position);
-            BmobIM.getInstance().deleteConversation(conversation.getConversationId());
-            updateMyConversation();
-            return true;
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                BmobIMConversation conversation = conversationList.get(position);
+                BmobIM.getInstance().deleteConversation(conversation.getConversationId());
+                updateMyConversation();
+                return true;
+            }
         });
         popupMenu.show();
         return true;
@@ -215,7 +219,7 @@ public class NotificationFragment extends Fragment implements
 //            updateMyConversation();
         } else if (busEvent.getEventName().equals("在线消息")) {
             updateMyConversation();
-        }else if (busEvent.getEventName().equals("离线消息")){
+        } else if (busEvent.getEventName().equals("离线消息")) {
             updateMyConversation();
         }
     }

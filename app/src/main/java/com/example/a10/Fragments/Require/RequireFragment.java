@@ -110,7 +110,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
         refreshButton.setRefreshing(false);
     }
 
-    private void updateChange(String text, RequireGson data,boolean isRefresh) {
+    private void updateChange(final String text, final RequireGson data, final boolean isRefresh) {
         BmobQuery<RequireGson> query = new BmobQuery<>();
         query.addWhereEqualTo("username", BmobUser.getCurrentUser(BmobUser.class).getUsername());
         query.addWhereEqualTo("title", data.getTitle());
@@ -222,7 +222,7 @@ public class RequireFragment extends Fragment implements View.OnClickListener {
     private void showMenu() {
         try {
             MenuButton button = view.findViewById(R.id.menuButton);
-            LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
+            final LinearLayout menuLayout = view.findViewById(R.id.menuLayout);
             if (menuLayout.getVisibility() == View.GONE) {
                 button.setIsShow(1);
                 menuLayout.setVisibility(View.VISIBLE);

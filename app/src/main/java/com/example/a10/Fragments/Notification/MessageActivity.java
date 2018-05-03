@@ -102,7 +102,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
         listView.setAdapter(new MessageAdapter(this, 0, messages));
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(final String message) {
         BmobIMTextMessage msg = new BmobIMTextMessage();
         msg.setContent(message);
         bConversation.sendMessage(msg, new MessageSendListener() {
